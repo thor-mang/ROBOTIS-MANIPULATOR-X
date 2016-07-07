@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<launch>        
+    <param name="gazebo"                   value="false"    type="bool"/>
+    <param name="gazebo_robot_name"        value="robotis_manipulator_x"/>
+    
+    <param name="offset_file_path"         value="$(find manipulator_x_manager)/config/offset.yaml"/>
+    <param name="robot_file_path"          value="$(find manipulator_x_manager)/config/MANIPULATOR-X.robot"/>
+    <param name="init_file_path"           value="$(find manipulator_x_manager)/config/dxl_init.yaml"/>
+                	 
+    <!-- ROBOTIS MANIPULATOR X Manager -->
+    <node name="manipulator_x_manager" pkg="manipulator_x_manager" type="manipulator_x_manager" output="screen"/>
+    
+    <!-- Robot Model & TF -->
+    <!--<include file="$(find manipulator_x_description)/launch/manipulator_x_ctrl.launch"/>-->
+</launch>

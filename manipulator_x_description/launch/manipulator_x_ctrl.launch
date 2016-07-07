@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<launch>    
+    <arg name="use_present" default="true" />
+    
+    <param name="robot_description"
+    command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x.xacro'" />
+    
+    <!-- send joint values -->
+    <node name="robotis_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="use_gui" value="FALSE"/>
+        <param name="rate" value="125"/>
+        <remap from="/joint_states" to="/robotis/manipulator_x/joint_states" />
+        <rosparam param="source_list" if="$(arg use_present)">["robotis/manipulator_x/present_joint_states"]</rosparam>
+        <rosparam param="source_list" unless="$(arg use_present)">["robotis/manipulator_x/goal_joint_states"]</rosparam>
+    </node>
+
+    <!-- Combine joint values to TF-->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+        <remap from="/joint_states" to="/robotis/manipulator_x/joint_states"/>
+    </node>
+</launch>
