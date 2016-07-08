@@ -44,8 +44,9 @@ public:
 class TorqueCtrlJointState
 {
 public:
-  TorqueCtrlJointData curr_joint_state_[MAX_JOINT_ID + 1];
-  TorqueCtrlJointData goal_joint_state_[MAX_JOINT_ID + 1];
+  TorqueCtrlJointData curr_joint_state_[MAX_JOINT_ID+1];
+  TorqueCtrlJointData goal_joint_state_[MAX_JOINT_ID+1];
+  double gravity_state_[MAX_JOINT_ID+1];
 };
 
 
@@ -66,10 +67,11 @@ private:
   bool gazebo_;
 
   KDL::Chain chain_;
-  KDL::ChainDynParam *dynParam_ = NULL;
+  KDL::ChainDynParam *dyn_param_ = NULL;
 
   void queueThread();
   void setKinematicsChain();
+  void calcGravityTerm();
 
 public:
   TorqueCtrlModule();
