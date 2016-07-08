@@ -4,10 +4,9 @@
   <version>0.0.0</version>
   <description>The manipulator_x_torque_ctrl_module package</description>
 
-  <maintainer email="sch@robotis.com">sch</maintainer>
+  <maintainer email="sch@robotis.com">SCH</maintainer>
+  <author email="sch@robotis.com">SCH</author>
   <license>BSD</license>
-
-  <author email="sch@robotis.com">sch</author>
   
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>robotis_device</build_depend>
