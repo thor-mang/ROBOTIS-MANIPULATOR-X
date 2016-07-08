@@ -41,7 +41,8 @@
 using namespace robotis_manipulator_x;
 
 TorqueCtrlModule::TorqueCtrlModule()
-  : control_cycle_msec_(8)
+  : control_cycle_msec_(8),
+    gazebo_()
 {
   enable_       = false;
   module_name_  = "torque_ctrl_module";
@@ -53,6 +54,7 @@ TorqueCtrlModule::TorqueCtrlModule()
   result_["joint4"] = new robotis_framework::DynamixelState();
   result_["joint5"] = new robotis_framework::DynamixelState();
   result_["joint6"] = new robotis_framework::DynamixelState();
+  result_["grip_joint"] = new robotis_framework::DynamixelState();
 
   joint_name_to_id_["joint1"] = 1;
   joint_name_to_id_["joint2"] = 2;
@@ -60,6 +62,7 @@ TorqueCtrlModule::TorqueCtrlModule()
   joint_name_to_id_["joint4"] = 4;
   joint_name_to_id_["joint5"] = 5;
   joint_name_to_id_["joint6"] = 6;
+  joint_name_to_id_["grip_joint"] = 7;
 
   joint_state_  = new TorqueCtrlJointState();
 }
@@ -112,75 +115,9 @@ void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 
 void TorqueCtrlModule::setKinematicsChain()
 {
-  if (gazebo_ == true)
+  if (gazebo_ == false)
   {
-    chain_.addSegment(KDL::Segment("Base",
-                                   KDL::Joint(KDL::Joint::None),
-                                   KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
-                                   KDL::RigidBodyInertia(0.08581,
-                                                         KDL::Vector(-0.01173, 0.0, -0.01621),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint1",
-                                   KDL::Joint(KDL::Joint::RotZ),
-                                   KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
-                                   KDL::RigidBodyInertia(0.00795,
-                                                         KDL::Vector(0.0, 0.017, -0.02025),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint2",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
-                                   KDL::RigidBodyInertia(0.21941,
-                                                         KDL::Vector(-0.01865, 0.01652, -0.04513),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint3",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.0, -0.01212),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint4",
-                                   KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09226,
-                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint5",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.00000, 0.01140),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint6",
-                                   KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
-                                   KDL::RigidBodyInertia(0.26121,
-                                                         KDL::Vector(-0.09906, 0.00146, -0.00021),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-  }
-  else
-  {
-    chain_.addSegment(KDL::Segment("Base",
+    chain_.addSegment(KDL::Segment("base",
                                    KDL::Joint(KDL::Joint::None),
                                    KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
                                    KDL::RigidBodyInertia(0.08581,
@@ -189,7 +126,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint1",
+    chain_.addSegment(KDL::Segment("joint1",
                                    KDL::Joint(KDL::Joint::RotZ),
                                    KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
                                    KDL::RigidBodyInertia(0.00795,
@@ -198,7 +135,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint2",
+    chain_.addSegment(KDL::Segment("joint2",
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
                                    KDL::RigidBodyInertia(0.21941,
@@ -207,7 +144,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint3",
+    chain_.addSegment(KDL::Segment("joint3",
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
                                    KDL::RigidBodyInertia(0.09746,
@@ -216,7 +153,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint4",
+    chain_.addSegment(KDL::Segment("joint4",
                                    KDL::Joint(KDL::Joint::RotX),
                                    KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
                                    KDL::RigidBodyInertia(0.09226,
@@ -225,7 +162,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint5",
+    chain_.addSegment(KDL::Segment("joint5",
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
                                    KDL::RigidBodyInertia(0.09746,
@@ -234,12 +171,21 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("Joint6",
+    chain_.addSegment(KDL::Segment("joint6",
                                    KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
-                                   KDL::RigidBodyInertia(0.26121,
-                                                         KDL::Vector(-0.09906, 0.00146, -0.00021),
-                                                         KDL::RotationalInertia(0.00019, 0.00022, 0.00029, 0.00001, 0.0, 0.0)
+                                   KDL::Frame(KDL::Vector(0.029, -0.016, 0.023)),
+                                   KDL::RigidBodyInertia(0.12680,
+                                                         KDL::Vector(-0.00155, 0.019, -0.02343),
+                                                         KDL::RotationalInertia(0.00004897, 0.00003261, 0.00004008, -0.00000004, 0.00000006, 0.0000001)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("grip_joint",
+                                   KDL::Joint(KDL::Joint::RotZ),
+                                   KDL::Frame(KDL::Vector(0.112, 0.016, -0.023)),
+                                   KDL::RigidBodyInertia(0.13441,
+                                                         KDL::Vector(-0.08534, 0, 0),
+                                                         KDL::RotationalInertia(0.00002875, 0.00006646, 0.00005474, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
@@ -253,6 +199,7 @@ void TorqueCtrlModule::setKinematicsChain()
   minPositionLimit.push_back(-150.0); maxPositionLimit.push_back(150.0);
   minPositionLimit.push_back(-90.0);  maxPositionLimit.push_back(90.0);
   minPositionLimit.push_back(-150.0); maxPositionLimit.push_back(150.0);
+  minPositionLimit.push_back(-90.0); maxPositionLimit.push_back(90.0);
 
   dyn_param_ = new KDL::ChainDynParam(chain_, KDL::Vector(0.0, 0.0, -9.81));
 }
@@ -278,6 +225,10 @@ void TorqueCtrlModule::calcGravityTerm()
   {
     if (id == 3 || id == 5)
       gravity_term(id-1) *= -1.0;
+
+    if (id ==2)
+      gravity_term(id-1) *= 1.2;
+
 
     joint_state_->gravity_state_[id] = gravity_term(id-1);
   }

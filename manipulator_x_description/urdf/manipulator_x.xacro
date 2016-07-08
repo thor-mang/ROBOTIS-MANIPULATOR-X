@@ -309,7 +309,7 @@
   <!-- Joint 6 -->
   <joint name="joint6" type="revolute">
     <parent link="link6"/>
-    <child link="link789"/>
+    <child link="link7"/>
     <origin xyz="0.062 0.017 0.0" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit velocity="6.5" effort="1000" lower="${-5.0*pi/6.0}" upper="${5.0*pi/6.0}" />
@@ -327,29 +327,121 @@
     </actuator>
   </transmission>
   
-  <!-- Link 789 -->
-  <link name="link789">
+  <!-- Link 7 -->
+  <link name="link7">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link789.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link7.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link789.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link7.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.04197 0.00146 -0.00021" rpy="0 0 0"/>
-      <mass value="0.26121"/>
+      <origin xyz="0.02745 0.00300 -0.00043" rpy="0 0 0"/>
+      <mass value="0.12680"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
-      <!--<inertia ixx="0.00019" ixy="0.00001" ixz="0.0" iyy="0.00022" iyz="0.0" izz="0.00029" />-->
+      <!--<inertia ixx="0.00004897" ixy="-0.00000004" ixz="0.00000006" iyy="0.00003261" iyz="0.00000010" izz="0.00004008" />-->
     </inertial>
   </link>  
-  
+
+  <!-- Grip Joint -->
+  <joint name="grip_joint" type="revolute">
+    <parent link="link7"/>
+    <child link="grip_link"/>
+    <origin xyz="0.02900 -0.01600 0.02300" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit velocity="6.5" effort="1000" lower="${-0.5*pi}" upper="${0.5*pi}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran7">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="grip_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Grip Link -->
+  <link name="grip_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link9.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link9.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0.02666 -0.00910 -0.02300" rpy="0 0 0"/>
+      <mass value="0.06721"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+      <!--<inertia ixx="0.00002875" ixy="-0.00000593" ixz="-0.00000006" iyy="0.00006646" iyz="-0.00000009" izz="0.00005474" />-->
+    </inertial>
+  </link>  
+
+  <!-- Grip Joint Sub -->
+  <joint name="grip_joint_sub" type="revolute">
+    <parent link="link7"/>
+    <child link="grip_link_sub"/>
+    <origin xyz="0.02900 0.01600 0.02300" rpy="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <limit velocity="6.5" effort="1000" lower="${-0.5*pi}" upper="${0.5*pi}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran8">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="grip_joint_sub">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Grip Link Sub -->
+  <link name="grip_link_sub">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link8.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link8.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0.02666 0.00910 -0.02300" rpy="0 0 0"/>
+      <mass value="0.06721"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+      <!--<inertia ixx="0.00002875" ixy="0.00000593" ixz="0.00000006" iyy="0.00006646" iyz="-0.00000009" izz="0.00005474" />-->
+    </inertial>
+  </link>  
+
 </robot>
