@@ -28,3 +28,11 @@ robotis_manipulator_x:
   joint6_effort:
     type: effort_controllers/JointEffortController
     joint: joint6
+
+  grip_joint_effort:
+    type: effort_controllers/JointEffortController
+    joint: grip_joint
+
+  grip_joint_sub_effort:
+    type: effort_controllers/JointEffortController
+    joint: grip_joint_sub

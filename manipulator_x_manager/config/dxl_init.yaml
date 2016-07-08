@@ -27,3 +27,9 @@ joint6 :   # XM-430
    return_delay_time     : 1    
    operating_mode        : 0     
    goal_current          : 0
+
+grip_joint :   # XM-430
+   return_delay_time     : 1    
+   operating_mode        : 0     
+   goal_current          : 0
+   homing_offset         : -636

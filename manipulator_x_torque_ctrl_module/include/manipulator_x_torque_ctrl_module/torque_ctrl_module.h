@@ -31,7 +31,7 @@
 namespace robotis_manipulator_x
 {
 
-#define MAX_JOINT_ID  6
+#define MAX_JOINT_ID  7
 
 class TorqueCtrlJointData
 {
