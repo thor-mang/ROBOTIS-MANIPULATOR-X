@@ -208,12 +208,7 @@ void TorqueCtrlModule::calcGravityTerm()
 {
   Eigen::VectorXd current_joint_position(MAX_JOINT_ID);
   for (int id=1; id<=MAX_JOINT_ID; id++)
-  {
     current_joint_position.coeffRef(id-1) = joint_state_->curr_joint_state_[id].position_;
-
-//    if (id == 3 || id == 5)
-//      current_joint_position.coeffRef(id-1) = -1.0*current_joint_position.coeff(id-1);
-  }
 
   KDL::JntArray kdl_current_joint_position;
   kdl_current_joint_position.data = current_joint_position;
@@ -223,9 +218,6 @@ void TorqueCtrlModule::calcGravityTerm()
 
   for (int id=1; id<=MAX_JOINT_ID; id++)
   {
-//    if (id == 3 || id == 5)
-//      gravity_term(id-1) *= -1.0;
-
     if (id ==2)
       gravity_term(id-1) *= 1.2;
 
