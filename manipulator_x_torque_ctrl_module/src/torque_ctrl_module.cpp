@@ -145,7 +145,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                    )
                       );
     chain_.addSegment(KDL::Segment("joint3",
-                                   KDL::Joint(KDL::Joint::RotY),
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
                                    KDL::RigidBodyInertia(0.09746,
                                                          KDL::Vector(-0.01902, 0.0, -0.01212),
@@ -163,7 +163,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                    )
                       );
     chain_.addSegment(KDL::Segment("joint5",
-                                   KDL::Joint(KDL::Joint::RotY),
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
                                    KDL::RigidBodyInertia(0.09746,
                                                          KDL::Vector(-0.01902, 0.00000, 0.01140),
@@ -193,13 +193,13 @@ void TorqueCtrlModule::setKinematicsChain()
 
   std::vector<double> minPositionLimit, maxPositionLimit;
 
-  minPositionLimit.push_back(-90.0);  maxPositionLimit.push_back(90.0);
-  minPositionLimit.push_back(-90.0);  maxPositionLimit.push_back(90.0);
-  minPositionLimit.push_back(-90.0);  maxPositionLimit.push_back(90.0);
-  minPositionLimit.push_back(-150.0); maxPositionLimit.push_back(150.0);
-  minPositionLimit.push_back(-90.0);  maxPositionLimit.push_back(90.0);
-  minPositionLimit.push_back(-150.0); maxPositionLimit.push_back(150.0);
-  minPositionLimit.push_back(-90.0); maxPositionLimit.push_back(90.0);
+  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
+  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
+  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
+  minPositionLimit.push_back(-150.0);   maxPositionLimit.push_back(150.0);
+  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
+  minPositionLimit.push_back(-150.0);   maxPositionLimit.push_back(150.0);
+  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
 
   dyn_param_ = new KDL::ChainDynParam(chain_, KDL::Vector(0.0, 0.0, -9.81));
 }
@@ -211,8 +211,8 @@ void TorqueCtrlModule::calcGravityTerm()
   {
     current_joint_position.coeffRef(id-1) = joint_state_->curr_joint_state_[id].position_;
 
-    if (id == 3 || id == 5)
-      current_joint_position.coeffRef(id-1) = -1.0*current_joint_position.coeff(id-1);
+//    if (id == 3 || id == 5)
+//      current_joint_position.coeffRef(id-1) = -1.0*current_joint_position.coeff(id-1);
   }
 
   KDL::JntArray kdl_current_joint_position;
@@ -223,8 +223,8 @@ void TorqueCtrlModule::calcGravityTerm()
 
   for (int id=1; id<=MAX_JOINT_ID; id++)
   {
-    if (id == 3 || id == 5)
-      gravity_term(id-1) *= -1.0;
+//    if (id == 3 || id == 5)
+//      gravity_term(id-1) *= -1.0;
 
     if (id ==2)
       gravity_term(id-1) *= 1.2;
