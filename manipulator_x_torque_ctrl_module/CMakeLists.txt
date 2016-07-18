@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   geometry_msgs
-  #manipulator_x_torque_ctrl_module_msgs
+  manipulator_x_torque_ctrl_module_msgs
   cmake_modules
 )
 

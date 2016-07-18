@@ -1,0 +1,24 @@
+joint1:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0
+joint2:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0
+joint3:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0
+joint4:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0
+joint5:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0
+joint6:
+  d_gain: 0
+  i_gain: 0
+  p_gain: 0

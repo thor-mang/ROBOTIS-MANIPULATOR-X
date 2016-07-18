@@ -42,7 +42,10 @@ using namespace robotis_manipulator_x;
 
 TorqueCtrlModule::TorqueCtrlModule()
   : control_cycle_msec_(8),
-    gazebo_()
+    gazebo_(),
+    gripper_(),
+    joint_control_mode_(false),
+    force_control_mode_(false)
 {
   enable_       = false;
   module_name_  = "torque_ctrl_module";
@@ -54,7 +57,6 @@ TorqueCtrlModule::TorqueCtrlModule()
   result_["joint4"] = new robotis_framework::DynamixelState();
   result_["joint5"] = new robotis_framework::DynamixelState();
   result_["joint6"] = new robotis_framework::DynamixelState();
-  result_["grip_joint"] = new robotis_framework::DynamixelState();
 
   joint_name_to_id_["joint1"] = 1;
   joint_name_to_id_["joint2"] = 2;
@@ -62,9 +64,28 @@ TorqueCtrlModule::TorqueCtrlModule()
   joint_name_to_id_["joint4"] = 4;
   joint_name_to_id_["joint5"] = 5;
   joint_name_to_id_["joint6"] = 6;
-  joint_name_to_id_["grip_joint"] = 7;
 
-  joint_state_  = new TorqueCtrlJointState();
+  gain_path_ = ros::package::getPath("manipulator_x_torque_ctrl_module") + "/config/torque_control_pid_gain.yaml";
+
+  p_gain_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  i_gain_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  d_gain_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+
+  error_        = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  error_prior_  = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  integral_     = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  derivative_   = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+
+  present_joint_position_  = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  present_joint_velocity_  = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  present_joint_effort_    = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+
+  goal_joint_position_      = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  goal_joint_velocity_      = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  goal_joint_acceleration_  = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  goal_joint_effort_        = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+
+  goal_task_wrench_ = Eigen::VectorXd::Zero(TASK_DEMENSION);
 }
 
 TorqueCtrlModule::~TorqueCtrlModule()
@@ -92,9 +113,27 @@ void TorqueCtrlModule::queueThread()
   status_msg_pub_ = ros_node.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 1);
   set_ctrl_module_pub_ = ros_node.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 1);
 
+  get_joint_gain_server_ = ros_node.advertiseService("/robotis/torque_ctrl/get_joint_gain",
+                                                     &TorqueCtrlModule::getJointGainCallback, this);
+  get_joint_pose_server_ = ros_node.advertiseService("/robotis/torque_ctrl/get_joint_pose",
+                                                     &TorqueCtrlModule::getJointPoseCallback, this);
+
   /* subscribe topics */
   ros::Subscriber set_mode_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/set_mode_msg", 5,
                                                         &TorqueCtrlModule::setModeMsgCallback, this);
+  ros::Subscriber save_gain_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/save_gain_msg", 5,
+                                                         &TorqueCtrlModule::saveGainMsgCallback, this);
+  ros::Subscriber set_gain_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/set_gain_msg", 5,
+                                                        &TorqueCtrlModule::setGainMsgCallback, this);
+  ros::Subscriber set_joint_pose_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/set_joint_pose_msg", 5,
+                                                              &TorqueCtrlModule::setJointPoseMsgCallback, this);
+  ros::Subscriber set_wrench_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/set_wrench_msg", 5,
+                                                          &TorqueCtrlModule::setWrenchMsgCallback, this);
+
+  ros::Subscriber enable_joint_control_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/enable_joint_control_msg", 5,
+                                                                    &TorqueCtrlModule::enableJointControlMsgCallback, this);
+  ros::Subscriber enable_force_control_msg_sub = ros_node.subscribe("/robotis/torque_ctrl/enable_force_control_msg", 5,
+                                                                    &TorqueCtrlModule::enableForceControlMsgCallback, this);
 
   while (ros_node.ok())
   {
@@ -103,9 +142,56 @@ void TorqueCtrlModule::queueThread()
   }
 }
 
+void TorqueCtrlModule::parseGainData(const std::string &path)
+{
+  YAML::Node doc;
+  try
+  {
+    // load yaml
+    doc = YAML::LoadFile( path.c_str() );
+  }
+  catch(const std::exception& e)
+  {
+    ROS_ERROR("Fail to load yaml file.");
+    return ;
+  }
+
+  for(std::map<std::string, int>::iterator it = joint_name_to_id_.begin(); it != joint_name_to_id_.end(); it++)
+  {
+    YAML::Node joint_node = doc[it->first];
+
+    p_gain_(joint_name_to_id_[it->first]-1) = joint_node["p_gain"].as<double>();
+    i_gain_(joint_name_to_id_[it->first]-1) = joint_node["i_gain"].as<double>();
+    d_gain_(joint_name_to_id_[it->first]-1) = joint_node["d_gain"].as<double>();
+  }
+}
+
+void TorqueCtrlModule::saveGainData(const std::string &path)
+{
+  YAML::Emitter out;
+  out << YAML::BeginMap;
+
+  std::map<std::string, double> gain_value;
+
+  for(std::map<std::string, int>::iterator it = joint_name_to_id_.begin(); it != joint_name_to_id_.end(); it++)
+  {
+    gain_value["p_gain"] = p_gain_(joint_name_to_id_[it->first]-1);
+    gain_value["i_gain"] = i_gain_(joint_name_to_id_[it->first]-1);
+    gain_value["d_gain"] = d_gain_(joint_name_to_id_[it->first]-1);
+
+    out << YAML::Key << it->first << YAML::Value << gain_value;
+  }
+
+  out << YAML::EndMap;
+
+  // output to file
+  std::ofstream fout(path.c_str());
+  fout << out.c_str();
+}
+
 void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
-  ROS_INFO("----- Set Mode -----");
+//  ROS_INFO("--- Set Torque Control Mode ---");
 
   std_msgs::String str_msg;
   str_msg.data = "torque_ctrl_module";
@@ -113,11 +199,229 @@ void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
   return;
 }
 
+void TorqueCtrlModule::saveGainMsgCallback(const std_msgs::String::ConstPtr& msg)
+{
+//  ROS_INFO("--- Save Gain ---");
+
+  saveGainData(gain_path_);
+}
+
+void TorqueCtrlModule::setGainMsgCallback(const manipulator_x_torque_ctrl_module_msgs::JointGain::ConstPtr& msg)
+{
+  goal_joint_position_ = present_joint_position_;
+
+//  ROS_INFO("--- Set Torque Control PID Gain ---");
+  for (int it=0; it<msg->joint_name.size(); it++)
+  {
+    p_gain_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->p_gain[it];
+    i_gain_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->i_gain[it];
+    d_gain_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->d_gain[it];
+  }
+}
+
+void TorqueCtrlModule::setJointPoseMsgCallback(const manipulator_x_torque_ctrl_module_msgs::JointPose::ConstPtr &msg)
+{
+//  ROS_INFO("--- Set Desired Joint Angle ---");
+  for (int it=0; it<msg->joint_name.size(); it++)
+    goal_joint_position_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
+}
+
+void TorqueCtrlModule::setWrenchMsgCallback(const geometry_msgs::Wrench::ConstPtr& msg)
+{
+  goal_task_wrench_(0) = msg->force.x;
+  goal_task_wrench_(1) = msg->force.y;
+  goal_task_wrench_(2) = msg->force.z;
+  goal_task_wrench_(3) = msg->torque.x;
+  goal_task_wrench_(4) = msg->torque.y;
+  goal_task_wrench_(5) = msg->torque.z;
+}
+
+void TorqueCtrlModule::enableJointControlMsgCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+  if (force_control_mode_ == true)
+    force_control_mode_ = false;
+
+  joint_control_mode_ = msg->data;
+}
+
+void TorqueCtrlModule::enableForceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+  if (joint_control_mode_ == true)
+    joint_control_mode_ = false;
+
+  force_control_mode_ = msg->data;
+}
+
+bool TorqueCtrlModule::getJointGainCallback(manipulator_x_torque_ctrl_module_msgs::GetJointGain::Request &req,
+                                            manipulator_x_torque_ctrl_module_msgs::GetJointGain::Response &res)
+{
+  if (enable_==false)
+    return false;
+
+  parseGainData( gain_path_ );
+
+  for(std::map<std::string, int>::iterator it = joint_name_to_id_.begin(); it != joint_name_to_id_.end(); it++)
+  {
+    res.torque_ctrl_gain.joint_name.push_back(it->first);
+    res.torque_ctrl_gain.p_gain.push_back(p_gain_(joint_name_to_id_[it->first]-1));
+    res.torque_ctrl_gain.i_gain.push_back(i_gain_(joint_name_to_id_[it->first]-1));
+    res.torque_ctrl_gain.d_gain.push_back(d_gain_(joint_name_to_id_[it->first]-1));
+  }
+
+  return true;
+}
+
+bool TorqueCtrlModule::getJointPoseCallback(manipulator_x_torque_ctrl_module_msgs::GetJointPose::Request &req,
+                                            manipulator_x_torque_ctrl_module_msgs::GetJointPose::Response &res)
+{
+  if (enable_==false)
+    return false;
+
+  for(std::map<std::string, int>::iterator it = joint_name_to_id_.begin(); it != joint_name_to_id_.end(); it++)
+  {
+    res.torque_ctrl_joint_pose.joint_name.push_back(it->first);
+    res.torque_ctrl_joint_pose.position.push_back(present_joint_position_(joint_name_to_id_[it->first]-1));
+  }
+
+  calcJacobian();
+
+  return true;
+}
+
+void TorqueCtrlModule::calcGravityTerm()
+{
+  KDL::JntArray kdl_curr_joint_position;
+  kdl_curr_joint_position.data = present_joint_position_;
+
+  KDL::JntArray gravity_term(MAX_JOINT_ID);
+  dyn_param_->JntToGravity(kdl_curr_joint_position, gravity_term);
+
+  gravity_term_ = gravity_term.data;
+}
+
+void TorqueCtrlModule::calcCoriolisTerm()
+{
+  KDL::JntArray kdl_curr_joint_position, kdl_curr_joint_velocity;
+
+  kdl_curr_joint_position.data = present_joint_position_;
+  kdl_curr_joint_velocity.data = present_joint_velocity_;
+
+  KDL::JntArray coriolis_term(MAX_JOINT_ID);
+  dyn_param_->JntToCoriolis(kdl_curr_joint_position, kdl_curr_joint_velocity, coriolis_term);
+
+  coriolis_term_ = coriolis_term.data;
+}
+
+void TorqueCtrlModule::calcMassTerm()
+{
+  KDL::JntArray kdl_curr_joint_position;
+  kdl_curr_joint_position.data = present_joint_position_;
+
+  KDL::JntSpaceInertiaMatrix mass_term(MAX_JOINT_ID);
+  dyn_param_->JntToMass(kdl_curr_joint_position, mass_term);
+
+  mass_term_ = mass_term.data;
+}
+
+void TorqueCtrlModule::calcJacobian()
+{
+  KDL::JntArray kdl_curr_joint_position;
+  kdl_curr_joint_position.data = present_joint_position_;
+
+  KDL::Jacobian jacobian(MAX_JOINT_ID);
+  jacobian_solver_->JntToJac(kdl_curr_joint_position,jacobian);
+
+  jacobian_ = jacobian.data;
+}
+
 void TorqueCtrlModule::setKinematicsChain()
 {
-  if (gazebo_ == false)
+  if (gazebo_ == true)
   {
-    chain_.addSegment(KDL::Segment("base",
+    chain_.addSegment(KDL::Segment("Base",
+                                   KDL::Joint(KDL::Joint::None),
+                                   KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
+                                   KDL::RigidBodyInertia(0.08581,
+                                                         KDL::Vector(-0.01173, 0.0, -0.01621),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint1",
+                                   KDL::Joint(KDL::Joint::RotZ),
+                                   KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
+                                   KDL::RigidBodyInertia(0.00795,
+                                                         KDL::Vector(0.0, 0.017, -0.02025),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint2",
+                                   KDL::Joint(KDL::Joint::RotY),
+                                   KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
+                                   KDL::RigidBodyInertia(0.21941,
+                                                         KDL::Vector(-0.01865, 0.01652, -0.04513),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint3",
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
+                                   KDL::RigidBodyInertia(0.09746,
+                                                         KDL::Vector(-0.01902, 0.0, -0.01212),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint4",
+                                   KDL::Joint(KDL::Joint::RotX),
+                                   KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
+                                   KDL::RigidBodyInertia(0.09226,
+                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint5",
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
+                                   KDL::RigidBodyInertia(0.09746,
+                                                         KDL::Vector(-0.01902, 0.00000, 0.01140),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+
+    if (gripper_ == true )
+    {
+      chain_.addSegment(KDL::Segment("Joint6",
+                                     KDL::Joint(KDL::Joint::RotX),
+                                     KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
+                                     KDL::RigidBodyInertia(0.26121,
+                                                           KDL::Vector(-0.09906, 0.00146, -0.00021),
+                                                           KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                           )
+                                     )
+                        );
+    }
+    else
+    {
+      chain_.addSegment(KDL::Segment("Joint6",
+                                     KDL::Joint(KDL::Joint::RotX),
+                                     KDL::Frame(KDL::Vector(0.02, 0.0, 0.0)),
+                                     KDL::RigidBodyInertia(0.005,
+                                                           KDL::Vector(-0.01126, 0.0, 0.0),
+                                                           KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                           )
+                                     )
+                        );
+    }
+
+  }
+  else
+  {
+    chain_.addSegment(KDL::Segment("Base",
                                    KDL::Joint(KDL::Joint::None),
                                    KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
                                    KDL::RigidBodyInertia(0.08581,
@@ -126,7 +430,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint1",
+    chain_.addSegment(KDL::Segment("Joint1",
                                    KDL::Joint(KDL::Joint::RotZ),
                                    KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
                                    KDL::RigidBodyInertia(0.00795,
@@ -135,7 +439,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint2",
+    chain_.addSegment(KDL::Segment("Joint2",
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
                                    KDL::RigidBodyInertia(0.21941,
@@ -144,7 +448,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint3",
+    chain_.addSegment(KDL::Segment("Joint3",
                                    KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
                                    KDL::RigidBodyInertia(0.09746,
@@ -153,7 +457,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint4",
+    chain_.addSegment(KDL::Segment("Joint4",
                                    KDL::Joint(KDL::Joint::RotX),
                                    KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
                                    KDL::RigidBodyInertia(0.09226,
@@ -162,7 +466,7 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint5",
+    chain_.addSegment(KDL::Segment("Joint5",
                                    KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
                                    KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
                                    KDL::RigidBodyInertia(0.09746,
@@ -171,59 +475,35 @@ void TorqueCtrlModule::setKinematicsChain()
                                                          )
                                    )
                       );
-    chain_.addSegment(KDL::Segment("joint6",
-                                   KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.029, -0.016, 0.023)),
-                                   KDL::RigidBodyInertia(0.12680,
-                                                         KDL::Vector(-0.00155, 0.019, -0.02343),
-                                                         KDL::RotationalInertia(0.00004897, 0.00003261, 0.00004008, -0.00000004, 0.00000006, 0.0000001)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("grip_joint",
-                                   KDL::Joint(KDL::Joint::RotZ),
-                                   KDL::Frame(KDL::Vector(0.112, 0.016, -0.023)),
-                                   KDL::RigidBodyInertia(0.13441,
-                                                         KDL::Vector(-0.08534, 0, 0),
-                                                         KDL::RotationalInertia(0.00002875, 0.00006646, 0.00005474, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
+    if (gripper_ == true)
+    {
+      chain_.addSegment(KDL::Segment("Joint6",
+                                     KDL::Joint(KDL::Joint::RotX),
+                                     KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
+                                     KDL::RigidBodyInertia(0.26121,
+                                                           KDL::Vector(-0.09906, 0.00146, -0.00021),
+                                                           KDL::RotationalInertia(0.00019, 0.00022, 0.00029, 0.00001, 0.0, 0.0)
+                                                           )
+                                     )
+                        );
+    }
+    else
+    {
+      chain_.addSegment(KDL::Segment("Joint6",
+                                     KDL::Joint(KDL::Joint::RotX),
+                                     KDL::Frame(KDL::Vector(0.02, 0.0, 0.0)),
+                                     KDL::RigidBodyInertia(0.005,
+                                                           KDL::Vector(-0.01126, 0.0, 0.0),
+                                                           KDL::RotationalInertia(0.00000016, 0.00000021, 0.00000021, 0.0, 0.0, 0.0)
+                                                           )
+                                     )
+                        );
+    }
+
+    jacobian_solver_.reset(new KDL::ChainJntToJacSolver(chain_));
   }
-
-  std::vector<double> minPositionLimit, maxPositionLimit;
-
-  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
-  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
-  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
-  minPositionLimit.push_back(-150.0);   maxPositionLimit.push_back(150.0);
-  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
-  minPositionLimit.push_back(-150.0);   maxPositionLimit.push_back(150.0);
-  minPositionLimit.push_back(-120.0);   maxPositionLimit.push_back(120.0);
 
   dyn_param_ = new KDL::ChainDynParam(chain_, KDL::Vector(0.0, 0.0, -9.81));
-}
-
-void TorqueCtrlModule::calcGravityTerm()
-{
-  Eigen::VectorXd current_joint_position(MAX_JOINT_ID);
-  for (int id=1; id<=MAX_JOINT_ID; id++)
-    current_joint_position.coeffRef(id-1) = joint_state_->curr_joint_state_[id].position_;
-
-  KDL::JntArray kdl_current_joint_position;
-  kdl_current_joint_position.data = current_joint_position;
-
-  KDL::JntArray gravity_term(MAX_JOINT_ID);
-  dyn_param_->JntToGravity(kdl_current_joint_position, gravity_term);
-
-  for (int id=1; id<=MAX_JOINT_ID; id++)
-  {
-    if (id ==2)
-      gravity_term(id-1) *= 1.2;
-
-
-    joint_state_->gravity_state_[id] = gravity_term(id-1);
-  }
 }
 
 void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixel *> dxls,
@@ -245,30 +525,66 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
     else
       continue;
 
-    double joint_curr_position  = dxl->dxl_state_->present_position_;
-    double joint_curr_velocity  = dxl->dxl_state_->present_velocity_;
-    double joint_curr_effort    = dxl->dxl_state_->present_torque_;
-
-    joint_state_->curr_joint_state_[joint_name_to_id_[joint_name]].position_  = joint_curr_position;
-    joint_state_->curr_joint_state_[joint_name_to_id_[joint_name]].velocity_  = joint_curr_velocity;
-    joint_state_->curr_joint_state_[joint_name_to_id_[joint_name]].effort_    = joint_curr_effort;
+    present_joint_position_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_position_;
+    present_joint_velocity_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_velocity_;
+    present_joint_effort_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_torque_;
   }
 
-  /*----- Calculate G(q) -----*/
+  /*----- Calculate Gravity Term -----*/
   calcGravityTerm();
+  //  calcCoriolisTerm();
+  //  calcMassTerm();
 
-  /*----- Set Goal Joint Data -----*/
-  for (int id=1; id<=MAX_JOINT_ID; id++)
+  /*----- Set Goal Torque Data -----*/
+  // PID Control with Gravity Compensation
+
+  if (joint_control_mode_ == true)
   {
-    joint_state_->goal_joint_state_[id].effort_ = joint_state_->gravity_state_[id];
+    for (int it=0; it<MAX_JOINT_ID; it++)
+    {
+      error_(it) = goal_joint_position_(it)-present_joint_position_(it);
+      integral_(it) = integral_(it) + (error_(it)*ITERATION_TIME);
+      derivative_(it) = present_joint_velocity_(it); //(error_(it)-error_prior_(it))/ITERATION_TIME;
+
+      goal_joint_effort_(it)=
+          p_gain_(it)*error_(it) +
+          i_gain_(it)*integral_(it) +
+          d_gain_(it)*derivative_(it);
+
+  //    goal_joint_effort_(it)=
+  //        p_gain_(it)*(goal_joint_position_(it)-present_joint_position_(it))+
+  //        d_gain_(it)*present_joint_velocity_(it)+
+  //        gravity_term_(it);
+
+      error_prior_(it) = error_(it);
+    }
   }
+
+  ROS_INFO("---");
+
+  // Force Control
+  if (force_control_mode_ == true)
+  {
+    calcJacobian();
+    goal_joint_effort_ = jacobian_.transpose()*goal_task_wrench_;
+
+    for (int it=0; it<MAX_JOINT_ID; it++)
+      ROS_INFO("goal_joint_effort_(%d) : %f", it, goal_joint_effort_(it));
+  }
+
+  goal_joint_effort_ += gravity_term_;
+
+//  ROS_INFO("goal_joint_position(6) : %f", goal_joint_position_(5));
+//  ROS_INFO("error(6) : %f", error_(5));
 
   for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
        state_iter != result_.end(); state_iter++)
   {
     std::string joint_name = state_iter->first;
-    result_[joint_name]->goal_torque_ = joint_state_->goal_joint_state_[joint_name_to_id_[joint_name]].effort_;
+    result_[joint_name]->goal_torque_ = goal_joint_effort_(joint_name_to_id_[joint_name]-1);
   }
+
+  goal_joint_effort_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
 }
 
 void TorqueCtrlModule::stop()
