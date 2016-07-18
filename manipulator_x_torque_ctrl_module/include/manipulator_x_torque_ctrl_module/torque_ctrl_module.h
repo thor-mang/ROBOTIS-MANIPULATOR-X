@@ -46,6 +46,12 @@ namespace robotis_manipulator_x
 #define TASK_DEMENSION  6
 #define ITERATION_TIME  0.008
 
+enum MODE_SELECT {
+    GRAVITY_COMPENSATION,
+    JOINT_CONTROL,
+    FORCE_CONTROL
+};
+
 class TorqueCtrlModule
   : public robotis_framework::MotionModule,
     public robotis_framework::Singleton<TorqueCtrlModule>
@@ -66,8 +72,7 @@ private:
   bool gazebo_;
   bool gripper_;
 
-  bool joint_control_mode_;
-  bool force_control_mode_;
+  MODE_SELECT module_control_;
 
   KDL::Chain chain_;
   KDL::ChainDynParam *dyn_param_ = NULL;

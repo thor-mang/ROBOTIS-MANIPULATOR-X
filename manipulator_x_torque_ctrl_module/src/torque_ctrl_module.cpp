@@ -44,8 +44,7 @@ TorqueCtrlModule::TorqueCtrlModule()
   : control_cycle_msec_(8),
     gazebo_(),
     gripper_(),
-    joint_control_mode_(false),
-    force_control_mode_(false)
+    module_control_(GRAVITY_COMPENSATION)
 {
   enable_       = false;
   module_name_  = "torque_ctrl_module";
@@ -106,7 +105,9 @@ void TorqueCtrlModule::queueThread()
 
   ros_node.setCallbackQueue(&callback_queue);
 
-  gazebo_ = ros_node.param<bool>("gazebo", false);
+  ros_node.getParam("gazebo", gazebo_);
+  ros_node.getParam("gripper", gripper_);
+
   setKinematicsChain();
 
   /* publish topics */
@@ -191,7 +192,7 @@ void TorqueCtrlModule::saveGainData(const std::string &path)
 
 void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
-//  ROS_INFO("--- Set Torque Control Mode ---");
+  //  ROS_INFO("--- Set Torque Control Mode ---");
 
   std_msgs::String str_msg;
   str_msg.data = "torque_ctrl_module";
@@ -201,7 +202,7 @@ void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 
 void TorqueCtrlModule::saveGainMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
-//  ROS_INFO("--- Save Gain ---");
+  //  ROS_INFO("--- Save Gain ---");
 
   saveGainData(gain_path_);
 }
@@ -210,7 +211,7 @@ void TorqueCtrlModule::setGainMsgCallback(const manipulator_x_torque_ctrl_module
 {
   goal_joint_position_ = present_joint_position_;
 
-//  ROS_INFO("--- Set Torque Control PID Gain ---");
+  //  ROS_INFO("--- Set Torque Control PID Gain ---");
   for (int it=0; it<msg->joint_name.size(); it++)
   {
     p_gain_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->p_gain[it];
@@ -221,7 +222,7 @@ void TorqueCtrlModule::setGainMsgCallback(const manipulator_x_torque_ctrl_module
 
 void TorqueCtrlModule::setJointPoseMsgCallback(const manipulator_x_torque_ctrl_module_msgs::JointPose::ConstPtr &msg)
 {
-//  ROS_INFO("--- Set Desired Joint Angle ---");
+  //  ROS_INFO("--- Set Desired Joint Angle ---");
   for (int it=0; it<msg->joint_name.size(); it++)
     goal_joint_position_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
 }
@@ -238,18 +239,14 @@ void TorqueCtrlModule::setWrenchMsgCallback(const geometry_msgs::Wrench::ConstPt
 
 void TorqueCtrlModule::enableJointControlMsgCallback(const std_msgs::Bool::ConstPtr& msg)
 {
-  if (force_control_mode_ == true)
-    force_control_mode_ = false;
-
-  joint_control_mode_ = msg->data;
+  if (msg->data == true)
+    module_control_ = JOINT_CONTROL;
 }
 
 void TorqueCtrlModule::enableForceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg)
 {
-  if (joint_control_mode_ == true)
-    joint_control_mode_ = false;
-
-  force_control_mode_ = msg->data;
+  if (msg->data == true)
+    module_control_ = FORCE_CONTROL;
 }
 
 bool TorqueCtrlModule::getJointGainCallback(manipulator_x_torque_ctrl_module_msgs::GetJointGain::Request &req,
@@ -536,10 +533,13 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
   //  calcMassTerm();
 
   /*----- Set Goal Torque Data -----*/
-  // PID Control with Gravity Compensation
-
-  if (joint_control_mode_ == true)
+  if (module_control_ == GRAVITY_COMPENSATION)
   {
+    goal_joint_effort_ = gravity_term_;
+  }
+  else if (module_control_ == JOINT_CONTROL)
+  {
+    // PID Control with Gravity Compensation
     for (int it=0; it<MAX_JOINT_ID; it++)
     {
       error_(it) = goal_joint_position_(it)-present_joint_position_(it);
@@ -549,33 +549,18 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
       goal_joint_effort_(it)=
           p_gain_(it)*error_(it) +
           i_gain_(it)*integral_(it) +
-          d_gain_(it)*derivative_(it);
-
-  //    goal_joint_effort_(it)=
-  //        p_gain_(it)*(goal_joint_position_(it)-present_joint_position_(it))+
-  //        d_gain_(it)*present_joint_velocity_(it)+
-  //        gravity_term_(it);
+          d_gain_(it)*derivative_(it) +
+          gravity_term_(it);
 
       error_prior_(it) = error_(it);
     }
   }
-
-  ROS_INFO("---");
-
-  // Force Control
-  if (force_control_mode_ == true)
+  else if (module_control_ == FORCE_CONTROL)
   {
     calcJacobian();
-    goal_joint_effort_ = jacobian_.transpose()*goal_task_wrench_;
-
-    for (int it=0; it<MAX_JOINT_ID; it++)
-      ROS_INFO("goal_joint_effort_(%d) : %f", it, goal_joint_effort_(it));
+    goal_joint_effort_ = jacobian_.transpose()*goal_task_wrench_ + gravity_term_;
   }
 
-  goal_joint_effort_ += gravity_term_;
-
-//  ROS_INFO("goal_joint_position(6) : %f", goal_joint_position_(5));
-//  ROS_INFO("error(6) : %f", error_(5));
 
   for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
        state_iter != result_.end(); state_iter++)
@@ -583,8 +568,6 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
     std::string joint_name = state_iter->first;
     result_[joint_name]->goal_torque_ = goal_joint_effort_(joint_name_to_id_[joint_name]-1);
   }
-
-  goal_joint_effort_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
 }
 
 void TorqueCtrlModule::stop()

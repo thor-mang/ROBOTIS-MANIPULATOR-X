@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1519</width>
-    <height>756</height>
+    <height>869</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QGroupBox" name="groupBox_12">
+         <widget class="QGroupBox" name="log_groupbox">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -131,84 +131,222 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="3" column="1">
-         <widget class="QGroupBox" name="groupBox_3">
+         <widget class="QGroupBox" name="task_space_groupbox">
           <property name="title">
            <string>Task Space Control</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="5" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+            <widget class="QDoubleSpinBox" name="des_orientation_r_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+            <widget class="QDoubleSpinBox" name="pre_orientation_r_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+            <widget class="QDoubleSpinBox" name="pre_orientation_p_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="7" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+            <widget class="QDoubleSpinBox" name="pre_orienation_y_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+            <widget class="QDoubleSpinBox" name="pre_position_y_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="pre_task_position">
              <property name="text">
               <string>Present Position [m]</string>
              </property>
             </widget>
            </item>
            <item row="6" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_11"/>
+            <widget class="QDoubleSpinBox" name="des_orientation_p_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+            <widget class="QDoubleSpinBox" name="pre_position_x_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="pre_task_orientation">
              <property name="text">
               <string>Present Orientation [deg]</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+            <widget class="QDoubleSpinBox" name="des_position_x_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="des_task_position">
              <property name="text">
               <string>Desired Position [m]</string>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_5"/>
+            <widget class="QDoubleSpinBox" name="des_position_y_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="3" column="0">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_4"/>
+            <widget class="QDoubleSpinBox" name="pre_position_z_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_6"/>
+            <widget class="QDoubleSpinBox" name="des_position_z_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+            <widget class="QDoubleSpinBox" name="des_orientation_y_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="des_task_orientation">
              <property name="text">
               <string>Desired Orientation [deg]</string>
              </property>
             </widget>
            </item>
            <item row="8" column="0">
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="get_pre_pose_pushbutton">
              <property name="text">
               <string>Ger Present Pose</string>
              </property>
             </widget>
            </item>
            <item row="8" column="1">
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="send_des_pose_pushbutton">
              <property name="text">
               <string>Send Desired Pose</string>
              </property>
@@ -523,7 +661,7 @@
           </layout>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -560,22 +698,6 @@
            <string>PID Gain</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="7" column="4">
-            <widget class="QDoubleSpinBox" name="grip_joint_i_gain_spinbox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>1000.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="4">
             <widget class="QDoubleSpinBox" name="joint3_i_gain_spinbox">
              <property name="decimals">
@@ -696,22 +818,6 @@
             <widget class="QDoubleSpinBox" name="joint2_i_gain_spinbox">
              <property name="decimals">
               <number>4</number>
-             </property>
-             <property name="maximum">
-              <double>1000.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="3">
-            <widget class="QDoubleSpinBox" name="grip_joint_p_gain_spinbox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
              </property>
              <property name="maximum">
               <double>1000.000000000000000</double>
@@ -868,25 +974,6 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="5">
-            <widget class="QDoubleSpinBox" name="grip_joint_d_gain_spinbox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>1000.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
            <item row="6" column="3">
             <widget class="QDoubleSpinBox" name="joint6_p_gain_spinbox">
              <property name="decimals">
@@ -940,6 +1027,57 @@
              </property>
             </widget>
            </item>
+           <item row="7" column="5">
+            <widget class="QDoubleSpinBox" name="grip_joint_d_gain_spinbox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="4">
+            <widget class="QDoubleSpinBox" name="grip_joint_i_gain_spinbox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="3">
+            <widget class="QDoubleSpinBox" name="grip_joint_p_gain_spinbox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -951,107 +1089,26 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="force_control_groupbox">
           <property name="title">
            <string>Force Control</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
+           <item row="4" column="1">
+            <widget class="QLabel" name="desired_torque">
              <property name="text">
-              <string>x</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="3">
-            <widget class="QDoubleSpinBox" name="des_torque_x_spinbox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-100.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QDoubleSpinBox" name="des_force_y_spinbox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-100.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="2">
-            <widget class="QPushButton" name="pushButton_4">
-             <property name="text">
-              <string>3</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QDoubleSpinBox" name="des_force_z_spinbox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>-100.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>y</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>pitch</string>
+              <string>Desired Torque [Nm]</string>
              </property>
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="empty_2">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>roll</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>z</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="3">
+           <item row="7" column="1">
             <widget class="QDoubleSpinBox" name="des_torque_z_spinbox">
              <property name="decimals">
               <number>3</number>
@@ -1064,14 +1121,21 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="label_12">
+           <item row="3" column="0">
+            <widget class="QLabel" name="z">
              <property name="text">
-              <string>yaw</string>
+              <string>z</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
+           <item row="6" column="0">
+            <widget class="QLabel" name="pitch">
+             <property name="text">
+              <string>pitch</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="des_force_x_spinbox">
              <property name="decimals">
               <number>3</number>
@@ -1084,7 +1148,95 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="3">
+           <item row="7" column="0">
+            <widget class="QLabel" name="yaw">
+             <property name="text">
+              <string>yaw</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="x">
+             <property name="text">
+              <string>x</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="empty">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="y">
+             <property name="text">
+              <string>y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="roll">
+             <property name="text">
+              <string>roll</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QDoubleSpinBox" name="des_force_z_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-100.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="desire_force">
+             <property name="text">
+              <string>Desired Force [N]</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="des_force_y_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-100.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QPushButton" name="send_des_wrench_pushbutton">
+             <property name="text">
+              <string>Send Desired Force</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QDoubleSpinBox" name="des_torque_x_spinbox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>-100.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
             <widget class="QDoubleSpinBox" name="des_torque_y_spinbox">
              <property name="decimals">
               <number>3</number>
@@ -1097,38 +1249,10 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="3">
-            <widget class="QPushButton" name="send_des_wrench_pushbutton">
+           <item row="0" column="2">
+            <widget class="QLabel" name="force_gain">
              <property name="text">
-              <string>Send Desired Force</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="desire_force">
-             <property name="text">
-              <string>Desired Force [N]</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="text">
-              <string>1</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QPushButton" name="pushButton_6">
-             <property name="text">
-              <string>2</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="3">
-            <widget class="QLabel" name="desired_torque">
-             <property name="text">
-              <string>Desired Torque [Nm]</string>
+              <string>Force Gain</string>
              </property>
             </widget>
            </item>
@@ -1140,6 +1264,46 @@
           <property name="text">
            <string>Enable Force Control</string>
           </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QGroupBox" name="gripper_groupbox">
+          <property name="title">
+           <string>Gripper</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="grip_force_spinbox">
+             <property name="minimum">
+              <double>-100.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="target_force">
+             <property name="text">
+              <string>Target Force [N]</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="grip_on_pushbutton">
+             <property name="text">
+              <string>Grip On</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="grip_off_pushbutton">
+             <property name="text">
+              <string>Grip Off</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
