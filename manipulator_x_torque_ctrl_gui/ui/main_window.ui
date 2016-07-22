@@ -1319,16 +1319,16 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="set_mode_button">
+         <widget class="QPushButton" name="set_torque_control_mode_button">
           <property name="text">
-           <string>Set Mode</string>
+           <string>Set Torque Control Mode</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="go_zero_pose_button">
+         <widget class="QPushButton" name="set_position_control_mode_button">
           <property name="text">
-           <string>Go Zero Pose</string>
+           <string>Set Position Control Mode</string>
           </property>
          </widget>
         </item>

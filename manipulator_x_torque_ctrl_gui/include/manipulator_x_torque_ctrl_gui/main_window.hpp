@@ -57,9 +57,6 @@
 namespace manipulator_x_torque_ctrl_gui
 {
 
-#define deg2rad (M_PI/180.0)
-#define rad2deg (180.0/M_PI)
-
 /*****************************************************************************
 ** Interface [MainWindow]
 *****************************************************************************/
@@ -82,7 +79,10 @@ public Q_SLOTS:
   *******************************************/
   void on_actionAbout_triggered();
 
-  void on_set_mode_button_clicked(bool check);
+  void on_set_position_control_mode_button_clicked(bool check);
+  void on_set_torque_control_mode_button_clicked(bool check);
+
+  void on_go_initial_pose_button_clicked(bool check);
 
   void on_load_gain_pushbutton_clicked(bool check);
   void on_save_gain_pushbutton_clicked(bool check);

@@ -144,6 +144,25 @@ MainWindow::~MainWindow() {}
 ** Implementation [Slots]
 *****************************************************************************/
 
+void MainWindow::on_set_torque_control_mode_button_clicked(bool check)
+{
+  std_msgs::String msg;
+  msg.data = "set_mode";
+
+  qnode_.sendSetModeMsg(msg);
+}
+
+void MainWindow::on_set_position_control_mode_button_clicked(bool check)
+{
+
+}
+
+void MainWindow::on_go_initial_pose_button_clicked(bool check)
+{
+
+
+}
+
 void MainWindow::on_load_gain_pushbutton_clicked(bool check)
 {
   qnode_.getJointGain();
@@ -155,14 +174,6 @@ void MainWindow::on_save_gain_pushbutton_clicked(bool check)
   msg.data = "save_gain";
 
   qnode_.sendSaveGainMsg(msg);
-}
-
-void MainWindow::on_set_mode_button_clicked(bool check)
-{
-  std_msgs::String msg;
-  msg.data = "set_mode";
-
-  qnode_.sendSetModeMsg(msg);
 }
 
 void MainWindow::on_set_gain_pushbutton_clicked(bool check)
@@ -202,7 +213,7 @@ void MainWindow::on_send_des_value_pushbutton_clicked(bool check)
   for (int it=0; it<joint_name_.size(); it++)
   {
     msg.joint_name.push_back(joint_name_[it]);
-    msg.position.push_back(((QDoubleSpinBox *) desired_joint_angle_spinbox_[it])->value()*deg2rad);
+    msg.position.push_back(((QDoubleSpinBox *) desired_joint_angle_spinbox_[it])->value()*DEGREE2RADIAN);
   }
 
   qnode_.sendJointPoseMsg(msg);
@@ -284,7 +295,7 @@ void MainWindow::updateJointPoseSpinbox(manipulator_x_torque_ctrl_module_msgs::J
     {
       if (msg.joint_name[joint_index] == joint_name_[name_index])
       {
-        ((QDoubleSpinBox *) present_joint_angle_spinbox_[name_index])->setValue(msg.position[joint_index]*rad2deg);
+        ((QDoubleSpinBox *) present_joint_angle_spinbox_[name_index])->setValue(msg.position[joint_index]*RADIAN2DEGREE);
         break;
       }
     }

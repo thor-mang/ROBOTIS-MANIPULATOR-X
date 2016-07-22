@@ -63,13 +63,16 @@
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Wrench.h>
 
+#include "robotis_math/robotis_math.h"
 #include "robotis_controller_msgs/StatusMsg.h"
 
 #include "manipulator_x_torque_ctrl_module_msgs/JointGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/JointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/KinematicsPose.h"
 
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/GetKinematicsPose.h"
 
 #endif
 

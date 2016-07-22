@@ -18,6 +18,7 @@
 #include <std_msgs/Bool.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Wrench.h>
+#include <sensor_msgs/JointState.h>
 #include <boost/thread.hpp>
 #include <yaml-cpp/yaml.h>
 
@@ -28,25 +29,29 @@
 #include <kdl/chaindynparam.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 
+#include "robotis_math/robotis_math.h"
 #include "robotis_framework_common/motion_module.h"
 
 #include "robotis_controller_msgs/JointCtrlModule.h"
 #include "robotis_controller_msgs/StatusMsg.h"
 
 #include "manipulator_x_torque_ctrl_module_msgs/JointGain.h"
-#include "manipulator_x_torque_ctrl_module_msgs/GetJointGain.h"
+#include "manipulator_x_torque_ctrl_module_msgs/JointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/KinematicsPose.h"
 
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/GetKinematicsPose.h"
 
 namespace robotis_manipulator_x
 {
 
-#define MAX_JOINT_ID    6
-#define TASK_DEMENSION  6
-#define ITERATION_TIME  0.008
+#define MAX_JOINT_ID    (6)
+#define TASK_DEMENSION  (6)
+#define ITERATION_TIME  (0.003)
 
-enum MODE_SELECT {
+enum MODE_SELECT
+{
     GRAVITY_COMPENSATION,
     JOINT_CONTROL,
     FORCE_CONTROL
@@ -63,6 +68,7 @@ private:
   /* sample subscriber & publisher */
   ros::Publisher  status_msg_pub_;
   ros::Publisher  set_ctrl_module_pub_;
+  ros::Publisher  goal_joint_position_pub_;
 
   ros::ServiceServer get_joint_gain_server_;
   ros::ServiceServer get_joint_pose_server_;
@@ -99,12 +105,20 @@ private:
   Eigen::VectorXd present_joint_velocity_;
   Eigen::VectorXd present_joint_effort_;
 
+  bool initialize_goal_value_;
+
   Eigen::VectorXd goal_joint_position_;
   Eigen::VectorXd goal_joint_velocity_;
   Eigen::VectorXd goal_joint_acceleration_;
   Eigen::VectorXd goal_joint_effort_;
 
   Eigen::VectorXd goal_task_wrench_;
+
+  bool is_moving_;
+  int cnt_;
+  double mov_time_;
+  int all_time_steps_;
+  Eigen::MatrixXd goal_joint_tra_;
 
   void queueThread();
 
@@ -116,6 +130,8 @@ private:
 
   void parseGainData(const std::string &path);
   void saveGainData(const std::string &path);
+
+  void calcGoalJointTra(Eigen::VectorXd initial_joint_position, Eigen::VectorXd target_joint_position);
 
 public:
   TorqueCtrlModule();
@@ -142,6 +158,7 @@ public:
 
   void stop();
   bool isRunning();
+  void publishStatusMsg(unsigned int type, std::string msg);
 };
 
 }

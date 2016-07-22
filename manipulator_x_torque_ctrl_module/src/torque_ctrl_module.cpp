@@ -44,7 +44,9 @@ TorqueCtrlModule::TorqueCtrlModule()
   : control_cycle_msec_(8),
     gazebo_(),
     gripper_(),
-    module_control_(GRAVITY_COMPENSATION)
+    module_control_(GRAVITY_COMPENSATION),
+    is_moving_(false),
+    initialize_goal_value_(false)
 {
   enable_       = false;
   module_name_  = "torque_ctrl_module";
@@ -113,6 +115,7 @@ void TorqueCtrlModule::queueThread()
   /* publish topics */
   status_msg_pub_ = ros_node.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 1);
   set_ctrl_module_pub_ = ros_node.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 1);
+  goal_joint_position_pub_ = ros_node.advertise<sensor_msgs::JointState>("/robotis/goal_joint_position", 1);
 
   get_joint_gain_server_ = ros_node.advertiseService("/robotis/torque_ctrl/get_joint_gain",
                                                      &TorqueCtrlModule::getJointGainCallback, this);
@@ -193,7 +196,6 @@ void TorqueCtrlModule::saveGainData(const std::string &path)
 void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
   //  ROS_INFO("--- Set Torque Control Mode ---");
-
   std_msgs::String str_msg;
   str_msg.data = "torque_ctrl_module";
   set_ctrl_module_pub_.publish(str_msg);
@@ -203,13 +205,12 @@ void TorqueCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 void TorqueCtrlModule::saveGainMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
   //  ROS_INFO("--- Save Gain ---");
-
   saveGainData(gain_path_);
 }
 
 void TorqueCtrlModule::setGainMsgCallback(const manipulator_x_torque_ctrl_module_msgs::JointGain::ConstPtr& msg)
 {
-  goal_joint_position_ = present_joint_position_;
+//  goal_joint_position_ = present_joint_position_;
 
   //  ROS_INFO("--- Set Torque Control PID Gain ---");
   for (int it=0; it<msg->joint_name.size(); it++)
@@ -222,9 +223,14 @@ void TorqueCtrlModule::setGainMsgCallback(const manipulator_x_torque_ctrl_module
 
 void TorqueCtrlModule::setJointPoseMsgCallback(const manipulator_x_torque_ctrl_module_msgs::JointPose::ConstPtr &msg)
 {
+  Eigen::VectorXd initial_joint_position = goal_joint_position_;
+  Eigen::VectorXd target_joint_position = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+
   //  ROS_INFO("--- Set Desired Joint Angle ---");
   for (int it=0; it<msg->joint_name.size(); it++)
-    goal_joint_position_(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
+    target_joint_position(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
+
+  calcGoalJointTra(initial_joint_position, target_joint_position);
 }
 
 void TorqueCtrlModule::setWrenchMsgCallback(const geometry_msgs::Wrench::ConstPtr& msg)
@@ -329,6 +335,64 @@ void TorqueCtrlModule::calcJacobian()
   jacobian_solver_->JntToJac(kdl_curr_joint_position,jacobian);
 
   jacobian_ = jacobian.data;
+}
+
+void TorqueCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_joint_position, Eigen::VectorXd target_joint_position)
+{
+  if( enable_ == false )
+    return;
+
+  /* set movement time */
+  double tol = 15.0 * DEGREE2RADIAN; // rad per sec
+  double min_mov_time = 0.1;
+
+  double diff , diff_old ;
+  diff = 0.0;
+
+  for (int index = 0; index < MAX_JOINT_ID;  index++)
+  {
+    double ini_value;
+    double tar_value;
+
+    ini_value = initial_joint_position(index);
+    tar_value = target_joint_position(index);
+
+    diff_old = fabs(tar_value - ini_value);
+
+    if (diff < diff_old)
+      diff = diff_old;
+  }
+
+  mov_time_ =  diff / tol;
+  all_time_steps_ = int(floor((mov_time_ / ITERATION_TIME ) + 1.0));
+  mov_time_ = double(all_time_steps_ - 1) * ITERATION_TIME;
+
+  if (mov_time_ < min_mov_time)
+    mov_time_ = min_mov_time;
+
+  ROS_INFO("mov_time : %f", mov_time_);
+
+  all_time_steps_ = int(mov_time_ / ITERATION_TIME) + 1;
+  goal_joint_tra_.resize(all_time_steps_ , MAX_JOINT_ID);
+
+  /* calculate joint trajectory */
+  for (int index = 0; index < MAX_JOINT_ID; index++)
+  {
+    double ini_value = initial_joint_position(index);
+    double tar_value = target_joint_position(index);
+
+    Eigen::MatrixXd tra = robotis_framework::calcMinimumJerkTra(
+          ini_value, 0.0, 0.0,
+          tar_value, 0.0, 0.0,
+          ITERATION_TIME, mov_time_);
+
+    goal_joint_tra_.block(0, index, all_time_steps_, 1) = tra;
+  }
+
+  cnt_ = 0;
+  is_moving_ = true;
+
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Trajectory");
 }
 
 void TorqueCtrlModule::setKinematicsChain()
@@ -509,6 +573,8 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
   if (enable_ == false)
     return;
 
+//  ros::Time now = ros::Time::now();
+
   /*----- Get Joint State -----*/
   for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
        state_iter != result_.end(); state_iter++)
@@ -527,6 +593,15 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
     present_joint_effort_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_torque_;
   }
 
+  if (initialize_goal_value_==false)
+  {
+    goal_joint_position_ = present_joint_position_;
+    goal_joint_velocity_ = present_joint_velocity_;
+    goal_joint_effort_ = present_joint_effort_;
+
+    initialize_goal_value_ = true;
+  }
+
   /*----- Calculate Gravity Term -----*/
   calcGravityTerm();
   //  calcCoriolisTerm();
@@ -539,6 +614,19 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
   }
   else if (module_control_ == JOINT_CONTROL)
   {
+    if (is_moving_ == true)
+    {
+      for (int index=0; index<MAX_JOINT_ID; index++)
+        goal_joint_position_(index) = goal_joint_tra_(cnt_,index);
+
+//      PRINT_MAT(goal_joint_position_);
+
+      cnt_++;
+    }
+
+//    ROS_INFO("present_position[6] : %f", present_joint_position_(5));
+//    ROS_INFO("goal_position[6] : %f", goal_joint_position_(5));
+
     // PID Control with Gravity Compensation
     for (int it=0; it<MAX_JOINT_ID; it++)
     {
@@ -561,12 +649,35 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
     goal_joint_effort_ = jacobian_.transpose()*goal_task_wrench_ + gravity_term_;
   }
 
+  sensor_msgs::JointState goal_joint_position_msg;
 
   for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
        state_iter != result_.end(); state_iter++)
   {
     std::string joint_name = state_iter->first;
     result_[joint_name]->goal_torque_ = goal_joint_effort_(joint_name_to_id_[joint_name]-1);
+
+
+    goal_joint_position_msg.name.push_back(joint_name);
+    goal_joint_position_msg.position.push_back(goal_joint_position_(joint_name_to_id_[joint_name]-1));
+    goal_joint_position_msg.header.stamp = ros::Time::now();
+  }
+  goal_joint_position_pub_.publish(goal_joint_position_msg);
+
+//  ros::Duration dur = ros::Time::now() - now;
+//  double msec = dur.nsec * 0.000001;
+
+//  ROS_INFO_STREAM("Process duration  : " << msec);
+
+  if (module_control_ == JOINT_CONTROL)
+  {
+    if (is_moving_ == true && cnt_ >= all_time_steps_)
+    {
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Trajectory");
+
+      is_moving_ = false;
+      cnt_ = 0;
+    }
   }
 }
 
@@ -577,5 +688,16 @@ void TorqueCtrlModule::stop()
 
 bool TorqueCtrlModule::isRunning()
 {
-  return false;
+  return is_moving_;
+}
+
+void TorqueCtrlModule::publishStatusMsg(unsigned int type, std::string msg)
+{
+    robotis_controller_msgs::StatusMsg status_msg;
+    status_msg.header.stamp = ros::Time::now();
+    status_msg.type = type;
+    status_msg.module_name = "TorqueCtrl";
+    status_msg.status_msg = msg;
+
+    status_msg_pub_.publish(status_msg);
 }

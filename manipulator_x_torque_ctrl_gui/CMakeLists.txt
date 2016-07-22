@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   qt_build 
   roscpp 
   geometry_msgs
+  robotis_math
   robotis_controller_msgs
   manipulator_x_torque_ctrl_module_msgs
   cmake_modules
