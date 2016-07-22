@@ -38,7 +38,8 @@
 #include "robotis_controller/robotis_controller.h"
 
 /* Motion Module Header */
-#include "manipulator_x_torque_ctrl_module/torque_ctrl_module.h"
+//#include "manipulator_x_torque_ctrl_module/torque_ctrl_module.h"
+#include "manipulator_x_position_ctrl_module/position_ctrl_module.h"
 
 using namespace robotis_manipulator_x;
 
@@ -86,7 +87,8 @@ int main(int argc, char **argv)
     /* Add Sensor Module */
 
     /* Add Motion Module */
-    controller->addMotionModule((robotis_framework::MotionModule*)TorqueCtrlModule::getInstance());
+    //controller->addMotionModule((robotis_framework::MotionModule*)TorqueCtrlModule::getInstance());
+    controller->addMotionModule((robotis_framework::MotionModule*)PositionCtrlModule::getInstance());
 
     controller->startTimer();
 
