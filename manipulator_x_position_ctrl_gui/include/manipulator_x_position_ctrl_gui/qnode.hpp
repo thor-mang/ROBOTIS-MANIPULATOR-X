@@ -53,6 +53,25 @@
 #include <QThread>
 #include <QStringListModel>
 
+#include <ros/package.h>
+#include <yaml-cpp/yaml.h>
+
+#include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/Float64.h>
+#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Wrench.h>
+
+#include "robotis_math/robotis_math.h"
+#include "robotis_controller_msgs/StatusMsg.h"
+
+#include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
+
+#include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
+
 #endif
 
 /*****************************************************************************
@@ -68,35 +87,65 @@ namespace manipulator_x_position_ctrl_gui {
 class QNode : public QThread {
     Q_OBJECT
 public:
-	QNode(int argc, char** argv );
-	virtual ~QNode();
-	bool init();
-	bool init(const std::string &master_url, const std::string &host_url);
-	void run();
+    QNode(int argc, char** argv );
+    virtual ~QNode();
+    bool init();
+    void run();
 
-	/*********************
-	** Logging
-	**********************/
-	enum LogLevel {
-	         Debug,
-	         Info,
-	         Warn,
-	         Error,
-	         Fatal
-	 };
+    /*********************
+    ** Logging
+    **********************/
+    enum LogLevel
+    {
+        Debug,
+        Info,
+        Warn,
+        Error,
+        Fatal
+    };
 
-	QStringListModel* loggingModel() { return &logging_model; }
-	void log( const LogLevel &level, const std::string &msg);
+    QStringListModel* loggingModel() { return &logging_model; }
+    void log( const LogLevel &level, const std::string &msg, std::string sender);
+
+    void statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg);
+
+    void sendSetModeMsg(std_msgs::String msg);
+    void sendInitialPoseMsg(std_msgs::String msg);
+    void sendJointPoseMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+    void sendKinematicsPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
+
+    void enableJointSpaceControl(std_msgs::Bool msg);
+    void enableTaskSpaceControl(std_msgs::Bool msg);
+    void enableMotionPlanning(std_msgs::Bool msg);
+
+    void getJointPose();
+    void getKinematicsPose();
 
 Q_SIGNALS:
-	void loggingUpdated();
+    void loggingUpdated();
     void rosShutdown();
 
+    void updateJointPose(manipulator_x_position_ctrl_module_msgs::JointPose);
+    void updateKinematicsPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose);
+
 private:
-	int init_argc;
-	char** init_argv;
-	ros::Publisher chatter_publisher;
+    int init_argc;
+    char** init_argv;
     QStringListModel logging_model;
+
+    ros::Publisher set_mode_msg_pub_;
+    ros::Publisher set_initial_pose_msg_pub_;
+    ros::Publisher set_joint_pose_msg_pub_;
+    ros::Publisher set_kinematics_pose_msg_pub_;
+
+    ros::Publisher enable_joint_space_control_pub_;
+    ros::Publisher enable_task_space_control_pub_;
+    ros::Publisher enable_motion_planning_pub_;
+
+    ros::ServiceClient get_joint_pose_client_;
+    ros::ServiceClient get_kinematics_pose_client_;
+
+    ros::Subscriber status_msg_sub_;
 };
 
 }  // namespace manipulator_x_position_ctrl_gui

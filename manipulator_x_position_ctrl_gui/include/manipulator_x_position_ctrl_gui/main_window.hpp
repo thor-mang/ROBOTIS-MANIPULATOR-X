@@ -48,6 +48,8 @@
 #include "ui_main_window.h"
 #include "qnode.hpp"
 
+#include "robotis_math/robotis_math.h"
+
 #endif
 
 /*****************************************************************************
@@ -62,35 +64,58 @@ namespace manipulator_x_position_ctrl_gui {
 /**
  * @brief Qt central, all operations relating to the view part here.
  */
-class MainWindow : public QMainWindow {
-Q_OBJECT
+class MainWindow : public QMainWindow
+{
+  Q_OBJECT
 
 public:
-	MainWindow(int argc, char** argv, QWidget *parent = 0);
-	~MainWindow();
+  MainWindow(int argc, char** argv, QWidget *parent = 0);
+  ~MainWindow();
 
-	void ReadSettings(); // Load up qt program settings at startup
-	void WriteSettings(); // Save qt program settings when closing
-
-	void closeEvent(QCloseEvent *event); // Overloaded function
-	void showNoMasterMessage();
+  void closeEvent(QCloseEvent *event); // Overloaded function
 
 public Q_SLOTS:
-	/******************************************
-	** Auto-connections (connectSlotsByName())
-	*******************************************/
-	void on_actionAbout_triggered();
-	void on_button_connect_clicked(bool check );
-	void on_checkbox_use_environment_stateChanged(int state);
+  /******************************************
+  ** Auto-connections (connectSlotsByName())
+  *******************************************/
+  void on_actionAbout_triggered();
 
-    /******************************************
+  void on_set_position_control_mode_button_clicked(bool check);
+  void on_go_zero_pose_button_clicked(bool check);
+  void on_go_initial_pose_button_clicked(bool check);
+
+  void on_get_pre_value_pushbutton_clicked(bool check);
+  void on_send_des_value_pushbutton_clicked(bool check);
+
+  void on_get_pre_pose_pushbutton_clicked(bool check);
+  void on_send_des_pose_pushbutton_clicked(bool check);
+
+  void on_joint_space_control_checkbox_clicked(bool check);
+  void on_task_space_control_checkbox_clicked(bool check);
+  void on_motion_planning_checkbox_clicked(bool check);
+
+  /******************************************
     ** Manual connections
     *******************************************/
-    void updateLoggingView(); // no idea why this can't connect automatically
+  void updateLoggingView(); // no idea why this can't connect automatically
+
+  void updateJointPoseSpinbox(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
 
 private:
-	Ui::MainWindowDesign ui;
-	QNode qnode;
+  Ui::MainWindowDesign ui_;
+  QNode qnode_;
+
+  std::vector<std::string> joint_name_;
+
+  QList<QAbstractSpinBox *> present_joint_angle_spinbox_;
+  QList<QAbstractSpinBox *> desired_joint_angle_spinbox_;
+
+  QList<QAbstractSpinBox *> present_task_space_position_spinbox_;
+  QList<QAbstractSpinBox *> present_task_space_orientation_spinbox_;
+
+  QList<QAbstractSpinBox *> desired_task_space_position_spinbox_;
+  QList<QAbstractSpinBox *> desired_task_space_orientation_spinbox_;
 };
 
 }  // namespace manipulator_x_position_ctrl_gui
