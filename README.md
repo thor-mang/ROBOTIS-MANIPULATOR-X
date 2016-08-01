@@ -1,7 +1,10 @@
-# ROBOTIS-MANIPULATOR-X
+# ROBOTIS-MANIPULATOR-X for Position Control
 
 ### 1. Required Package
 
+- ROBOTIS-MANIPULATOR-X (branch : master / position_control)   
+- ROBOTIS-Framework-msgs  
+- ROBOTIS-Framework  
 
 ### 2. Execution
 
