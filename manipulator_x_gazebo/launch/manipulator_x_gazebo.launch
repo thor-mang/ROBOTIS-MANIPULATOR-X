@@ -6,6 +6,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
+  <arg name="use_gripper" default="false"/>
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -19,12 +20,17 @@
 
   <!-- Load the URDF into the ROS Parameter Server -->
   <param name="robot_description"
-	 command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x.xacro'" />
+	 command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_gripper.xacro'" 
+         if="$(arg use_gripper)"/>
+  <param name="robot_description"
+	 command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_tooltip.xacro'" 
+         unless="$(arg use_gripper)"/>
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
      args="-urdf -model manipulator_x -z 0.01 -param robot_description"/>
 
   <!-- ros_control robotis manipulator launch file -->
-  <include file="$(find manipulator_x_gazebo)/launch/effort_controller.launch" />
+  <include file="$(find manipulator_x_gazebo)/launch/effort_controller_gripper.launch" if="$(arg use_gripper)"/>
+  <include file="$(find manipulator_x_gazebo)/launch/effort_controller_tooltip.launch" unless="$(arg use_gripper)"/>
 </launch>

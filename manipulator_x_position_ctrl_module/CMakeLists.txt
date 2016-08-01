@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(manipulator_x_torque_ctrl_module)
+project(manipulator_x_position_ctrl_module)
 
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
@@ -10,7 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   geometry_msgs
-  #manipulator_x_torque_ctrl_module_msgs
+  sensor_msgs
+  manipulator_x_position_ctrl_module_msgs
   cmake_modules
 )
 
@@ -21,7 +22,7 @@ find_package(Eigen REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES manipulator_x_torque_ctrl_module
+  LIBRARIES manipulator_x_position_ctrl_module
 #  CATKIN_DEPENDS robotis_device roscpp std_msgs
 #  DEPENDS system_lib
 )
@@ -34,13 +35,13 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(manipulator_x_torque_ctrl_module
-  src/torque_ctrl_module.cpp
+add_library(manipulator_x_position_ctrl_module
+  src/position_ctrl_module.cpp
 )
 
-add_dependencies(manipulator_x_torque_ctrl_module ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(manipulator_x_position_ctrl_module ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(manipulator_x_torque_ctrl_module
+target_link_libraries(manipulator_x_position_ctrl_module
   yaml-cpp
   ${catkin_LIBRARIES}
   /opt/ros/kinetic/lib/liborocos-kdl.so

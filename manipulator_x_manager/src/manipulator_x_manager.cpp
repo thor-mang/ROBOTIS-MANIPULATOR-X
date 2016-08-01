@@ -38,64 +38,70 @@
 #include "robotis_controller/robotis_controller.h"
 
 /* Motion Module Header */
-#include "manipulator_x_torque_ctrl_module/torque_ctrl_module.h"
+#include "manipulator_x_position_ctrl_module/position_ctrl_module.h"
+#include "manipulator_x_gripper_module/gripper_module.h"
 
 using namespace robotis_manipulator_x;
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "ROBOTIS_MANIPULATOR_X_Manager");
-    ros::NodeHandle nh;
+  ros::init(argc, argv, "ROBOTIS_MANIPULATOR_X_Manager");
+  ros::NodeHandle nh;
 
-    ROS_INFO("manager->init");
-    robotis_framework::RobotisController *controller = robotis_framework::RobotisController::getInstance();
+  ROS_INFO("manager->init");
+  robotis_framework::RobotisController *controller = robotis_framework::RobotisController::getInstance();
 
-    /* Load ROS Parameter */
-    std::string offset_file = nh.param<std::string>("offset_file_path", "");
-    std::string robot_file  = nh.param<std::string>("robot_file_path", "");
+  /* Load ROS Parameter */
+  std::string offset_file = nh.param<std::string>("offset_file_path", "");
+  std::string robot_file  = nh.param<std::string>("robot_file_path", "");
 
-    std::string init_file   = nh.param<std::string>("init_file_path", "");
+  std::string init_file   = nh.param<std::string>("init_file_path", "");
 
-    /* gazebo simulation */
-    controller->gazebo_mode_ = nh.param<bool>("gazebo", false);
-    if(controller->gazebo_mode_ == true)
-    {
-        ROS_WARN("SET TO GAZEBO MODE!");
-        std::string robot_name = nh.param<std::string>("gazebo_robot_name", "");
-        if(robot_name != "")
-            controller->gazebo_robot_name_ = robot_name;
-    }
+  bool using_gripper;
+  nh.getParam("gripper", using_gripper);
 
-    if(robot_file == "")
-    {
-        ROS_ERROR("NO robot file path in the ROS parameters.");
-        return -1;
-    }
+  /* gazebo simulation */
+  controller->gazebo_mode_ = nh.param<bool>("gazebo", false);
+  if(controller->gazebo_mode_ == true)
+  {
+    ROS_WARN("SET TO GAZEBO MODE!");
+    std::string robot_name = nh.param<std::string>("gazebo_robot_name", "");
+    if(robot_name != "")
+      controller->gazebo_robot_name_ = robot_name;
+  }
 
-    if(controller->initialize(robot_file, init_file) == false)
-    {
-        ROS_ERROR("ROBOTIS Controller Initialize Fail!");
-        return -1;
-    }
+  if(robot_file == "")
+  {
+    ROS_ERROR("NO robot file path in the ROS parameters.");
+    return -1;
+  }
 
-    if(offset_file != "")
-        controller->loadOffset(offset_file);
+  if(controller->initialize(robot_file, init_file) == false)
+  {
+    ROS_ERROR("ROBOTIS Controller Initialize Fail!");
+    return -1;
+  }
 
-    sleep(1);
+  if(offset_file != "")
+    controller->loadOffset(offset_file);
 
-    /* Add Sensor Module */
+  sleep(1);
 
-    /* Add Motion Module */
-    controller->addMotionModule((robotis_framework::MotionModule*)TorqueCtrlModule::getInstance());
+  /* Add Sensor Module */
 
-    controller->startTimer();
+  /* Add Motion Module */
+  controller->addMotionModule((robotis_framework::MotionModule*)PositionCtrlModule::getInstance());
+  if (using_gripper==true)
+    controller->addMotionModule((robotis_framework::MotionModule*)GripperModule::getInstance());
 
-    while(ros::ok())
-    {
-      usleep(1000*1000);
-    }
+  controller->startTimer();
 
-    return 0;
+  while(ros::ok())
+  {
+    usleep(1000*1000);
+  }
+
+  return 0;
 }
 
 

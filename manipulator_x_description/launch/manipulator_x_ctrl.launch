@@ -1,22 +1,32 @@
 <?xml version="1.0" ?>
-
 <launch>    
-    <arg name="use_present" default="true" />
+  <arg name="use_present" default="true" />
+  <arg name="use_gripper" default="false" />
     
-    <param name="robot_description"
-    command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x.xacro'" />
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_gripper.xacro'" 
+         if="$(arg use_gripper)"/>
+  <param name="robot_description"
+         command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_tooltip.xacro'" 
+         unless="$(arg use_gripper)"/>
     
-    <!-- send joint values -->
-    <node name="robotis_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-        <param name="use_gui" value="FALSE"/>
-        <param name="rate" value="125"/>
-        <remap from="/joint_states" to="/robotis/manipulator_x/joint_states" />
-        <rosparam param="source_list" if="$(arg use_present)">["robotis/manipulator_x/present_joint_states"]</rosparam>
-        <rosparam param="source_list" unless="$(arg use_present)">["robotis/manipulator_x/goal_joint_states"]</rosparam>
-    </node>
+  <!-- send joint values -->
+  <node name="robotis_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="FALSE"/>
+    <param name="rate" value="30"/>
+    <remap from="/joint_states" to="/robotis/manipulator_x/joint_states" />
+    <rosparam param="source_list" if="$(arg use_present)">["robotis/manipulator_x/present_joint_states"]</rosparam>
+    <rosparam param="source_list" unless="$(arg use_present)">["robotis/manipulator_x/goal_joint_states"]</rosparam>
+  </node>
 
-    <!-- Combine joint values to TF-->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
-        <remap from="/joint_states" to="/robotis/manipulator_x/joint_states"/>
-    </node>
+  <!-- Combine joint values to TF-->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+    <remap from="/joint_states" to="/robotis/manipulator_x/joint_states"/>
+  </node>
+
+  <!-- Show in Rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulator_x_description)/launch/manipulator_x.rviz"/>
+  
+  <!-- Gripper Pub-->
+  <node name="manipulator_x_rviz_pub" pkg="manipulator_x_description" type="manipulator_x_rviz_pub"/>
 </launch>
