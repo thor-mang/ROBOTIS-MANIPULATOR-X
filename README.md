@@ -3,8 +3,10 @@
 ### 1. Required Package
 
 - ROBOTIS-MANIPULATOR-X (branch : master / position_control)   
-- ROBOTIS-Framework (branch : develop) 
+- ROBOTIS-Framework (branch : develop)  
 - ROBOTIS-Framework-msgs  
+- qt_ros (https://github.com/stonier/qt_ros, branch : indigo)  
+- gazebo_ros_pkgs (https://github.com/ros-simulation/gazebo_ros_pkgs, branch : kinetic)  
 
 ### 2. Execution
 
