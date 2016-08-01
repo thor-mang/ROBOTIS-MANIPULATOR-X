@@ -3,8 +3,8 @@
 ### 1. Required Package
 
 - ROBOTIS-MANIPULATOR-X (branch : master / position_control)   
-- ROBOTIS-Framework-msgs  
 - ROBOTIS-Framework  
+- ROBOTIS-Framework-msgs  
 
 ### 2. Execution
 
