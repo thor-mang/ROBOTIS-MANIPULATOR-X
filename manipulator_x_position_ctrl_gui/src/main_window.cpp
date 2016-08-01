@@ -67,7 +67,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   present_task_space_position_spinbox_.push_back(ui_.pre_position_x_spinbox);
   present_task_space_position_spinbox_.push_back(ui_.pre_position_y_spinbox);
   present_task_space_position_spinbox_.push_back(ui_.pre_position_z_spinbox);
-
   present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_r_spinbox);
   present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_p_spinbox);
   present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_y_spinbox);
@@ -75,7 +74,6 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   desired_task_space_position_spinbox_.push_back(ui_.des_position_x_spinbox);
   desired_task_space_position_spinbox_.push_back(ui_.des_position_y_spinbox);
   desired_task_space_position_spinbox_.push_back(ui_.des_position_z_spinbox);
-
   desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_r_spinbox);
   desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_p_spinbox);
   desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_y_spinbox);
@@ -117,7 +115,7 @@ void MainWindow::on_set_position_control_mode_button_clicked(bool check)
 
 void MainWindow::on_go_zero_pose_button_clicked(bool check)
 {
-  ui_.joint_space_control_checkbox->setChecked(false);
+  ui_.joint_space_control_checkbox->setChecked(true);
   ui_.task_space_control_checkbox->setChecked(false);
   ui_.motion_planning_checkbox->setChecked(false);
 
@@ -129,7 +127,7 @@ void MainWindow::on_go_zero_pose_button_clicked(bool check)
 
 void MainWindow::on_go_initial_pose_button_clicked(bool check)
 {
-  ui_.joint_space_control_checkbox->setChecked(false);
+  ui_.joint_space_control_checkbox->setChecked(true);
   ui_.task_space_control_checkbox->setChecked(false);
   ui_.motion_planning_checkbox->setChecked(false);
 
@@ -186,6 +184,24 @@ void MainWindow::on_send_des_pose_pushbutton_clicked(bool check)
   msg.pose.orientation.w = quaternion.w();
 
   qnode_.sendKinematicsPoseMsg(msg);
+}
+
+void MainWindow::on_grip_off_pushbutton_clicked(bool check)
+{
+  std_msgs::Float64 msg;
+  msg.data = -45.0 * DEGREE2RADIAN;
+
+  qnode_.sendGripperPoseMsg(msg);
+}
+
+void MainWindow::on_grip_on_pushbutton_clicked(bool check)
+{
+  double value = ui_.grip_joint_des_angle_spinbox->value() * DEGREE2RADIAN;
+
+  std_msgs::Float64 msg;
+  msg.data = -1.0 * value;
+
+  qnode_.sendGripperPoseMsg(msg);
 }
 
 void MainWindow::on_joint_space_control_checkbox_clicked(bool check)

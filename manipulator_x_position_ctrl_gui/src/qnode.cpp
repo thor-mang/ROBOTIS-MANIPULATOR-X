@@ -44,7 +44,8 @@ QNode::~QNode()
 
 void QNode::sendSetModeMsg(std_msgs::String msg)
 {
-  set_mode_msg_pub_.publish(msg);
+  set_position_ctrl_mode_msg_pub_.publish(msg);
+  set_gripper_mode_msg_pub_.publish(msg);
 }
 
 void QNode::sendInitialPoseMsg(std_msgs::String msg)
@@ -60,6 +61,11 @@ void QNode::sendJointPoseMsg(manipulator_x_position_ctrl_module_msgs::JointPose 
 void QNode::sendKinematicsPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
 {
   set_kinematics_pose_msg_pub_.publish(msg);
+}
+
+void QNode::sendGripperPoseMsg(std_msgs::Float64 msg)
+{
+  set_gripper_pose_msg_pub_.publish(msg);
 }
 
 void QNode::enableJointSpaceControl(std_msgs::Bool msg)
@@ -115,10 +121,12 @@ bool QNode::init()
   ros::NodeHandle n;
 
   // Add your ros communications here.
-  set_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_mode_msg", 0);
+  set_position_ctrl_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_mode_msg", 0);
+  set_gripper_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/gripper/set_mode_msg", 0);
   set_initial_pose_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_initial_pose_msg", 0);
   set_joint_pose_msg_pub_ = n.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>("/robotis/position_ctrl/set_joint_pose_msg", 0);
   set_kinematics_pose_msg_pub_ = n.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("/robotis/position_ctrl/set_kinematics_pose_msg", 0);
+  set_gripper_pose_msg_pub_ = n.advertise<std_msgs::Float64>("/robotis/gripper/set_gripper_pose_msg", 0);
 
   enable_joint_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_joint_space_control_msg", 0);
   enable_task_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_task_space_control_msg", 0);

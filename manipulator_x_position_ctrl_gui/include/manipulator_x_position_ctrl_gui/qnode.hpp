@@ -113,6 +113,7 @@ public:
     void sendInitialPoseMsg(std_msgs::String msg);
     void sendJointPoseMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
     void sendKinematicsPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
+    void sendGripperPoseMsg(std_msgs::Float64 msg);
 
     void enableJointSpaceControl(std_msgs::Bool msg);
     void enableTaskSpaceControl(std_msgs::Bool msg);
@@ -133,10 +134,12 @@ private:
     char** init_argv;
     QStringListModel logging_model;
 
-    ros::Publisher set_mode_msg_pub_;
+    ros::Publisher set_position_ctrl_mode_msg_pub_;
+    ros::Publisher set_gripper_mode_msg_pub_;
     ros::Publisher set_initial_pose_msg_pub_;
     ros::Publisher set_joint_pose_msg_pub_;
     ros::Publisher set_kinematics_pose_msg_pub_;
+    ros::Publisher set_gripper_pose_msg_pub_;
 
     ros::Publisher enable_joint_space_control_pub_;
     ros::Publisher enable_task_space_control_pub_;

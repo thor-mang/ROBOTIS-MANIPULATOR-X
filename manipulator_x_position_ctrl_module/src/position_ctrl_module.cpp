@@ -65,10 +65,10 @@ PositionCtrlModule::PositionCtrlModule()
   joint_name_to_id_["joint5"] = 5;
   joint_name_to_id_["joint6"] = 6;
 
-  present_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
-  present_joint_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
-  present_joint_effort_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
-  goal_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+  present_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  present_joint_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  present_joint_effort_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  goal_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
 }
 
 PositionCtrlModule::~PositionCtrlModule()
@@ -95,11 +95,7 @@ void PositionCtrlModule::queueThread()
 
   ros_node.setCallbackQueue(&callback_queue);
 
-//  ros_node.getParam("gazebo", using_gazebo_);
-//  ros_node.getParam("gripper", using_gripper_);
-
   /* publish topics */
-
   status_msg_pub_ = ros_node.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 1);
   set_ctrl_module_pub_ = ros_node.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 1);
 
@@ -109,7 +105,6 @@ void PositionCtrlModule::queueThread()
                                                           &PositionCtrlModule::getKinematicsPoseCallback, this);
 
   /* subscribe topics */
-
   ros::Subscriber set_mode_msg_sub = ros_node.subscribe("/robotis/position_ctrl/set_mode_msg", 5,
                                                         &PositionCtrlModule::setModeMsgCallback, this);
   ros::Subscriber set_initial_pose_msg_sub = ros_node.subscribe("/robotis/position_ctrl/set_initial_pose_msg", 5,
@@ -143,14 +138,58 @@ void PositionCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& ms
 
 void PositionCtrlModule::setInitialPoseMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
+  if (enable_==false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Set Position Control Module");
+    return;
+  }
+
+  std::string ini_pose_path;
+
   if (msg->data == "zero_pose")
-  {
-    ROS_INFO("1");
-  }
+    ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/zero_pose.yaml";
   else if (msg->data == "initial_pose")
+    ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
+
+  parseIniPoseData(ini_pose_path);
+}
+
+void PositionCtrlModule::parseIniPoseData(const std::string &path)
+{
+  YAML::Node doc;
+  try
   {
-    ROS_INFO("2");
+    // load yaml
+    doc = YAML::LoadFile( path.c_str() );
   }
+  catch(const std::exception& e)
+  {
+    ROS_ERROR("Fail to load yaml file.");
+    return ;
+  }
+
+  module_control_ = JOINT_SPACE_CONTROL;
+  Eigen::VectorXd initial_position = goal_joint_position_;
+
+  // parse movement time
+  mov_time_ = doc["mov_time"].as< double >();
+
+  // parse target pose
+  Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+
+  YAML::Node tar_pose_node = doc["tar_pose"];
+  for(YAML::iterator it = tar_pose_node.begin() ; it != tar_pose_node.end() ; ++it)
+  {
+    std::string joint_name;
+    double value;
+
+    joint_name = it->first.as<std::string>();
+    value = it->second.as<double>();
+
+    target_position(joint_name_to_id_[joint_name]-1) = value * DEGREE2RADIAN;
+  }
+
+  calcGoalJointTra(initial_position, target_position);
 }
 
 void PositionCtrlModule::enableJointSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg)
@@ -217,7 +256,7 @@ void PositionCtrlModule::setJointPoseMsgCallback(const manipulator_x_position_ct
     publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Joint Values");
 
     Eigen::VectorXd initial_position = goal_joint_position_;
-    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_ID);
+    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
 
     mov_time_ = msg->mov_time;
 
@@ -320,7 +359,7 @@ void PositionCtrlModule::calcJacobian()
   KDL::JntArray kdl_joint_position;
   kdl_joint_position.data = goal_joint_position_;
 
-  KDL::Jacobian jacobian(MAX_JOINT_ID);
+  KDL::Jacobian jacobian(MAX_JOINT_NUM);
   jacobian_solver_->JntToJac(kdl_joint_position,jacobian);
 
   jacobian_ = jacobian.data;
@@ -366,7 +405,7 @@ bool PositionCtrlModule::calcInverseKinematics(int cnt)
                                                             kdl_orientation.w());
 
   KDL::JntArray kdl_desired_joint_position;
-  kdl_desired_joint_position.resize(MAX_JOINT_ID);
+  kdl_desired_joint_position.resize(MAX_JOINT_NUM);
 
   if (inverse_pos_kinematics_solver_->CartToJnt(kdl_initial_joint_position, kdl_desired_kinematics_pose, kdl_desired_joint_position) < 0)
   {
@@ -376,7 +415,7 @@ bool PositionCtrlModule::calcInverseKinematics(int cnt)
     return false;
   }
 
-  for (int index=0; index<MAX_JOINT_ID; index++)
+  for (int index=0; index<MAX_JOINT_NUM; index++)
     goal_joint_position_(index) = kdl_desired_joint_position(index);
 
   return true;
@@ -393,10 +432,10 @@ void PositionCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_position, Eige
   /* set movement time */
   all_time_steps_ = int(floor((mov_time_ / ITERATION_TIME ) + 1.0));
   mov_time_ = double(all_time_steps_ - 1) * ITERATION_TIME;
-  goal_joint_tra_.resize(all_time_steps_ , MAX_JOINT_ID);
+  goal_joint_tra_.resize(all_time_steps_ , MAX_JOINT_NUM);
 
   /* calculate joint trajectory */
-  for (int index=0; index<MAX_JOINT_ID; index++)
+  for (int index=0; index<MAX_JOINT_NUM; index++)
   {
     double ini_value = initial_position(index);
     double tar_value = target_position(index);
@@ -624,8 +663,8 @@ void PositionCtrlModule::setKinematicsChain()
   min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint5
   min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint6
 
-  KDL::JntArray min_joint_position_limit(MAX_JOINT_ID), max_joint_position_limit(MAX_JOINT_ID);
-  for (int index=0; index<MAX_JOINT_ID; index++)
+  KDL::JntArray min_joint_position_limit(MAX_JOINT_NUM), max_joint_position_limit(MAX_JOINT_NUM);
+  for (int index=0; index<MAX_JOINT_NUM; index++)
   {
     min_joint_position_limit(index) = min_position_limit[index]*DEGREE2RADIAN;
     max_joint_position_limit(index) = max_position_limit[index]*DEGREE2RADIAN;
@@ -677,7 +716,7 @@ void PositionCtrlModule::process(std::map<std::string, robotis_framework::Dynami
   {
     if (module_control_==JOINT_SPACE_CONTROL)
     {
-      for (int index=0; index<MAX_JOINT_ID; index++)
+      for (int index=0; index<MAX_JOINT_NUM; index++)
         goal_joint_position_(index) = goal_joint_tra_(cnt_,index);
     }
     else if (module_control_==TASK_SPACE_CONTROL)

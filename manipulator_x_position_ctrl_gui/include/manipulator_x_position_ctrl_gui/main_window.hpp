@@ -90,6 +90,9 @@ public Q_SLOTS:
   void on_get_pre_pose_pushbutton_clicked(bool check);
   void on_send_des_pose_pushbutton_clicked(bool check);
 
+  void on_grip_off_pushbutton_clicked(bool check);
+  void on_grip_on_pushbutton_clicked(bool check);
+
   void on_joint_space_control_checkbox_clicked(bool check);
   void on_task_space_control_checkbox_clicked(bool check);
   void on_motion_planning_checkbox_clicked(bool check);

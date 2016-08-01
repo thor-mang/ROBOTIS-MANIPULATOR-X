@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions 
 )
 
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}

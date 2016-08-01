@@ -187,6 +187,12 @@
            </item>
            <item row="6" column="1">
             <widget class="QDoubleSpinBox" name="pre_orientation_r_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -195,11 +201,20 @@
              </property>
              <property name="maximum">
               <double>180.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
            <item row="7" column="1">
             <widget class="QDoubleSpinBox" name="pre_orientation_p_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -208,11 +223,20 @@
              </property>
              <property name="maximum">
               <double>180.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
            <item row="8" column="1">
             <widget class="QDoubleSpinBox" name="pre_orientation_y_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -222,10 +246,19 @@
              <property name="maximum">
               <double>180.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
             </widget>
            </item>
            <item row="3" column="1">
             <widget class="QDoubleSpinBox" name="pre_position_y_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -236,7 +269,7 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -262,6 +295,12 @@
            </item>
            <item row="2" column="1">
             <widget class="QDoubleSpinBox" name="pre_position_x_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -272,7 +311,7 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -295,7 +334,7 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -318,12 +357,18 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
             <widget class="QDoubleSpinBox" name="pre_position_z_spinbox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
              <property name="decimals">
               <number>3</number>
              </property>
@@ -334,7 +379,7 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -350,7 +395,7 @@
               <double>10.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -806,13 +851,13 @@
            <item row="1" column="3">
             <widget class="QDoubleSpinBox" name="grip_joint_des_angle_spinbox">
              <property name="minimum">
-              <double>-180.000000000000000</double>
+              <double>0.000000000000000</double>
              </property>
              <property name="maximum">
-              <double>180.000000000000000</double>
+              <double>45.000000000000000</double>
              </property>
              <property name="singleStep">
-              <double>0.100000000000000</double>
+              <double>1.000000000000000</double>
              </property>
             </widget>
            </item>
