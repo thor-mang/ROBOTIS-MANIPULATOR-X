@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(manipulator_x_gripper_module-msgs)
+project(manipulator_x_gripper_module_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -97,7 +97,7 @@ find_package(catkin REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES manipulator_x_gripper_module-msgs
+#  LIBRARIES manipulator_x_gripper_module_msgs
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -111,24 +111,24 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a C++ library
-# add_library(manipulator_x_gripper_module-msgs
-#   src/${PROJECT_NAME}/manipulator_x_gripper_module-msgs.cpp
+# add_library(manipulator_x_gripper_module_msgs
+#   src/${PROJECT_NAME}/manipulator_x_gripper_module_msgs.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(manipulator_x_gripper_module-msgs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(manipulator_x_gripper_module_msgs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(manipulator_x_gripper_module-msgs_node src/manipulator_x_gripper_module-msgs_node.cpp)
+# add_executable(manipulator_x_gripper_module_msgs_node src/manipulator_x_gripper_module_msgs_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(manipulator_x_gripper_module-msgs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(manipulator_x_gripper_module_msgs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(manipulator_x_gripper_module-msgs_node
+# target_link_libraries(manipulator_x_gripper_module_msgs_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -147,7 +147,7 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS manipulator_x_gripper_module-msgs manipulator_x_gripper_module-msgs_node
+# install(TARGETS manipulator_x_gripper_module_msgs manipulator_x_gripper_module_msgs_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -172,7 +172,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_manipulator_x_gripper_module-msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_manipulator_x_gripper_module_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

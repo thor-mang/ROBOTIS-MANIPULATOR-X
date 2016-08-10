@@ -18,6 +18,7 @@ add_message_files(
   FILES
   JointGain.msg
   JointPose.msg
+  KinematicsGain.msg
   KinematicsPose.msg
 )
 
@@ -25,6 +26,7 @@ add_service_files(
   FILES
   GetJointGain.srv
   GetJointPose.srv
+  GetKinematicsGain.srv
   GetKinematicsPose.srv
 )
 

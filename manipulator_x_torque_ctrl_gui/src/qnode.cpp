@@ -97,6 +97,21 @@ void QNode::sendWrenchMsg(geometry_msgs::Wrench msg)
   set_wrench_msg_pub_.publish(msg);
 }
 
+void QNode::sendKinematicsPoseMsg(manipulator_x_torque_ctrl_module_msgs::KinematicsPose msg)
+{
+  set_kinematics_pose_msg_pub_.publish(msg);
+}
+
+void QNode::sendKinematicsGainMsg(manipulator_x_torque_ctrl_module_msgs::KinematicsGain msg)
+{
+  set_kinematics_gain_msg_pub_.publish(msg);
+}
+
+void QNode::sendSaveForceGainMsg(std_msgs::String msg)
+{
+  save_force_gain_msg_pub_.publish(msg);
+}
+
 void QNode::enableJointControl(std_msgs::Bool msg)
 {
   enable_joint_control_pub_.publish(msg);
@@ -124,6 +139,22 @@ void QNode::getJointGain()
   }
 }
 
+void QNode::getKinematicsGain()
+{
+  manipulator_x_torque_ctrl_module_msgs::GetKinematicsGain srv;
+
+  if (get_kinematics_gain_client_.call(srv))
+  {
+    manipulator_x_torque_ctrl_module_msgs::KinematicsGain msg;
+
+    msg.pose_value = srv.response.torque_ctrl_force_gain.pose_value;
+    msg.p_gain = srv.response.torque_ctrl_force_gain.p_gain;
+    msg.d_gain = srv.response.torque_ctrl_force_gain.d_gain;
+
+    Q_EMIT updateKinematicsGain(msg);
+  }
+}
+
 void QNode::getJointPose()
 {
   manipulator_x_torque_ctrl_module_msgs::GetJointPose srv;
@@ -136,6 +167,21 @@ void QNode::getJointPose()
     msg.position = srv.response.torque_ctrl_joint_pose.position;
 
     Q_EMIT updateJointPose(msg);
+  }
+}
+
+void QNode::getKinematicsPose()
+{
+  manipulator_x_torque_ctrl_module_msgs::GetKinematicsPose srv;
+
+  if (get_kinematics_pose_client_.call(srv))
+  {
+    manipulator_x_torque_ctrl_module_msgs::KinematicsPose msg;
+
+    msg.group_name = srv.response.torque_ctrl_kinematics_pose.group_name;
+    msg.pose = srv.response.torque_ctrl_kinematics_pose.pose;
+
+    Q_EMIT updateKinematicsPose(msg);
   }
 }
 
@@ -152,12 +198,17 @@ bool QNode::init()
   set_gain_msg_pub_ = n.advertise<manipulator_x_torque_ctrl_module_msgs::JointGain>("/robotis/torque_ctrl/set_gain_msg", 0);
   set_joint_pose_msg_pub_ = n.advertise<manipulator_x_torque_ctrl_module_msgs::JointPose>("/robotis/torque_ctrl/set_joint_pose_msg", 0);
   set_wrench_msg_pub_ = n.advertise<geometry_msgs::Wrench>("/robotis/torque_ctrl/set_wrench_msg", 0);
+  set_kinematics_pose_msg_pub_ = n.advertise<manipulator_x_torque_ctrl_module_msgs::KinematicsPose>("/robotis/torque_ctrl/set_kinematics_pose_msg", 0);
+  set_kinematics_gain_msg_pub_ = n.advertise<manipulator_x_torque_ctrl_module_msgs::KinematicsGain>("/robotis/torque_ctrl/set_kinematics_gain_msg", 0);
+  save_force_gain_msg_pub_ = n.advertise<std_msgs::String>("/robotis/torque_ctrl/save_foece_gain_msg", 0);
 
   enable_joint_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/torque_ctrl/enable_joint_control_msg", 0);
   enable_force_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/torque_ctrl/enable_force_control_msg", 0);
 
   get_joint_gain_client_ = n.serviceClient<manipulator_x_torque_ctrl_module_msgs::GetJointGain>("/robotis/torque_ctrl/get_joint_gain", 0);
   get_joint_pose_client_ = n.serviceClient<manipulator_x_torque_ctrl_module_msgs::GetJointPose>("/robotis/torque_ctrl/get_joint_pose", 0);
+  get_kinematics_pose_client_ = n.serviceClient<manipulator_x_torque_ctrl_module_msgs::GetKinematicsPose>("/robotis/torque_ctrl/get_kinematics_pose", 0);
+  get_kinematics_gain_client_ = n.serviceClient<manipulator_x_torque_ctrl_module_msgs::GetKinematicsGain>("/robotis/torque_ctrl/get_kinematics_gain", 0);
 
   status_msg_sub_ = n.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
 

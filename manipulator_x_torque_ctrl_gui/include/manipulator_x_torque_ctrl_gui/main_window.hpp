@@ -79,10 +79,10 @@ public Q_SLOTS:
   *******************************************/
   void on_actionAbout_triggered();
 
-  void on_set_position_control_mode_button_clicked(bool check);
   void on_set_torque_control_mode_button_clicked(bool check);
 
   void on_go_initial_pose_button_clicked(bool check);
+  void on_go_zero_pose_button_clicked(bool check);
 
   void on_load_gain_pushbutton_clicked(bool check);
   void on_save_gain_pushbutton_clicked(bool check);
@@ -97,6 +97,13 @@ public Q_SLOTS:
   void on_joint_control_checkbox_clicked(bool check);
   void on_force_control_checkbox_clicked(bool check);
 
+  void on_force_set_gain_pushbutton_clicked(bool check);
+  void on_force_save_gain_pushbutton_clicked(bool check);
+  void on_force_load_gain_pushbutton_clicked(bool check);
+
+  void on_get_pre_pose_pushbutton_clicked(bool check);
+  void on_send_des_pose_pushbutton_clicked(bool check);
+
   /******************************************
     ** Manual connections
     *******************************************/
@@ -104,6 +111,8 @@ public Q_SLOTS:
 
   void updateJointGainSpinbox(manipulator_x_torque_ctrl_module_msgs::JointGain msg);
   void updateJointPoseSpinbox(manipulator_x_torque_ctrl_module_msgs::JointPose msg);
+  void updateKinematicsPoseSpinbox(manipulator_x_torque_ctrl_module_msgs::KinematicsPose msg);
+  void updateKinematicsGainSpinbox(manipulator_x_torque_ctrl_module_msgs::KinematicsGain msg);
 
 private:
   Ui::MainWindowDesign ui_;
@@ -118,7 +127,16 @@ private:
   QList<QAbstractSpinBox *> present_joint_angle_spinbox_;
   QList<QAbstractSpinBox *> desired_joint_angle_spinbox_;
 
+  QList<QAbstractSpinBox *> present_task_space_position_spinbox_;
+  QList<QAbstractSpinBox *> present_task_space_orientation_spinbox_;
+
+  QList<QAbstractSpinBox *> desired_task_space_position_spinbox_;
+  QList<QAbstractSpinBox *> desired_task_space_orientation_spinbox_;
+
   QList<QAbstractSpinBox *> desired_wrench_spinbox_;
+
+  QList<QAbstractSpinBox *> kinematics_p_gain_spinbox_;
+  QList<QAbstractSpinBox *> kinematics_d_gain_spinbox_;
 };
 
 }  // namespace manipulator_x_torque_ctrl_gui
