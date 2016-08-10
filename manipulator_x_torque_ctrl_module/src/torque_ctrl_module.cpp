@@ -402,7 +402,6 @@ void TorqueCtrlModule::enableForceControlMsgCallback(const std_msgs::Bool::Const
   if (msg->data == true)
     module_control_ = FORCE_CONTROL;
 
-
   force_target_position_ = force_current_position_;
   force_target_orientation_ = force_current_orientation_;
 }
@@ -426,7 +425,7 @@ bool TorqueCtrlModule::getJointGainCallback(manipulator_x_torque_ctrl_module_msg
   return true;
 }
 
-bool TorqueCtrlModule::getKinematicsGainCallback(manipulator_x_torque_ctrl_module_msgs::GetKinematicsGain::Request & req,
+bool TorqueCtrlModule::getKinematicsGainCallback(manipulator_x_torque_ctrl_module_msgs::GetKinematicsGain::Request &req,
                                                  manipulator_x_torque_ctrl_module_msgs::GetKinematicsGain::Response &res)
 {
   if (enable_==false)
@@ -553,35 +552,8 @@ void TorqueCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_joint_position, 
     return;
 
   /* set movement time */
-//  double tol = 20.0 * DEGREE2RADIAN; // rad per sec
-//  double min_mov_time = 0.1;
-
-//  double diff , diff_old ;
-//  diff = 0.0;
-
-//  for (int index = 0; index < MAX_JOINT_ID;  index++)
-//  {
-//    double ini_value;
-//    double tar_value;
-
-//    ini_value = initial_joint_position(index);
-//    tar_value = target_joint_position(index);
-
-//    diff_old = fabs(tar_value - ini_value);
-
-//    if (diff < diff_old)
-//      diff = diff_old;
-//  }
-
-//  mov_time_ =  diff / tol;
-//  mov_time_ = 0.8;
   all_time_steps_ = int(floor((mov_time_ / ITERATION_TIME ) + 1.0));
   mov_time_ = double(all_time_steps_ - 1) * ITERATION_TIME;
-
-//  if (mov_time_ < min_mov_time)
-//    mov_time_ = min_mov_time;
-
-//  ROS_INFO("mov_time : %f", mov_time_);
 
   all_time_steps_ = int(mov_time_ / ITERATION_TIME) + 1;
   goal_joint_tra_.resize(all_time_steps_ , MAX_JOINT_NUM);
@@ -607,7 +579,7 @@ void TorqueCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_joint_position, 
   cnt_ = 0;
   is_moving_ = true;
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Joint Trajectory");
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Trajectory");
 }
 
 void TorqueCtrlModule::calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen::VectorXd target_position)
@@ -640,7 +612,7 @@ void TorqueCtrlModule::calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen::
   cnt_ = 0;
   is_moving_ = true;
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Task Trajectory");
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Trajectory");
 }
 
 Eigen::MatrixXd TorqueCtrlModule::calcPoseError(Eigen::VectorXd target_position, Eigen::VectorXd current_position, Eigen::MatrixXd target_orientation, Eigen::MatrixXd current_orientation)
@@ -658,6 +630,7 @@ Eigen::MatrixXd TorqueCtrlModule::calcPoseError(Eigen::VectorXd target_position,
 
   return error;
 }
+
 void TorqueCtrlModule::setCurrentPoseError()
 {
   force_current_position_(0) = present_kinematics_pose_.position.x;
@@ -1013,26 +986,8 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
 //  double msec = dur.nsec * 0.000001;
 //  ROS_INFO_STREAM("Process duration  : " << msec);
 
-  if (module_control_ == JOINT_CONTROL)
-  {
-    if (is_moving_ == true && cnt_ >= all_time_steps_)
-    {
-      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Joint Trajectory");
-
-      is_moving_ = false;
-      cnt_ = 0;
-    }
-  }
-  else if (module_control_ == FORCE_CONTROL)
-  {
-    if (is_moving_ == true && cnt_ >= all_time_steps_)
-    {
-      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Task Trajectory");
-
-      is_moving_ = false;
-      cnt_ = 0;
-    }
-  }
+  if (module_control_ == JOINT_CONTROL || module_control_ == FORCE_CONTROL)
+    closeMovementEvent();
 }
 
 void TorqueCtrlModule::stop()
@@ -1047,7 +1002,13 @@ bool TorqueCtrlModule::isRunning()
 
 void TorqueCtrlModule::closeMovementEvent()
 {
+  if (is_moving_ == true && cnt_ >= all_time_steps_)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Trajectory");
 
+    is_moving_ = false;
+    cnt_ = 0;
+  }
 }
 
 void TorqueCtrlModule::publishStatusMsg(unsigned int type, std::string msg)
