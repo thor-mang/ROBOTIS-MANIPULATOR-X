@@ -41,7 +41,7 @@
 using namespace robotis_manipulator_x;
 
 TorqueCtrlModule::TorqueCtrlModule()
-  : control_cycle_msec_(8),
+  : control_cycle_msec_(4),
     using_gazebo_(),
     using_gripper_(),
     module_control_(GRAVITY_COMPENSATION),
@@ -960,7 +960,7 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
       goal_joint_velocity_damping_(index) = force_joint_gain_(index) * present_joint_velocity_(index);
     }
 
-    goal_joint_effort_ = jacobian_.transpose() * (goal_task_wrench_ + goal_task_wrench_derivative_) + gravity_term_;
+    goal_joint_effort_ = goal_joint_velocity_damping_ + jacobian_.transpose() * (goal_task_wrench_ + goal_task_wrench_derivative_) + gravity_term_;
 
     goal_pose_error_prior_ = goal_pose_error_;
   }
