@@ -68,10 +68,12 @@
 
 #include "manipulator_x_torque_ctrl_module_msgs/JointGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/JointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/KinematicsGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/KinematicsPose.h"
 
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_torque_ctrl_module_msgs/GetKinematicsGain.h"
 #include "manipulator_x_torque_ctrl_module_msgs/GetKinematicsPose.h"
 
 #endif
@@ -118,12 +120,17 @@ public:
   void sendSetGainMsg(manipulator_x_torque_ctrl_module_msgs::JointGain msg);
   void sendJointPoseMsg(manipulator_x_torque_ctrl_module_msgs::JointPose msg);
   void sendWrenchMsg(geometry_msgs::Wrench msg);
+  void sendKinematicsPoseMsg(manipulator_x_torque_ctrl_module_msgs::KinematicsPose msg);
+  void sendKinematicsGainMsg(manipulator_x_torque_ctrl_module_msgs::KinematicsGain msg);
+  void sendSaveForceGainMsg(std_msgs::String msg);
 
   void enableJointControl(std_msgs::Bool msg);
   void enableForceControl(std_msgs::Bool msg);
 
   void getJointGain();
   void getJointPose();
+  void getKinematicsPose();
+  void getKinematicsGain();
 
 Q_SIGNALS:
   void loggingUpdated();
@@ -131,6 +138,8 @@ Q_SIGNALS:
 
   void updateJointGain(manipulator_x_torque_ctrl_module_msgs::JointGain);
   void updateJointPose(manipulator_x_torque_ctrl_module_msgs::JointPose);
+  void updateKinematicsPose(manipulator_x_torque_ctrl_module_msgs::KinematicsPose);
+  void updateKinematicsGain(manipulator_x_torque_ctrl_module_msgs::KinematicsGain);
 
 private:
   int init_argc;
@@ -142,12 +151,17 @@ private:
   ros::Publisher set_gain_msg_pub_;
   ros::Publisher set_joint_pose_msg_pub_;
   ros::Publisher set_wrench_msg_pub_;
+  ros::Publisher set_kinematics_pose_msg_pub_;
+  ros::Publisher set_kinematics_gain_msg_pub_;
+  ros::Publisher save_force_gain_msg_pub_;
 
   ros::Publisher enable_joint_control_pub_;
   ros::Publisher enable_force_control_pub_;
 
   ros::ServiceClient get_joint_gain_client_;
   ros::ServiceClient get_joint_pose_client_;
+  ros::ServiceClient get_kinematics_pose_client_;
+  ros::ServiceClient get_kinematics_gain_client_;
 
   ros::Subscriber status_msg_sub_;
 };
