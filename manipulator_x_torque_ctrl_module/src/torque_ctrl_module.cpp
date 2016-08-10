@@ -886,8 +886,8 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
 
   /*----- Calculation -----*/
   calcGravityTerm();
-  calcCoriolisTerm();
-  calcMassTerm();
+//  calcCoriolisTerm();
+//  calcMassTerm();
 
   calcForwardKinematics();
   calcJacobian();
@@ -955,9 +955,9 @@ void TorqueCtrlModule::process(std::map<std::string, robotis_framework::Dynamixe
     for (int index=0; index<MAX_JOINT_NUM; index++)
     {
       goal_task_wrench_(index) = force_p_gain_(index) * goal_pose_error_(index);
-      goal_task_wrench_derivative_(index) = force_d_gain_(index) * ((goal_pose_error_(index) - goal_pose_error_prior_(index))/ITERATION_TIME);
+      goal_task_wrench_derivative_(index) = force_d_gain_(index) * ((goal_pose_error_(index) - goal_pose_error_prior_(index)) / ITERATION_TIME);
 
-      goal_joint_velocity_damping_(index) = 0.1 * present_joint_velocity_(index); //pose_joint_gain_(index) * present_joint_velocity_(index);
+      goal_joint_velocity_damping_(index) = force_joint_gain_(index) * present_joint_velocity_(index);
     }
 
     goal_joint_effort_ = jacobian_.transpose() * (goal_task_wrench_ + goal_task_wrench_derivative_) + gravity_term_;
