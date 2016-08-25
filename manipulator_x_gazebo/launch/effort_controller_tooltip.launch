@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
   <!-- Load joint controller configurations from YAML file to parameter server -->
-  <rosparam file="$(find manipulator_x_gazebo)/config/effort_controller.yaml" command="load"/>
+  <rosparam file="$(find manipulator_x_gazebo)/config/effort_controller_tooltip.yaml" command="load"/>
 
   <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
@@ -11,7 +11,5 @@
 							  joint3_effort
                                                           joint4_effort
   							  joint5_effort
-  							  joint6_effort
-							  grip_joint_effort
-                                                          grip_joint_sub_effort"/>
+  							  joint6_effort"/>
 </launch>
