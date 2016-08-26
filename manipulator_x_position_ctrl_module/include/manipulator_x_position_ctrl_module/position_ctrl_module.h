@@ -79,7 +79,7 @@
 namespace robotis_manipulator_x
 {
 
-#define MAX_JOINT_NUM    (6)
+#define MAX_JOINT_NUM   (6)
 #define TASK_DEMENSION  (6)
 #define ITERATION_TIME  (0.008)
 

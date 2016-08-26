@@ -73,5 +73,6 @@ target_link_libraries(manipulator_x_position_ctrl_gui
   ${QT_LIBRARIES} 
   ${catkin_LIBRARIES}
 )
+add_dependencies(manipulator_x_position_ctrl_gui ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 install(TARGETS manipulator_x_position_ctrl_gui RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
