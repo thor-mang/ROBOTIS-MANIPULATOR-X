@@ -41,9 +41,8 @@
 using namespace robotis_manipulator_x;
 
 PositionCtrlModule::PositionCtrlModule()
-  : control_cycle_msec_(8),
+  : control_cycle_sec_(0.008),
     using_gazebo_(),
-    using_gripper_(),
     is_moving_(false),
     module_control_(NONE)
 {
@@ -57,6 +56,7 @@ PositionCtrlModule::PositionCtrlModule()
   result_["joint4"] = new robotis_framework::DynamixelState();
   result_["joint5"] = new robotis_framework::DynamixelState();
   result_["joint6"] = new robotis_framework::DynamixelState();
+  result_["joint7"] = new robotis_framework::DynamixelState();
 
   joint_name_to_id_["joint1"] = 1;
   joint_name_to_id_["joint2"] = 2;
@@ -64,6 +64,7 @@ PositionCtrlModule::PositionCtrlModule()
   joint_name_to_id_["joint4"] = 4;
   joint_name_to_id_["joint5"] = 5;
   joint_name_to_id_["joint6"] = 6;
+  joint_name_to_id_["joint7"] = 7;
 
   present_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
   present_joint_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
@@ -80,11 +81,10 @@ void PositionCtrlModule::initialize(const int control_cycle_msec, robotis_framew
 {
   ros::NodeHandle ros_node;
   ros_node.getParam("gazebo", using_gazebo_);
-  ros_node.getParam("gripper", using_gripper_);
 
   setKinematicsChain();
 
-  control_cycle_msec_ = control_cycle_msec;
+  control_cycle_sec_ = control_cycle_msec * 0.001;
   queue_thread_ = boost::thread(boost::bind(&PositionCtrlModule::queueThread, this));
 }
 
@@ -113,8 +113,6 @@ void PositionCtrlModule::queueThread()
                                                                           &PositionCtrlModule::enableJointSpaceControlMsgCallback, this);
   ros::Subscriber enable_task_space_control_msg_sub = ros_node.subscribe("/robotis/position_ctrl/enable_task_space_control_msg", 5,
                                                                          &PositionCtrlModule::enableTaskSpaceControlMsgCallback, this);
-  ros::Subscriber enable_motion_planning_msg_sub = ros_node.subscribe("/robotis/position_ctrl/enable_motion_planning_msg", 5,
-                                                                      &PositionCtrlModule::enableMotionPlanningMsgCallback, this);
 
   ros::Subscriber set_joint_pose_msg_sub = ros_node.subscribe("/robotis/position_ctrl/set_joint_pose_msg", 5,
                                                               &PositionCtrlModule::setJointPoseMsgCallback, this);
@@ -144,14 +142,19 @@ void PositionCtrlModule::setInitialPoseMsgCallback(const std_msgs::String::Const
     return;
   }
 
-  std::string ini_pose_path;
+  if (is_moving_ == false)
+  {
+    std::string ini_pose_path;
 
-  if (msg->data == "zero_pose")
-    ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/zero_pose.yaml";
-  else if (msg->data == "initial_pose")
-    ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
+    if (msg->data == "zero_pose")
+      ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/zero_pose.yaml";
+    else if (msg->data == "initial_pose")
+      ini_pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
 
-  parseIniPoseData(ini_pose_path);
+    parseIniPoseData(ini_pose_path);
+  }
+  else
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 void PositionCtrlModule::parseIniPoseData(const std::string &path)
@@ -226,23 +229,6 @@ void PositionCtrlModule::enableTaskSpaceControlMsgCallback(const std_msgs::Bool:
     publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Disable Task Space Control");
 }
 
-void PositionCtrlModule::enableMotionPlanningMsgCallback(const std_msgs::Bool::ConstPtr& msg)
-{
-  if (enable_==false)
-  {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Set Position Control Module");
-    return;
-  }
-
-  if (msg->data == true)
-  {
-    module_control_ = MOTION_PLANNING;
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Enable Motion Planning Control");
-  }
-  else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Disable Motion Planning Control");
-}
-
 void PositionCtrlModule::setJointPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg)
 {
   if (enable_==false)
@@ -251,22 +237,27 @@ void PositionCtrlModule::setJointPoseMsgCallback(const manipulator_x_position_ct
     return;
   }
 
-  if (module_control_ == JOINT_SPACE_CONTROL)
+  if(is_moving_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Joint Values");
+    if (module_control_ == JOINT_SPACE_CONTROL)
+    {
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Joint Values");
 
-    Eigen::VectorXd initial_position = goal_joint_position_;
-    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+      Eigen::VectorXd initial_position = goal_joint_position_;
+      Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
 
-    mov_time_ = msg->mov_time;
+      mov_time_ = msg->mov_time;
 
-    for (int it=0; it<msg->joint_name.size(); it++)
-      target_position(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
+      for (int it=0; it<msg->joint_name.size(); it++)
+        target_position(joint_name_to_id_[msg->joint_name[it]]-1) = msg->position[it];
 
-    calcGoalJointTra(initial_position, target_position);
+      calcGoalJointTra(initial_position, target_position);
+    }
+    else
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Joint Space Control");
   }
   else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Joint Space Control");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 void PositionCtrlModule::setKinematicsPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr& msg)
@@ -277,40 +268,44 @@ void PositionCtrlModule::setKinematicsPoseMsgCallback(const manipulator_x_positi
     return;
   }
 
-  if (module_control_ == TASK_SPACE_CONTROL)
+  if (is_moving_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Kinematics Pose");
+    if (module_control_ == TASK_SPACE_CONTROL)
+    {
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Kinematics Pose");
 
-    Eigen::VectorXd initial_position = Eigen::VectorXd::Zero(3);
-    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(3);
+      Eigen::VectorXd initial_position = Eigen::VectorXd::Zero(3);
+      Eigen::VectorXd target_position = Eigen::VectorXd::Zero(3);
 
-    mov_time_ = msg->mov_time;
+      mov_time_ = msg->mov_time;
 
-    calcForwardKinematics();
+      calcForwardKinematics();
 
-    initial_position(0) = present_kinematics_pose_.position.x;
-    initial_position(1) = present_kinematics_pose_.position.y;
-    initial_position(2) = present_kinematics_pose_.position.z;
+      initial_position(0) = present_kinematics_pose_.position.x;
+      initial_position(1) = present_kinematics_pose_.position.y;
+      initial_position(2) = present_kinematics_pose_.position.z;
 
-    target_position(0) = msg->pose.position.x;
-    target_position(1) = msg->pose.position.y;
-    target_position(2) = msg->pose.position.z;
+      target_position(0) = msg->pose.position.x;
+      target_position(1) = msg->pose.position.y;
+      target_position(2) = msg->pose.position.z;
 
-    initial_orientation_.x() = present_kinematics_pose_.orientation.x;
-    initial_orientation_.y() = present_kinematics_pose_.orientation.y;
-    initial_orientation_.z() = present_kinematics_pose_.orientation.z;
-    initial_orientation_.w() = present_kinematics_pose_.orientation.w;
+      initial_orientation_.x() = present_kinematics_pose_.orientation.x;
+      initial_orientation_.y() = present_kinematics_pose_.orientation.y;
+      initial_orientation_.z() = present_kinematics_pose_.orientation.z;
+      initial_orientation_.w() = present_kinematics_pose_.orientation.w;
 
-    target_orientation_.x() = msg->pose.orientation.x;
-    target_orientation_.y() = msg->pose.orientation.y;
-    target_orientation_.z() = msg->pose.orientation.z;
-    target_orientation_.w() = msg->pose.orientation.w;
+      target_orientation_.x() = msg->pose.orientation.x;
+      target_orientation_.y() = msg->pose.orientation.y;
+      target_orientation_.z() = msg->pose.orientation.z;
+      target_orientation_.w() = msg->pose.orientation.w;
 
-    calcGoalTaskTra(initial_position, target_position);
+      calcGoalTaskTra(initial_position, target_position);
+    }
+    else
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Task Space Control");
   }
   else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Task Space Control");
-
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 bool PositionCtrlModule::getJointPoseCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
@@ -430,8 +425,8 @@ void PositionCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_position, Eige
   }
 
   /* set movement time */
-  all_time_steps_ = int(floor((mov_time_ / ITERATION_TIME ) + 1.0));
-  mov_time_ = double(all_time_steps_ - 1) * ITERATION_TIME;
+  all_time_steps_ = int(floor((mov_time_ / control_cycle_sec_ ) + 1.0));
+  mov_time_ = double(all_time_steps_ - 1) * control_cycle_sec_;
   goal_joint_tra_.resize(all_time_steps_ , MAX_JOINT_NUM);
 
   /* calculate joint trajectory */
@@ -443,7 +438,7 @@ void PositionCtrlModule::calcGoalJointTra(Eigen::VectorXd initial_position, Eige
     Eigen::MatrixXd tra =
         robotis_framework::calcMinimumJerkTra(ini_value, 0.0, 0.0,
                                               tar_value, 0.0, 0.0,
-                                              ITERATION_TIME, mov_time_);
+                                              control_cycle_sec_, mov_time_);
 
     goal_joint_tra_.block(0, index, all_time_steps_, 1) = tra;
   }
@@ -463,8 +458,8 @@ void PositionCtrlModule::calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen
   }
 
   /* set movement time */
-  all_time_steps_ = int(floor((mov_time_ / ITERATION_TIME) + 1.0));
-  mov_time_ = double(all_time_steps_ - 1) * ITERATION_TIME;
+  all_time_steps_ = int(floor((mov_time_ / control_cycle_sec_) + 1.0));
+  mov_time_ = double(all_time_steps_ - 1) * control_cycle_sec_;
   goal_task_tra_.resize(all_time_steps_, 3);
 
   /* calculate task position trajectory */
@@ -476,7 +471,7 @@ void PositionCtrlModule::calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen
     Eigen::MatrixXd tra =
         robotis_framework::calcMinimumJerkTra(ini_value, 0.0, 0.0,
                                               tar_value, 0.0, 0.0,
-                                              ITERATION_TIME, mov_time_);
+                                              control_cycle_sec_, mov_time_);
 
     goal_task_tra_.block(0, index, all_time_steps_, 1) = tra;
   }
@@ -493,175 +488,162 @@ void PositionCtrlModule::setKinematicsChain()
   {
     chain_.addSegment(KDL::Segment("Base",
                                    KDL::Joint(KDL::Joint::None),
-                                   KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
-                                   KDL::RigidBodyInertia(0.08581,
-                                                         KDL::Vector(-0.01173, 0.0, -0.01621),
+                                   KDL::Frame(KDL::Vector(0.0, 0.0, 0.042)),
+                                   KDL::RigidBodyInertia(0.08659,
+                                                         KDL::Vector(-0.01175, 0.0, -0.05820),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint1",
                                    KDL::Joint(KDL::Joint::RotZ),
-                                   KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
+                                   KDL::Frame(KDL::Vector(0.0, -0.019, 0.028)),
                                    KDL::RigidBodyInertia(0.00795,
-                                                         KDL::Vector(0.0, 0.017, -0.02025),
+                                                         KDL::Vector(0.0, 0.019, -0.01825),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint2",
                                    KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
-                                   KDL::RigidBodyInertia(0.21941,
-                                                         KDL::Vector(-0.01865, 0.01652, -0.04513),
+                                   KDL::Frame(KDL::Vector(0.0, 0.019, 0.0405)),
+                                   KDL::RigidBodyInertia(0.09312,
+                                                         KDL::Vector(0.0, -0.00057, -0.02731),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint3",
-                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.0, -0.01212),
+                                   KDL::Joint(KDL::Joint::RotZ),
+                                   KDL::Frame(KDL::Vector(0.024, -0.019, 0.064)),
+                                   KDL::RigidBodyInertia(0.19398,
+                                                         KDL::Vector(-0.02376, 0.01864, -0.02267),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint4",
-                                   KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09226,
-                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.064, 0.019, 0.024)),
+                                   KDL::RigidBodyInertia(0.09824,
+                                                         KDL::Vector(-0.02099, 0.0, -0.01213),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint5",
-                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.00000, 0.01140),
+                                   KDL::Joint(KDL::Joint::RotX),
+                                   KDL::Frame(KDL::Vector(0.0405, -0.019, 0.0)),
+                                   KDL::RigidBodyInertia(0.09312,
+                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
-
-    if (using_gripper_ == true )
-    {
-      chain_.addSegment(KDL::Segment("Joint6",
-                                     KDL::Joint(KDL::Joint::RotX),
-                                     KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
-                                     KDL::RigidBodyInertia(0.26121,
-                                                           KDL::Vector(-0.09906, 0.00146, -0.00021),
-                                                           KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                           )
-                                     )
-                        );
-    }
-    else
-    {
-      chain_.addSegment(KDL::Segment("Joint6",
-                                     KDL::Joint(KDL::Joint::RotX),
-                                     KDL::Frame(KDL::Vector(0.02, 0.0, 0.0)),
-                                     KDL::RigidBodyInertia(0.005,
-                                                           KDL::Vector(-0.01126, 0.0, 0.0),
-                                                           KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                           )
-                                     )
-                        );
-    }
-
+    chain_.addSegment(KDL::Segment("Joint6",
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.064, 0.019, 0.0)),
+                                   KDL::RigidBodyInertia(0.09824,
+                                                         KDL::Vector(-0.02099, 0.0, 0.01142),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint7",
+                                   KDL::Joint(KDL::Joint::RotX),
+                                   KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
+                                   KDL::RigidBodyInertia(0.26121,
+                                                         KDL::Vector(-0.09906, 0.00146, -0.00021),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
   }
   else
   {
     chain_.addSegment(KDL::Segment("Base",
                                    KDL::Joint(KDL::Joint::None),
-                                   KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
-                                   KDL::RigidBodyInertia(0.08581,
-                                                         KDL::Vector(-0.01173, 0.0, -0.01621),
-                                                         KDL::RotationalInertia(0.0000136, 0.00002352, 0.0000208, 0.0, -0.00000022, 0.0)
+                                   KDL::Frame(KDL::Vector(0.0, 0.0, 0.042)),
+                                   KDL::RigidBodyInertia(0.08659,
+                                                         KDL::Vector(-0.01175, 0.0, -0.05820),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint1",
                                    KDL::Joint(KDL::Joint::RotZ),
-                                   KDL::Frame(KDL::Vector(0.0, -0.017, 0.03)),
+                                   KDL::Frame(KDL::Vector(0.0, -0.019, 0.028)),
                                    KDL::RigidBodyInertia(0.00795,
-                                                         KDL::Vector(0.0, 0.017, -0.02025),
-                                                         KDL::RotationalInertia(0.00000265, 0.00000105, 0.00000246, 0.0, 0.0, 0.0)
+                                                         KDL::Vector(0.0, 0.019, -0.01825),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint2",
                                    KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.024, 0.0, 0.1045)),
-                                   KDL::RigidBodyInertia(0.21941,
-                                                         KDL::Vector(-0.01865, 0.01652, -0.04513),
-                                                         KDL::RotationalInertia(0.00043395, 0.00044404, 0.00005415, 0.00000013, -0.00005129, -0.00000018)
+                                   KDL::Frame(KDL::Vector(0.0, 0.019, 0.0405)),
+                                   KDL::RigidBodyInertia(0.09312,
+                                                         KDL::Vector(0.0, -0.00057, -0.02731),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint3",
-                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.024)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.0, -0.01212),
-                                                         KDL::RotationalInertia(0.00002580, 0.00003203, 0.00002291, 0.0, -0.00000144, 0.0)
+                                   KDL::Joint(KDL::Joint::RotZ),
+                                   KDL::Frame(KDL::Vector(0.024, -0.019, 0.064)),
+                                   KDL::RigidBodyInertia(0.19398,
+                                                         KDL::Vector(-0.02376, 0.01864, -0.02267),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint4",
-                                   KDL::Joint(KDL::Joint::RotX),
-                                   KDL::Frame(KDL::Vector(0.0425, -0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09226,
-                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
-                                                         KDL::RotationalInertia(0.00001535, 0.00002498, 0.00002865, 0.00000012, 0.0, 0.0)
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.064, 0.019, 0.024)),
+                                   KDL::RigidBodyInertia(0.09824,
+                                                         KDL::Vector(-0.02099, 0.0, -0.01213),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
     chain_.addSegment(KDL::Segment("Joint5",
-                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                   KDL::Frame(KDL::Vector(0.062, 0.017, 0.0)),
-                                   KDL::RigidBodyInertia(0.09746,
-                                                         KDL::Vector(-0.01902, 0.00000, 0.01140),
-                                                         KDL::RotationalInertia(0.00002577, 0.00003200, 0.00002291, 0.0, -0.00000087, 0.0)
+                                   KDL::Joint(KDL::Joint::RotX),
+                                   KDL::Frame(KDL::Vector(0.0405, -0.019, 0.0)),
+                                   KDL::RigidBodyInertia(0.09312,
+                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
-    if (using_gripper_ == true)
-    {
-      chain_.addSegment(KDL::Segment("Joint6",
-                                     KDL::Joint(KDL::Joint::RotX),
-                                     KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
-                                     KDL::RigidBodyInertia(0.26121,
-                                                           KDL::Vector(-0.09906, 0.00146, -0.00021),
-                                                           KDL::RotationalInertia(0.00019, 0.00022, 0.00029, 0.00001, 0.0, 0.0)
-                                                           )
-                                     )
-                        );
-    }
-    else
-    {
-      chain_.addSegment(KDL::Segment("Joint6",
-                                     KDL::Joint(KDL::Joint::RotX),
-                                     KDL::Frame(KDL::Vector(0.02, 0.0, 0.0)),
-                                     KDL::RigidBodyInertia(0.005,
-                                                           KDL::Vector(-0.01126, 0.0, 0.0),
-                                                           KDL::RotationalInertia(0.00000016, 0.00000021, 0.00000021, 0.0, 0.0, 0.0)
-                                                           )
-                                     )
-                        );
-    }
+    chain_.addSegment(KDL::Segment("Joint6",
+                                   KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                   KDL::Frame(KDL::Vector(0.064, 0.019, 0.0)),
+                                   KDL::RigidBodyInertia(0.09824,
+                                                         KDL::Vector(-0.02099, 0.0, 0.01142),
+                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
+    chain_.addSegment(KDL::Segment("Joint7",
+                                   KDL::Joint(KDL::Joint::RotX),
+                                   KDL::Frame(KDL::Vector(0.14103, 0.0, 0.0)),
+                                   KDL::RigidBodyInertia(0.26121,
+                                                         KDL::Vector(-0.09906, 0.00146, -0.00021),
+                                                         KDL::RotationalInertia(0.00019, 0.00022, 0.00029, 0.00001, 0.0, 0.0)
+                                                         )
+                                   )
+                      );
   }
 
   // Set Joint Limits
   std::vector<double> min_position_limit, max_position_limit;
-  min_position_limit.push_back(-90.0);  max_position_limit.push_back(90.0); // joint1
+  min_position_limit.push_back(-160.0);  max_position_limit.push_back(160.0); // joint1
   min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint2
-  min_position_limit.push_back(-90.0);  max_position_limit.push_back(90.0); // joint3
+  min_position_limit.push_back(-160.0);  max_position_limit.push_back(160.0); // joint3
   min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint4
-  min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint5
+  min_position_limit.push_back(-160.0);	max_position_limit.push_back(160.0); // joint5
   min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint6
+  min_position_limit.push_back(-160.0);	max_position_limit.push_back(160.0); // joint7
 
   KDL::JntArray min_joint_position_limit(MAX_JOINT_NUM), max_joint_position_limit(MAX_JOINT_NUM);
   for (int index=0; index<MAX_JOINT_NUM; index++)

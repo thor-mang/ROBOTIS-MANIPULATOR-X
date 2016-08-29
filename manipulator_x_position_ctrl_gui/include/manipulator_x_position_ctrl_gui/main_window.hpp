@@ -95,7 +95,6 @@ public Q_SLOTS:
 
   void on_joint_space_control_checkbox_clicked(bool check);
   void on_task_space_control_checkbox_clicked(bool check);
-  void on_motion_planning_checkbox_clicked(bool check);
 
   /******************************************
     ** Manual connections

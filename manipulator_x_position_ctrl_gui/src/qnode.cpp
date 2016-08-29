@@ -78,11 +78,6 @@ void QNode::enableTaskSpaceControl(std_msgs::Bool msg)
   enable_task_space_control_pub_.publish(msg);
 }
 
-void QNode::enableMotionPlanning(std_msgs::Bool msg)
-{
-  enable_motion_planning_pub_.publish(msg);
-}
-
 void QNode::getJointPose()
 {
   manipulator_x_position_ctrl_module_msgs::GetJointPose srv;
@@ -130,7 +125,6 @@ bool QNode::init()
 
   enable_joint_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_joint_space_control_msg", 0);
   enable_task_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_task_space_control_msg", 0);
-  enable_motion_planning_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_motion_planning_msg", 0);
 
   get_joint_pose_client_ = n.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>("/robotis/position_ctrl/get_joint_pose", 0);
   get_kinematics_pose_client_ = n.serviceClient<manipulator_x_position_ctrl_module_msgs::GetKinematicsPose>("/robotis/position_ctrl/get_kinematics_pose", 0);

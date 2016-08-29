@@ -49,6 +49,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   joint_name_.push_back("joint4");
   joint_name_.push_back("joint5");
   joint_name_.push_back("joint6");
+  joint_name_.push_back("joint7");
 
   present_joint_angle_spinbox_.push_back(ui_.joint1_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint2_pre_angle_spinbox);
@@ -56,6 +57,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   present_joint_angle_spinbox_.push_back(ui_.joint4_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint5_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint6_pre_angle_spinbox);
+  present_joint_angle_spinbox_.push_back(ui_.joint7_pre_angle_spinbox);
 
   desired_joint_angle_spinbox_.push_back(ui_.joint1_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint2_des_angle_spinbox);
@@ -63,6 +65,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   desired_joint_angle_spinbox_.push_back(ui_.joint4_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint5_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint6_des_angle_spinbox);
+  desired_joint_angle_spinbox_.push_back(ui_.joint7_des_angle_spinbox);
 
   present_task_space_position_spinbox_.push_back(ui_.pre_position_x_spinbox);
   present_task_space_position_spinbox_.push_back(ui_.pre_position_y_spinbox);
@@ -117,7 +120,6 @@ void MainWindow::on_go_zero_pose_button_clicked(bool check)
 {
   ui_.joint_space_control_checkbox->setChecked(true);
   ui_.task_space_control_checkbox->setChecked(false);
-  ui_.motion_planning_checkbox->setChecked(false);
 
   std_msgs::String msg;
   msg.data = "zero_pose";
@@ -129,7 +131,6 @@ void MainWindow::on_go_initial_pose_button_clicked(bool check)
 {
   ui_.joint_space_control_checkbox->setChecked(true);
   ui_.task_space_control_checkbox->setChecked(false);
-  ui_.motion_planning_checkbox->setChecked(false);
 
   std_msgs::String msg;
   msg.data = "initial_pose";
@@ -210,10 +211,7 @@ void MainWindow::on_joint_space_control_checkbox_clicked(bool check)
   msg.data = ui_.joint_space_control_checkbox->isChecked();
 
   if (msg.data == true)
-  {
     ui_.task_space_control_checkbox->setChecked(false);
-    ui_.motion_planning_checkbox->setChecked(false);
-  }
 
   qnode_.enableJointSpaceControl(msg);
 }
@@ -224,26 +222,9 @@ void MainWindow::on_task_space_control_checkbox_clicked(bool check)
   msg.data = ui_.task_space_control_checkbox->isChecked();
 
   if (msg.data == true)
-  {
     ui_.joint_space_control_checkbox->setChecked(false);
-    ui_.motion_planning_checkbox->setChecked(false);
-  }
 
   qnode_.enableTaskSpaceControl(msg);
-}
-
-void MainWindow::on_motion_planning_checkbox_clicked(bool check)
-{
-  std_msgs::Bool msg;
-  msg.data = ui_.motion_planning_checkbox->isChecked();
-
-  if (msg.data == true)
-  {
-    ui_.joint_space_control_checkbox->setChecked(false);
-    ui_.task_space_control_checkbox->setChecked(false);
-  }
-
-  qnode_.enableMotionPlanning(msg);
 }
 
 /*****************************************************************************

@@ -79,16 +79,14 @@
 namespace robotis_manipulator_x
 {
 
-#define MAX_JOINT_NUM   (6)
+#define MAX_JOINT_NUM   (7)
 #define TASK_DEMENSION  (6)
-#define ITERATION_TIME  (0.008)
 
 enum MODE_SELECT
 {
   NONE,
   JOINT_SPACE_CONTROL,
-  TASK_SPACE_CONTROL,
-  MOTION_PLANNING
+  TASK_SPACE_CONTROL
 };
 
 class PositionCtrlModule
@@ -96,7 +94,7 @@ class PositionCtrlModule
     public robotis_framework::Singleton<PositionCtrlModule>
 {
 private:
-  int control_cycle_msec_;
+  double control_cycle_sec_;
   boost::thread queue_thread_;
 
   /* sample subscriber & publisher */
@@ -109,7 +107,6 @@ private:
   std::map<std::string, int> joint_name_to_id_;
 
   bool using_gazebo_;
-  bool using_gripper_;
 
   MODE_SELECT module_control_;
 
@@ -119,11 +116,6 @@ private:
   KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
   KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
   KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
-
-//  boost::shared_ptr<KDL::ChainIkSolverPos_NR_JL> inverse_pos_kinematics_solver_;
-//  boost::shared_ptr<KDL::ChainIkSolverVel_pinv> inverse_vel_kinematics_solver_;
-//  KDL::ChainFkSolverPos_recursive *forward_kinematics_solver;
-//  KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver;
 
   Eigen::MatrixXd jacobian_;
   geometry_msgs::Pose present_kinematics_pose_;
@@ -165,7 +157,6 @@ public:
 
   void enableJointSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg);
   void enableTaskSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg);
-  void enableMotionPlanningMsgCallback(const std_msgs::Bool::ConstPtr& msg);
 
   void setJointPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr& msg);
   void setKinematicsPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr& msg);

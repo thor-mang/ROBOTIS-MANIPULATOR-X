@@ -117,7 +117,6 @@ public:
 
     void enableJointSpaceControl(std_msgs::Bool msg);
     void enableTaskSpaceControl(std_msgs::Bool msg);
-    void enableMotionPlanning(std_msgs::Bool msg);
 
     void getJointPose();
     void getKinematicsPose();
@@ -143,7 +142,6 @@ private:
 
     ros::Publisher enable_joint_space_control_pub_;
     ros::Publisher enable_task_space_control_pub_;
-    ros::Publisher enable_motion_planning_pub_;
 
     ros::ServiceClient get_joint_pose_client_;
     ros::ServiceClient get_kinematics_pose_client_;

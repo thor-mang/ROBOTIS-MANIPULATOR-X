@@ -26,14 +26,14 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_base.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_base-plate.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_base.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_base-plate.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -56,33 +56,33 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link1.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-0.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link1.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-0.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.00027 0.00000 0.01779" rpy="0 0 0"/>
-      <mass value="0.08581"/>
+      <origin xyz="-0.01175 0.00000 -0.01620" rpy="0 0 0"/>
+      <mass value="0.08659"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <!--<inertia ixx="0.00001360" ixy="0.0" ixz="-0.00000022" iyy="0.00002352" iyz="0.0" izz="0.00002080" />-->
+      <!--<inertia ixx="0.00000371" ixy="0.0" ixz="-0.00000025" iyy="0.00002369" iyz="0.0" izz="0.00002097" />-->
     </inertial>
   </link>
-  
-    <!-- Joint 1 -->
+
+  <!-- Joint 1 -->
   <joint name="joint1" type="revolute">
     <parent link="link1"/>
     <child link="link2"/>
-    <origin xyz="0.012 0.0 0.034" rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 0.042" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
+    <limit velocity="6.5" effort="1000" lower="${-8.0*pi/9.0}" upper="${8.0*pi/9.0}" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -96,20 +96,20 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
-    <!-- Link 2 -->
+
+  <!-- Link 2 -->
   <link name="link2">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link2.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link2.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -121,12 +121,12 @@
       <!--<inertia ixx="0.00000265" ixy="0.0" ixz="0.0" iyy="0.00000105" iyz="0.0" izz="0.00000246" />-->
     </inertial>
   </link>
-  
+
   <!-- Joint 2 -->
   <joint name="joint2" type="revolute">
     <parent link="link2"/>
     <child link="link3"/>
-    <origin xyz="0.0 -0.017 0.03" rpy="0 0 0"/>
+    <origin xyz="0.0 -0.019 0.028" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
     <dynamics damping="0.7"/>
@@ -142,39 +142,39 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
+
   <!-- Link 3 -->
   <link name="link3">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link3.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link3.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.00535 0.01652 0.05937" rpy="0 0 0"/>
-      <mass value="0.21941"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <!--<inertia ixx="0.00043395" ixy="0.00000013" ixz="-0.00005129" iyy="0.00044404" iyz="-0.00000018" izz="0.00005415" />-->
+      <origin xyz="0.00000 0.01843 0.01319" rpy="0 0 0"/>
+      <mass value="0.09312"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+      <!--<inertia ixx="0.0.00002889" ixy="0.0" ixz="0.0" iyy="0.0.00002519" iyz="-0.00000012" izz="0.00001549" />-->
     </inertial>
   </link>
-  
+
   <!-- Joint 3 -->
   <joint name="joint3" type="revolute">
     <parent link="link3"/>
     <child link="link4"/>
-    <origin xyz="0.024 0.0 0.1045" rpy="0 0 0"/>
-    <axis xyz="0 -1 0"/>
-    <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
+    <origin xyz="0.0 0.019 0.0405" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit velocity="6.5" effort="1000" lower="${-8.0*pi/9.0}" upper="${8.0*pi/9.0}" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -194,33 +194,33 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link4.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link4.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-3.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.04298 0.01700 0.01188" rpy="0 0 0"/>
-      <mass value="0.09746"/>
+      <origin xyz="0.00024 -0.00036 0.04133" rpy="0 0 0"/>
+      <mass value="0.19398"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
-      <!--<inertia ixx="0.00002580" ixy="0.0" ixz="-0.00000144" iyy="0.00003203" iyz="0.0" izz="0.00002291" />-->
+      <!--<inertia ixx="0.00012132" ixy="0.00000108" ixz="-0.00004800" iyy="0.00016807" iyz="0.00000157" izz="0.00007952" />-->
     </inertial>
-  </link>  
-  
+  </link>
+
   <!-- Joint 4 -->
   <joint name="joint4" type="revolute">
     <parent link="link4"/>
     <child link="link5"/>
-    <origin xyz="0.062 0.017 0.024" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit velocity="6.5" effort="1000" lower="${-5.0*pi/6.0}" upper="${5.0*pi/6.0}" />
+    <origin xyz="0.024 -0.019 0.064" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -234,39 +234,39 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
+
   <!-- Link 5 -->
   <link name="link5">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link5.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link5.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-4.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.02929 -0.00057 0.00000" rpy="0 0 0"/>
-      <mass value="0.09226"/>
+      <origin xyz="0.04301 0.01900 0.01187" rpy="0 0 0"/>
+      <mass value="0.09824"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
-      <!--<inertia ixx="0.00001535" ixy="0.00000012" ixz="0.0" iyy="0.00002498" iyz="0.0" izz="0.00002865" />-->
+      <!--<inertia ixx="0.00002597" ixy="0.0" ixz="-0.00000146" iyy="0.00003222" iyz="0.0" izz="0.00002303" />-->
     </inertial>
   </link>  
-  
+
   <!-- Joint 5 -->
   <joint name="joint5" type="revolute">
     <parent link="link5"/>
     <child link="link6"/>
-    <origin xyz="0.0425 -0.017 0.0" rpy="0 0 0"/>
-    <axis xyz="0 -1 0"/>
-    <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
+    <origin xyz="0.064 0.019 0.024" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-8.0*pi/9.0}" upper="${8.0*pi/9.0}" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -280,39 +280,39 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
+
   <!-- Link 6 -->
   <link name="link6">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link6.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-5.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link6.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-5.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
 
     <inertial>
-      <origin xyz="0.04298 0.01700 0.01140" rpy="0 0 0"/>
-      <mass value="0.09746"/>
+      <origin xyz="0.02731 -0.00057 0.00000" rpy="0 0 0"/>
+      <mass value="0.09312"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
-      <!--</><inertia ixx="0.00002577" ixy="0.0" ixz="-0.00000087" iyy="0.00003200" iyz="0.0" izz="0.00002291" />-->
+      <!--<inertia ixx="0.00001549" ixy="0.00000012" ixz="0.0" iyy="0.00002519" iyz="0.0" izz="0.00002889" />-->
     </inertial>
   </link>  
-  
+
   <!-- Joint 6 -->
   <joint name="joint6" type="revolute">
     <parent link="link6"/>
     <child link="link7"/>
-    <origin xyz="0.062 0.017 0.0" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit velocity="6.5" effort="1000" lower="${-5.0*pi/6.0}" upper="${5.0*pi/6.0}" />
+    <origin xyz="0.0405 -0.019 0.0" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -326,20 +326,66 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
+
   <!-- Link 7 -->
   <link name="link7">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link7.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link7.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0.04301 0.01900 0.01142" rpy="0 0 0"/>
+      <mass value="0.09824"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+      <!--<inertia ixx="0.00002594" ixy="0.0" ixz="-0.00000085" iyy="0.00003219" iyz="0.0" izz="0.00002303" />-->
+    </inertial>
+  </link>
+
+  <!-- Joint 7 -->
+  <joint name="joint7" type="revolute">
+    <parent link="link7"/>
+    <child link="link8"/>
+    <origin xyz="0.064 0.019 0.0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-8.0*pi/9.0}" upper="${8.0*pi/9.0}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran7">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint7">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>  
+
+  <!-- Link 8 -->
+  <link name="link8">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-7.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://manipulator_x_description/meshes/manipulatorx7_rev1_axis-7.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -350,11 +396,11 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
       <!--<inertia ixx="0.00004897" ixy="-0.00000004" ixz="0.00000006" iyy="0.00003261" iyz="0.00000010" izz="0.00004008" />-->
     </inertial>
-  </link>  
+  </link>
 
   <!-- Grip Joint -->
   <joint name="grip_joint" type="revolute">
-    <parent link="link7"/>
+    <parent link="link8"/>
     <child link="grip_link"/>
     <origin xyz="0.02900 -0.01600 0.02300" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
@@ -400,7 +446,7 @@
 
   <!-- Grip Joint Sub -->
   <joint name="grip_joint_sub" type="revolute">
-    <parent link="link7"/>
+    <parent link="link8"/>
     <child link="grip_link_sub"/>
     <origin xyz="0.02900 0.01600 0.02300" rpy="0 0 0"/>
     <axis xyz="0 0 -1"/>
@@ -442,6 +488,6 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
       <!--<inertia ixx="0.00002875" ixy="0.00000593" ixz="0.00000006" iyy="0.00006646" iyz="-0.00000009" izz="0.00005474" />-->
     </inertial>
-  </link>  
+  </link>
 
 </robot>

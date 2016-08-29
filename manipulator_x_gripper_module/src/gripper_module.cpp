@@ -115,17 +115,22 @@ void GripperModule::setGripperPoseMsgCallback(const std_msgs::Float64::ConstPtr&
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Joint Values");
+  if (is_moving_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Goal Joint Values");
 
-  Eigen::VectorXd initial_position = goal_joint_position_;
-  Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_GRIPPER_NUM);
+    Eigen::VectorXd initial_position = goal_joint_position_;
+    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_GRIPPER_NUM);
 
-  mov_time_ = 1.0;
+    mov_time_ = 1.0;
 
-  for (int it=0; it<MAX_GRIPPER_NUM; it++)
-    target_position(it) = msg->data;
+    for (int it=0; it<MAX_GRIPPER_NUM; it++)
+      target_position(it) = msg->data;
 
-  calcGoalJointTra(initial_position, target_position);
+    calcGoalJointTra(initial_position, target_position);
+  }
+  else
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Previous Task is Alive");
 }
 
 void GripperModule::calcGoalJointTra(Eigen::VectorXd initial_position, Eigen::VectorXd target_position)
