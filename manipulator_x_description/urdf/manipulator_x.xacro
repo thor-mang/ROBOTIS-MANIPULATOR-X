@@ -49,6 +49,7 @@
   <joint name="base_fixed" type="fixed">
     <parent link="base"/>
     <child link="link1"/>
+    <origin xyz="0.0 0.0 0.006" rpy="0 0 0"/>
   </joint>
 
   <!-- Link 1 -->
@@ -69,10 +70,10 @@
     </visual>
 
     <inertial>
-      <origin xyz="-0.01175 0.00000 -0.01620" rpy="0 0 0"/>
+      <origin xyz="0.00025 0.00000 0.01780" rpy="0 0 0"/>
       <mass value="0.08659"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-      <!--<inertia ixx="0.00000371" ixy="0.0" ixz="-0.00000025" iyy="0.00002369" iyz="0.0" izz="0.00002097" />-->
+      <!--<inertia ixx="0.00001371" ixy="0.0" ixz="-0.00000025" iyy="0.00002369" iyz="0.0" izz="0.00002097" />-->
     </inertial>
   </link>
 
@@ -80,7 +81,7 @@
   <joint name="joint1" type="revolute">
     <parent link="link1"/>
     <child link="link2"/>
-    <origin xyz="0.0 0.0 0.042" rpy="0 0 0"/>
+    <origin xyz="0.012 0.0 0.036" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit velocity="6.5" effort="1000" lower="${-8.0*pi/9.0}" upper="${8.0*pi/9.0}" />
     <dynamics damping="0.7"/>
@@ -115,7 +116,7 @@
     </visual>
 
     <inertial>
-      <origin xyz="0.00000 0.00000 0.00975" rpy="0 0 0"/>
+      <origin xyz="0.00000 0.00000 0.00775" rpy="0 0 0"/>
       <mass value="0.00795"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
       <!--<inertia ixx="0.00000265" ixy="0.0" ixz="0.0" iyy="0.00000105" iyz="0.0" izz="0.00000246" />-->

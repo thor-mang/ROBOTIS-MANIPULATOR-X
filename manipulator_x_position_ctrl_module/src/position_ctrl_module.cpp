@@ -490,7 +490,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::None),
                                    KDL::Frame(KDL::Vector(0.0, 0.0, 0.042)),
                                    KDL::RigidBodyInertia(0.08659,
-                                                         KDL::Vector(-0.01175, 0.0, -0.05820),
+                                                         KDL::Vector(0.00025, 0.0, -0.02420),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
@@ -499,7 +499,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotZ),
                                    KDL::Frame(KDL::Vector(0.0, -0.019, 0.028)),
                                    KDL::RigidBodyInertia(0.00795,
-                                                         KDL::Vector(0.0, 0.019, -0.01825),
+                                                         KDL::Vector(0.0, 0.019, -0.02025),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
@@ -508,7 +508,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.0, 0.019, 0.0405)),
                                    KDL::RigidBodyInertia(0.09312,
-                                                         KDL::Vector(0.0, -0.00057, -0.02731),
+                                                         KDL::Vector(0.00000, -0.00057, -0.02731),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
@@ -535,7 +535,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotX),
                                    KDL::Frame(KDL::Vector(0.0405, -0.019, 0.0)),
                                    KDL::RigidBodyInertia(0.09312,
-                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
+                                                         KDL::Vector(-0.01319, 0.01843, 0.0),
                                                          KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
                                                          )
                                    )
@@ -565,8 +565,8 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::None),
                                    KDL::Frame(KDL::Vector(0.0, 0.0, 0.042)),
                                    KDL::RigidBodyInertia(0.08659,
-                                                         KDL::Vector(-0.01175, 0.0, -0.05820),
-                                                         KDL::RotationalInertia(0.00000371, 0.00002369, 0.00002097, 0.0, -0.00000025, 0.0)
+                                                         KDL::Vector(0.00025, 0.0, -0.02420),
+                                                         KDL::RotationalInertia(0.00001371, 0.00002369, 0.00002097, 0.0, -0.00000025, 0.0)
                                                          )
                                    )
                       );
@@ -574,7 +574,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotZ),
                                    KDL::Frame(KDL::Vector(0.0, -0.019, 0.028)),
                                    KDL::RigidBodyInertia(0.00795,
-                                                         KDL::Vector(0.0, 0.019, -0.01825),
+                                                         KDL::Vector(0.0, 0.019, -0.02025),
                                                          KDL::RotationalInertia(0.00000265, 0.00000105, 0.00000246, 0.0, 0.0, 0.0)
                                                          )
                                    )
@@ -583,7 +583,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotY),
                                    KDL::Frame(KDL::Vector(0.0, 0.019, 0.0405)),
                                    KDL::RigidBodyInertia(0.09312,
-                                                         KDL::Vector(0.0, -0.00057, -0.02731),
+                                                         KDL::Vector(0.00000, -0.00057, -0.02731),
                                                          KDL::RotationalInertia(0.00002889, 0.00002519, 0.00001549, 0.0, -0.00000012, 0.0)
                                                          )
                                    )
@@ -610,7 +610,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Joint(KDL::Joint::RotX),
                                    KDL::Frame(KDL::Vector(0.0405, -0.019, 0.0)),
                                    KDL::RigidBodyInertia(0.09312,
-                                                         KDL::Vector(-0.01321, 0.01643, 0.0),
+                                                         KDL::Vector(-0.01319, 0.01843, 0.0),
                                                          KDL::RotationalInertia(0.00001549, 0.00002519, 0.00002889, 0.00000012, 0.0, 0.0)
                                                          )
                                    )
