@@ -1,14 +1,9 @@
 <?xml version="1.0" ?>
 <launch>    
   <arg name="use_present" default="true" />
-  <arg name="use_gripper" default="true" />
     
   <param name="robot_description"
-         command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_gripper.xacro'" 
-         if="$(arg use_gripper)"/>
-  <param name="robot_description"
-         command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_tooltip.xacro'" 
-         unless="$(arg use_gripper)"/>
+         command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x.xacro'"/>
     
   <!-- send joint values -->
   <node name="robotis_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">

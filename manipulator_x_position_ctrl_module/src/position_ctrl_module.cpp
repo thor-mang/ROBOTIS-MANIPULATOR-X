@@ -566,7 +566,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.0, 0.0, 0.042)),
                                    KDL::RigidBodyInertia(0.08659,
                                                          KDL::Vector(-0.01175, 0.0, -0.05820),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00000371, 0.00002369, 0.00002097, 0.0, -0.00000025, 0.0)
                                                          )
                                    )
                       );
@@ -575,7 +575,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.0, -0.019, 0.028)),
                                    KDL::RigidBodyInertia(0.00795,
                                                          KDL::Vector(0.0, 0.019, -0.01825),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00000265, 0.00000105, 0.00000246, 0.0, 0.0, 0.0)
                                                          )
                                    )
                       );
@@ -584,7 +584,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.0, 0.019, 0.0405)),
                                    KDL::RigidBodyInertia(0.09312,
                                                          KDL::Vector(0.0, -0.00057, -0.02731),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00002889, 0.00002519, 0.00001549, 0.0, -0.00000012, 0.0)
                                                          )
                                    )
                       );
@@ -593,7 +593,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.024, -0.019, 0.064)),
                                    KDL::RigidBodyInertia(0.19398,
                                                          KDL::Vector(-0.02376, 0.01864, -0.02267),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00012132, 0.00016807, 0.00007952, 0.00000108, -0.000048, 0.00000157)
                                                          )
                                    )
                       );
@@ -602,7 +602,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.064, 0.019, 0.024)),
                                    KDL::RigidBodyInertia(0.09824,
                                                          KDL::Vector(-0.02099, 0.0, -0.01213),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00002597, 0.00003222, 0.00002303, 0.0, -0.00000146, 0.0)
                                                          )
                                    )
                       );
@@ -611,7 +611,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.0405, -0.019, 0.0)),
                                    KDL::RigidBodyInertia(0.09312,
                                                          KDL::Vector(-0.01321, 0.01643, 0.0),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00001549, 0.00002519, 0.00002889, 0.00000012, 0.0, 0.0)
                                                          )
                                    )
                       );
@@ -620,7 +620,7 @@ void PositionCtrlModule::setKinematicsChain()
                                    KDL::Frame(KDL::Vector(0.064, 0.019, 0.0)),
                                    KDL::RigidBodyInertia(0.09824,
                                                          KDL::Vector(-0.02099, 0.0, 0.01142),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                         KDL::RotationalInertia(0.00002594, 0.00003219, 0.00002303, 0.0, -0.00000085, 0.0)
                                                          )
                                    )
                       );
@@ -637,13 +637,13 @@ void PositionCtrlModule::setKinematicsChain()
 
   // Set Joint Limits
   std::vector<double> min_position_limit, max_position_limit;
-  min_position_limit.push_back(-160.0);  max_position_limit.push_back(160.0); // joint1
-  min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint2
-  min_position_limit.push_back(-160.0);  max_position_limit.push_back(160.0); // joint3
-  min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint4
-  min_position_limit.push_back(-160.0);	max_position_limit.push_back(160.0); // joint5
-  min_position_limit.push_back(-90.0);	max_position_limit.push_back(90.0); // joint6
-  min_position_limit.push_back(-160.0);	max_position_limit.push_back(160.0); // joint7
+  min_position_limit.push_back(-160.0);   max_position_limit.push_back(160.0);  // joint1
+  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint2
+  min_position_limit.push_back(-160.0);   max_position_limit.push_back(160.0);  // joint3
+  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint4
+  min_position_limit.push_back(-160.0);   max_position_limit.push_back(160.0);  // joint5
+  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint6
+  min_position_limit.push_back(-160.0);   max_position_limit.push_back(160.0);  // joint7
 
   KDL::JntArray min_joint_position_limit(MAX_JOINT_NUM), max_joint_position_limit(MAX_JOINT_NUM);
   for (int index=0; index<MAX_JOINT_NUM; index++)
