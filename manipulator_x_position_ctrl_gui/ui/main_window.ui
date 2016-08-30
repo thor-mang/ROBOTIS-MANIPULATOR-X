@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1570</width>
-    <height>741</height>
+    <width>1589</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>QRosApp</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../ROBOTIS-HAND/hand_control_module_gui/resources/images.qrc">
+   <iconset resource="../../../ROBOTIS-MANIPULATOR-H/manipulator_h_gui/resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -28,7 +28,7 @@
        <bool>true</bool>
       </property>
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -36,14 +36,17 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>660</height>
+        <height>625</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>16777215</width>
-        <height>660</height>
+        <width>800</width>
+        <height>625</height>
        </size>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
       </property>
       <property name="locale">
        <locale language="English" country="Australia"/>
@@ -85,7 +88,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1570</width>
+     <width>1589</width>
      <height>19</height>
     </rect>
    </property>
@@ -113,13 +116,13 @@
    <property name="minimumSize">
     <size>
      <width>1030</width>
-     <height>700</height>
+     <height>650</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>1030</width>
-     <height>700</height>
+     <height>650</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -143,13 +146,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>1000</width>
          <height>400</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>1000</width>
          <height>550</height>
         </size>
        </property>
@@ -164,13 +167,13 @@
          <widget class="QGroupBox" name="pid_gain_groupbox">
           <property name="minimumSize">
            <size>
-            <width>600</width>
+            <width>500</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>600</width>
+            <width>500</width>
             <height>16777215</height>
            </size>
           </property>
@@ -597,13 +600,13 @@
          <widget class="QGroupBox" name="task_space_groupbox">
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>400</width>
             <height>320</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>16777215</width>
+            <width>400</width>
             <height>350</height>
            </size>
           </property>
@@ -936,7 +939,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>1000</width>
          <height>60</height>
         </size>
        </property>
@@ -1015,7 +1018,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../ROBOTIS-HAND/hand_control_module_gui/resources/images.qrc"/>
+  <include location="../../../ROBOTIS-MANIPULATOR-H/manipulator_h_gui/resources/images.qrc"/>
  </resources>
  <connections>
   <connection>
