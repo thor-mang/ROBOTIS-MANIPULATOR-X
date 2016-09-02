@@ -102,9 +102,9 @@ void GripperModule::queueThread()
 void GripperModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
   publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Gripper Module");
-  std_msgs::String str_msg;
-  str_msg.data = "gripper_module";
-  set_ctrl_module_pub_.publish(str_msg);
+//  std_msgs::String str_msg;
+//  str_msg.data = "gripper_module";
+//  set_ctrl_module_pub_.publish(str_msg);
 }
 
 void GripperModule::setGripperPoseMsgCallback(const std_msgs::Float64::ConstPtr& msg)

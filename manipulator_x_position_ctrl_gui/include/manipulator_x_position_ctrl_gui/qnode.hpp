@@ -133,6 +133,8 @@ private:
     char** init_argv;
     QStringListModel logging_model;
 
+    ros::Publisher set_ctrl_module_pub_;
+
     ros::Publisher set_position_ctrl_mode_msg_pub_;
     ros::Publisher set_gripper_mode_msg_pub_;
     ros::Publisher set_initial_pose_msg_pub_;

@@ -44,6 +44,13 @@ QNode::~QNode()
 
 void QNode::sendSetModeMsg(std_msgs::String msg)
 {
+  std_msgs::String str_msg;
+  str_msg.data = "position_ctrl_module";
+  set_ctrl_module_pub_.publish(str_msg);
+
+  str_msg.data = "gripper_module";
+  set_ctrl_module_pub_.publish(str_msg);
+
   set_position_ctrl_mode_msg_pub_.publish(msg);
   set_gripper_mode_msg_pub_.publish(msg);
 }
@@ -116,6 +123,8 @@ bool QNode::init()
   ros::NodeHandle n;
 
   // Add your ros communications here.
+  set_ctrl_module_pub_ = n.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 0);
+
   set_position_ctrl_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_mode_msg", 0);
   set_gripper_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/gripper/set_mode_msg", 0);
   set_initial_pose_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_initial_pose_msg", 0);
@@ -137,7 +146,7 @@ bool QNode::init()
 
 void QNode::statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg)
 {
-    log((LogLevel) msg->type, msg->status_msg, msg->module_name);
+  log((LogLevel) msg->type, msg->status_msg, msg->module_name);
 }
 
 void QNode::run()

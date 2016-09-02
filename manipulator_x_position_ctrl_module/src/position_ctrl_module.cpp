@@ -129,9 +129,9 @@ void PositionCtrlModule::queueThread()
 void PositionCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
   publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Poition Control Module");
-  std_msgs::String str_msg;
-  str_msg.data = "position_ctrl_module";
-  set_ctrl_module_pub_.publish(str_msg);
+//  std_msgs::String str_msg;
+//  str_msg.data = "position_ctrl_module";
+//  set_ctrl_module_pub_.publish(str_msg);
 }
 
 void PositionCtrlModule::setInitialPoseMsgCallback(const std_msgs::String::ConstPtr& msg)
