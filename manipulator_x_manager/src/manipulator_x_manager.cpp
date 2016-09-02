@@ -57,9 +57,6 @@ int main(int argc, char **argv)
 
   std::string init_file   = nh.param<std::string>("init_file_path", "");
 
-  bool using_gripper;
-  nh.getParam("gripper", using_gripper);
-
   /* gazebo simulation */
   controller->gazebo_mode_ = nh.param<bool>("gazebo", false);
   if(controller->gazebo_mode_ == true)
@@ -91,8 +88,7 @@ int main(int argc, char **argv)
 
   /* Add Motion Module */
   controller->addMotionModule((robotis_framework::MotionModule*)PositionCtrlModule::getInstance());
-  if (using_gripper==true)
-    controller->addMotionModule((robotis_framework::MotionModule*)GripperModule::getInstance());
+  controller->addMotionModule((robotis_framework::MotionModule*)GripperModule::getInstance());
 
   controller->startTimer();
 

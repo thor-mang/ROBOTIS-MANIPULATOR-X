@@ -45,6 +45,7 @@ QNode::~QNode()
 void QNode::sendSetModeMsg(std_msgs::String msg)
 {
   std_msgs::String str_msg;
+
   str_msg.data = "position_ctrl_module";
   set_ctrl_module_pub_.publish(str_msg);
 
