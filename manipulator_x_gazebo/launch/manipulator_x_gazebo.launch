@@ -6,7 +6,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="use_gripper" default="false"/>
+  <arg name="use_gripper" default="true"/>
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -31,6 +31,11 @@
      args="-urdf -model manipulator_x -z 0.01 -param robot_description"/>
 
   <!-- ros_control robotis manipulator launch file -->
-  <include file="$(find manipulator_x_gazebo)/launch/effort_controller_gripper.launch" if="$(arg use_gripper)"/>
-  <include file="$(find manipulator_x_gazebo)/launch/effort_controller_tooltip.launch" unless="$(arg use_gripper)"/>
+  <include file="$(find manipulator_x_gazebo)/launch/position_controller_gripper.launch" if="$(arg use_gripper)"/>
+  <include file="$(find manipulator_x_gazebo)/launch/position_controller_tooltip.launch" unless="$(arg use_gripper)"/>.
+
+  <!-- gripper pub -->
+  <node name="gazebo_grip_pub" pkg="manipulator_x_gazebo" type="manipulator_x_gazebo_grip_pub">
+  </node>
+
 </launch>
