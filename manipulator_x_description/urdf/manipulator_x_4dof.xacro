@@ -289,14 +289,14 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link9.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link9.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -335,14 +335,14 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link8.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link8.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
