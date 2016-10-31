@@ -54,20 +54,6 @@
     <mu2>0.2</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
-  
-  <!-- Link6 -->
-  <gazebo reference="link6">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Black</material>
-  </gazebo>
-  
-  <!-- Link7 -->
-  <gazebo reference="link7">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Black</material>
-  </gazebo>
 
   <!-- grip_link -->
   <gazebo reference="grip_link">
