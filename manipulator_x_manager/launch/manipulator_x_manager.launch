@@ -1,0 +1,14 @@
+<launch>
+  <arg name="use_gazebo" default="false"/>
+
+  <param name="gazebo"                   value="$(arg use_gazebo)"    type="bool"/>
+  <param name="gazebo_robot_name"        value="robotis_manipulator_x4"/>
+
+  <param name="offset_file_path"         value="$(find manipulator_x_manager)/config/offset_4dof.yaml"/>
+  <param name="robot_file_path"          value="$(find manipulator_x_manager)/config/MANIPULATOR-X4.robot"/>
+  <param name="init_file_path"           value="$(find manipulator_x_manager)/config/dxl_init_4dof.yaml"/>
+
+  <!-- ROBOTIS MANIPULATOR X Manager -->
+  <node name="manipulator_x4_manager" pkg="manipulator_x_manager" type="manipulator_x_manager" output="screen"/>
+
+</launch>

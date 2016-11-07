@@ -27,5 +27,5 @@
      args="-urdf -model manipulator_x -z 0.0 -param robot_description"/>
 
   <!-- ros_control robotis manipulator launch file -->
-  <include file="$(find manipulator_x_gazebo)/launch/effort_controller_4dof.launch"/>
+  <include file="$(find manipulator_x_gazebo)/launch/position_controller_4dof.launch"/>
 </launch>
