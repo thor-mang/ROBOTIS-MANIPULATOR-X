@@ -35,7 +35,8 @@
 using namespace manipulator_x4_position_ctrl_module;
 
 ManipulatorX4PositionCtrlModule::ManipulatorX4PositionCtrlModule()
-  : control_cycle_msec_(8)
+  : control_cycle_msec_(8),
+    using_gazebo_()
 {
   enable_ = false; //motion_module.h
   module_name_ = "manipulator_x4_position_ctrl";
@@ -45,7 +46,16 @@ ManipulatorX4PositionCtrlModule::ManipulatorX4PositionCtrlModule()
   result_["joint2"] = new robotis_framework::DynamixelState();
   result_["joint3"] = new robotis_framework::DynamixelState();
   result_["joint4"] = new robotis_framework::DynamixelState();
-  result_["grip_joint"] = new robotis_framework::DynamixelState();
+
+  joint_name_to_id_["joint1"] = 1;
+  joint_name_to_id_["joint2"] = 2;
+  joint_name_to_id_["joint3"] = 3;
+  joint_name_to_id_["joint4"] = 4;
+
+  joint_present_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  joint_present_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  joint_present_current_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  joint_goal_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
 }
 
 ManipulatorX4PositionCtrlModule::~ManipulatorX4PositionCtrlModule()
@@ -55,8 +65,11 @@ ManipulatorX4PositionCtrlModule::~ManipulatorX4PositionCtrlModule()
 
 void ManipulatorX4PositionCtrlModule::initialize(const int control_cycle_msec, robotis_framework::Robot *robot)
 {
+  ros::NodeHandle nh;
+  nh.getParam("gazebo", using_gazebo_);
+
   control_cycle_msec_ = control_cycle_msec;
-  queue_thread_ = boost::thread(boost::bind(&ManipulatorX4PositionCtrlModule::queueThread,this));
+  queue_thread_ = boost::thread(boost::bind(&ManipulatorX4PositionCtrlModule::queueThread, this));
 }
 
 void ManipulatorX4PositionCtrlModule::queueThread()
@@ -66,11 +79,15 @@ void ManipulatorX4PositionCtrlModule::queueThread()
 
   nh.setCallbackQueue(&callback_queue);
 
-  joint1_position_control_pub_ = nh.advertise<std_msgs::Float64>("/robotis_manipulator_x/joint1_position/command", 1, true);
-  joint2_position_control_pub_ = nh.advertise<std_msgs::Float64>("/robotis_manipulator_x/joint2_position/command", 1, true);
-  joint3_position_control_pub_ = nh.advertise<std_msgs::Float64>("/robotis_manipulator_x/joint3_position/command", 1, true);
-  joint4_position_control_pub_ = nh.advertise<std_msgs::Float64>("/robotis_manipulator_x/joint4_position/command", 1, true);
-  grip_joint_position_control_pub_ = nh.advertise<std_msgs::Float64>("/robotis_manipulator_x/grip_joint_position/command", 1, true);
+  status_msg_pub_  = nh.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 10);
+  joint_present_position_server_ = nh.advertiseService("/robotis/manipulator_x4_position_ctrl/joint_present_position",
+                                                       &ManipulatorX4PositionCtrlModule::getJointPresentPositionCallback, this);
+
+  set_mode_msg_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_mode_msg", 10,
+                                   &ManipulatorX4PositionCtrlModule::setModeMsgCallback, this);
+
+  joint_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/send_goal_position", 10,
+                                          &ManipulatorX4PositionCtrlModule::setJointGoalPositionCallback, this);
 
   while (nh.ok())
   {
@@ -79,12 +96,71 @@ void ManipulatorX4PositionCtrlModule::queueThread()
   }
 }
 
+void ManipulatorX4PositionCtrlModule::setModeMsgCallback(const std_msgs::String::ConstPtr& msg)
+{
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Manipulator-X4 Poition Control Module");
+}
+
+bool ManipulatorX4PositionCtrlModule::getJointPresentPositionCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
+                                                                      manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res)
+{
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Get Joint Present Position");
+
+  for (std::map<std::string, uint8_t>::iterator joint_iter = joint_name_to_id_.begin();
+       joint_iter != joint_name_to_id_.end(); joint_iter++)
+  {
+    res.position_ctrl_joint_pose.joint_name.push_back(joint_iter->first);
+    res.position_ctrl_joint_pose.position.push_back(joint_present_position_(joint_name_to_id_[joint_iter->first]-1));
+  }
+
+  return true;
+}
+
+void ManipulatorX4PositionCtrlModule::setJointGoalPositionCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg)
+{
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Goal Position");
+
+  for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
+       state_iter != result_.end(); state_iter++)
+  {
+    std::string joint_name = state_iter->first;
+    joint_goal_position_(joint_name_to_id_[joint_name]-1) = msg->position[joint_name_to_id_[joint_name]-1];
+  }
+}
+
 void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors)
 {
   if (enable_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
     return;
+  }
 
+  /* Get Joint State */
+  for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
+       state_iter != result_.end(); state_iter++)
+  {
+    std::string joint_name = state_iter->first;
 
+    robotis_framework::Dynamixel *dxl = NULL;
+    std::map<std::string, robotis_framework::Dynamixel *>::iterator dxl_it = dxls.find(joint_name);
+    if (dxl_it != dxls.end())
+      dxl = dxl_it->second;
+    else
+      continue;
+
+    joint_present_position_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_position_;
+    joint_present_velocity_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_velocity_;
+    joint_present_current_(joint_name_to_id_[joint_name]-1) = dxl->dxl_state_->present_torque_;
+  }
+
+  /* Set Joint Pose */
+  for (std::map<std::string, robotis_framework::DynamixelState *>::iterator state_iter = result_.begin();
+       state_iter != result_.end(); state_iter++)
+  {
+    std::string joint_name = state_iter->first;
+    result_[joint_name]->goal_position_ = joint_goal_position_(joint_name_to_id_[joint_name]-1);
+  }
 }
 
 void ManipulatorX4PositionCtrlModule::stop()
@@ -95,4 +171,15 @@ void ManipulatorX4PositionCtrlModule::stop()
 bool ManipulatorX4PositionCtrlModule::isRunning()
 {
   return false;
+}
+
+void ManipulatorX4PositionCtrlModule::publishStatusMsg(unsigned int type, std::string msg)
+{
+  robotis_controller_msgs::StatusMsg status_msg;
+  status_msg.header.stamp = ros::Time::now();
+  status_msg.type = type;
+  status_msg.module_name = "Manipulator_X4_Position_ctrl";
+  status_msg.status_msg = msg;
+
+  status_msg_pub_.publish(status_msg);
 }

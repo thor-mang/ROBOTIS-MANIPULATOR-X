@@ -38,6 +38,10 @@
 #include <string>
 #include <QThread>
 #include <QStringListModel>
+#include <std_msgs/String.h>
+
+#include "robotis_controller_msgs/StatusMsg.h"
+#include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
 #endif
 
 namespace manipulator_x_position_ctrl_module_gui
@@ -49,8 +53,7 @@ Q_OBJECT
 	QNode(int argc, char** argv );
 	virtual ~QNode();
 	bool init();
-	bool init(const std::string &master_url, const std::string &host_url);
-	void run();
+  void run();
 
   enum LogLevel{
    Debug,
@@ -60,16 +63,30 @@ Q_OBJECT
    Fatal};
 
   QStringListModel* loggingModel() {return &logging_model;}
-  void log(const LogLevel &level, const std::string &msg);
+  void log(const LogLevel &level, const std::string &msg, std::string sender);
+
+  void sendSetModeMsg(std_msgs::String msg);
+  void statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg);
+  void getJointPresentPosition(void);
+  void sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
 
 Q_SIGNALS:
 	void loggingUpdated();
   void rosShutdown();
 
+  void updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+
 private:
 	int init_argc;
 	char** init_argv;
-	ros::Publisher chatter_publisher;
+
+  ros::Subscriber status_msg_sub_;
+  ros::ServiceClient joint_present_position_client_;
+
+  ros::Publisher set_mode_msg_pub_;
+  ros::Publisher set_ctrl_module_pub_;
+  ros::Publisher set_goel_joint_position_pub_;
+
   QStringListModel logging_model;
 };
 }  // namespace manipulator_x_position_ctrl_module_gui

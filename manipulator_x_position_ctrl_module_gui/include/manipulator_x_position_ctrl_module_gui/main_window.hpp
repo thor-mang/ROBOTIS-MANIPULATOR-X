@@ -36,6 +36,8 @@
 #include <QtGui/QMainWindow>
 #include "ui_main_window.h"
 #include "qnode.hpp"
+
+#include "robotis_math/robotis_math.h"
 #endif
 
 namespace manipulator_x_position_ctrl_module_gui
@@ -49,16 +51,25 @@ Q_OBJECT
 	~MainWindow();
 
 	void closeEvent(QCloseEvent *event); // Overloaded function
-	void showNoMasterMessage();
 
  public Q_SLOTS:
 	void on_actionAbout_triggered();
 
   void updateLoggingView(); // no idea why this can't connect automatically
+  void on_set_control_mode_pushButton_clicked(bool check);
+  void on_send_goal_position_pushButton_clicked(bool check);
+  void on_get_present_position_pushButton_clicked(bool check);
+
+  void updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg);
 
  private:
   Ui::MainWindowDesign ui_;
   QNode qnode_;
+
+//  std::vector<std::string> joint_name_;
+
+//  QList<QAbstractSpinBox *> present_joint_angle_spinbox_;
+//  QList<QAbstractSpinBox *> desired_joint_angle_spinbox_;
 };
 
 }  // namespace manipulator_x_position_ctrl_module_gui

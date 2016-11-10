@@ -35,13 +35,25 @@
 
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
+#include <ros/package.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/String.h>
+#include <sensor_msgs/JointState.h>
 #include <boost/thread.hpp>
+#include <yaml-cpp/yaml.h>
+#include <map>
+#include <eigen3/Eigen/Eigen>
+
+#include <fstream>
 
 #include "robotis_framework_common/motion_module.h"
+#include "robotis_controller_msgs/StatusMsg.h"
+#include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
 
 namespace manipulator_x4_position_ctrl_module
 {
+#define MAX_JOINT_NUM (4)
+
 class ManipulatorX4PositionCtrlModule
   : public robotis_framework::MotionModule,
     public robotis_framework::Singleton<ManipulatorX4PositionCtrlModule>
@@ -50,13 +62,27 @@ class ManipulatorX4PositionCtrlModule
   int control_cycle_msec_;
   boost::thread queue_thread_;
 
-  ros::Publisher joint1_position_control_pub_;
-  ros::Publisher joint2_position_control_pub_;
-  ros::Publisher joint3_position_control_pub_;
-  ros::Publisher joint4_position_control_pub_;
-  ros::Publisher grip_joint_position_control_pub_;
+  bool using_gazebo_;
+
+  ros::Publisher status_msg_pub_;
+  ros::ServiceServer joint_present_position_server_;
+
+  ros::Subscriber set_mode_msg_sub_;
+  ros::Subscriber joint_goal_position_sub_;
+
+  std::map<std::string, uint8_t> joint_name_to_id_;
+  Eigen::VectorXd joint_present_position_;
+  Eigen::VectorXd joint_present_velocity_;
+  Eigen::VectorXd joint_present_current_;
+  Eigen::VectorXd joint_goal_position_;
 
   void queueThread();
+  void publishStatusMsg(unsigned int type, std::string msg);
+  void setModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+
+  bool getJointPresentPositionCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
+                                       manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
+  void setJointGoalPositionCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg);
 
  public:
   ManipulatorX4PositionCtrlModule();

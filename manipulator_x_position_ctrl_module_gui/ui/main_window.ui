@@ -6,15 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>944</width>
-    <height>704</height>
+    <width>1219</width>
+    <height>740</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1219</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1219</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Manipulator-X4 Position Control Module GUI</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc">
+   <iconset resource="../resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -26,8 +38,14 @@
      <widget class="QTabWidget" name="tab_manager">
       <property name="minimumSize">
        <size>
-        <width>100</width>
+        <width>800</width>
         <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>800</width>
+        <height>16777215</height>
        </size>
       </property>
       <property name="locale">
@@ -40,7 +58,7 @@
        <attribute name="title">
         <string>Ros Communications</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QGroupBox" name="groupBox_12">
           <property name="sizePolicy">
@@ -52,8 +70,8 @@
           <property name="title">
            <string>Logging</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
             <widget class="QListView" name="view_logging"/>
            </item>
           </layout>
@@ -70,7 +88,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>944</width>
+     <width>1219</width>
      <height>19</height>
     </rect>
    </property>
@@ -97,8 +115,14 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>325</width>
-     <height>368</height>
+     <width>400</width>
+     <height>698</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>524287</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -128,7 +152,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QTabWidget" name="tabWidget">
+         <widget class="QTabWidget" name="manipulator_x4_tabWidget">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -136,6 +160,203 @@
            <attribute name="title">
             <string>Joint_space_control</string>
            </attribute>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="0">
+             <widget class="QGroupBox" name="goal_position_groupBox">
+              <property name="title">
+               <string>Goal position</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="10" column="0">
+                <widget class="QLabel" name="gripper_des_pos_label">
+                 <property name="text">
+                  <string>Gripper</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QDoubleSpinBox" name="joint3_des_pos_doubleSpinBox">
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="joint2_des_pos_label">
+                 <property name="text">
+                  <string>Joint 2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QDoubleSpinBox" name="joint2_des_pos_doubleSpinBox">
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QDoubleSpinBox" name="joint1_des_pos_doubleSpinBox">
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="joint4_des_pos_label">
+                 <property name="text">
+                  <string>Joint 4</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QPushButton" name="gripper_des_pos_pushButton">
+                 <property name="text">
+                  <string>On</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QSlider" name="gripper_des_pos_horizontalSlider">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="joint1_des_pos_label">
+                 <property name="text">
+                  <string>Joint 1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="joint3_des_pos_label">
+                 <property name="text">
+                  <string>Joint 3</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QDoubleSpinBox" name="joint4_des_pos_doubleSpinBox">
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="present_position_groupBox">
+              <property name="title">
+               <string>Present position</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="0" column="0">
+                <widget class="QLabel" name="joint1_pre_pos_label">
+                 <property name="text">
+                  <string>Joint 1</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="joint1_pre_pos_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="joint2_pre_pos_label">
+                 <property name="text">
+                  <string>Joint 2</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="joint2_pre_pos_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="joint3_pre_pos_label">
+                 <property name="text">
+                  <string>Joint 3</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="joint3_pre_pos_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="joint4_pre_pos_label">
+                 <property name="text">
+                  <string>Joint 4</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="joint4_pre_pos_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="gripper_pre_pos_label">
+                 <property name="text">
+                  <string>Gripper</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLineEdit" name="gripper_pre_pos_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="Task_space_control_tab">
            <attribute name="title">
@@ -145,6 +366,27 @@
          </widget>
         </item>
        </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="set_control_mode_pushButton">
+       <property name="text">
+        <string>Set Position Ctrl Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="get_present_position_pushButton">
+       <property name="text">
+        <string>Get Present Joint Position</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="send_goal_position_pushButton">
+       <property name="text">
+        <string>Send Goal Joint Position</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -191,7 +433,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc"/>
+  <include location="../resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -1,8 +1,8 @@
 <launch>
-  <arg name="use_gazebo" default="false"/>
+  <arg name="use_gazebo" default="true"/>
 
   <param name="gazebo"                   value="$(arg use_gazebo)"    type="bool"/>
-  <param name="gazebo_robot_name"        value="robotis_manipulator_x4"/>
+  <param name="gazebo_robot_name"        value="robotis_manipulator_x"/>
 
   <param name="offset_file_path"         value="$(find manipulator_x_manager)/config/offset_4dof.yaml"/>
   <param name="robot_file_path"          value="$(find manipulator_x_manager)/config/MANIPULATOR-X4.robot"/>

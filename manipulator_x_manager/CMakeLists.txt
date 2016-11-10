@@ -15,9 +15,13 @@ find_package(catkin REQUIRED COMPONENTS
   robotis_controller
   robotis_controller_msgs
   robotis_math
+
   cmake_modules
+
   manipulator_x_position_ctrl_module
 )
+
+find_package(Eigen REQUIRED)
 
 ################################################################################
 # Declare ROS messages, services and actions
@@ -40,6 +44,7 @@ catkin_package(
 ################################################################################
 include_directories(
   include
+  ${Eigen_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}  
 )
 

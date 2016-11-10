@@ -10,6 +10,10 @@ project(manipulator_x_position_ctrl_module_gui)
 find_package(catkin REQUIRED COMPONENTS
   qt_build
   roscpp
+  std_msgs
+  robotis_controller_msgs
+  robotis_math
+  manipulator_x_position_ctrl_module_msgs
 )
 
 ################################################################################

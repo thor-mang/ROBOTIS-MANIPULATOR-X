@@ -61,82 +61,106 @@ bool QNode::init()
   {
 		return false;
 	}
-	ros::start(); // explicitly needed since our nodehandle is going out of scope.
-	ros::NodeHandle n;
+  ros::start();
+  ros::NodeHandle nh;
+
 	// Add your ros communications here.
-	chatter_publisher = n.advertise<std_msgs::String>("chatter", 1000);
-	start();
+  set_ctrl_module_pub_ = nh.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 10);
+  set_mode_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_mode_msg", 10);
+  set_goel_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
+                                  "/robotis/manipulator_x4_position_ctrl/send_goal_position", 10);
+
+  status_msg_sub_ = nh.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
+
+  joint_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>(
+                                  "/robotis/manipulator_x4_position_ctrl/joint_present_position", 10);
+
+  getJointPresentPosition();
+
+  start();
 	return true;
 }
 
-bool QNode::init(const std::string &master_url, const std::string &host_url)
+void QNode::sendSetModeMsg(std_msgs::String msg)
 {
-	std::map<std::string,std::string> remappings;
-	remappings["__master"] = master_url;
-	remappings["__hostname"] = host_url;
-	ros::init(remappings,"manipulator_x_position_ctrl_module_gui");
-  if ( ! ros::master::check() )
+  std_msgs::String str_msg;
+
+  str_msg.data = "manipulator_x4_position_ctrl";
+  set_ctrl_module_pub_.publish(str_msg);
+
+  set_mode_msg_pub_.publish(msg);
+}
+
+void QNode::getJointPresentPosition(void)
+{
+  manipulator_x_position_ctrl_module_msgs::GetJointPose srv;
+
+  if (joint_present_position_client_.call(srv))
   {
-		return false;
-	}
-	ros::start(); // explicitly needed since our nodehandle is going out of scope.
-	ros::NodeHandle n;
-	// Add your ros communications here.
-	chatter_publisher = n.advertise<std_msgs::String>("chatter", 1000);
-	start();
-	return true;
+    manipulator_x_position_ctrl_module_msgs::JointPose msg;
+
+    msg.joint_name = srv.response.position_ctrl_joint_pose.joint_name;
+    msg.position = srv.response.position_ctrl_joint_pose.position;
+
+    Q_EMIT updateJointPresentPose(msg);
+  }
+}
+
+void QNode::sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg)
+{
+  set_goel_joint_position_pub_.publish(msg);
 }
 
 void QNode::run()
 {
-	ros::Rate loop_rate(1);
-	int count = 0;
+  ros::Rate loop_rate(125);
+
   while ( ros::ok() )
   {
-
-		std_msgs::String msg;
-		std::stringstream ss;
-		ss << "hello world " << count;
-		msg.data = ss.str();
-		chatter_publisher.publish(msg);
-		log(Info,std::string("I sent: ")+msg.data);
 		ros::spinOnce();
 		loop_rate.sleep();
-		++count;
 	}
 	std::cout << "Ros shutdown, proceeding to close the gui." << std::endl;
 	Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
 }
 
+void QNode::statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg)
+{
+  log((LogLevel) msg->type, msg->status_msg, msg->module_name);
+}
 
-void QNode::log( const LogLevel &level, const std::string &msg)
+void QNode::log( const LogLevel &level, const std::string &msg, std::string sender)
 {
 	logging_model.insertRows(logging_model.rowCount(),1);
-	std::stringstream logging_model_msg;
+  std::stringstream logging_model_msg;
+
+  std::stringstream _sender;
+  _sender << "[" << sender << "]";
+
 	switch ( level ) {
 		case(Debug) : {
 				ROS_DEBUG_STREAM(msg);
-				logging_model_msg << "[DEBUG] [" << ros::Time::now() << "]: " << msg;
+        logging_model_msg << "[DEBUG] [" << ros::Time::now() << "]: " << _sender.str() << msg;
 				break;
 		}
 		case(Info) : {
 				ROS_INFO_STREAM(msg);
-				logging_model_msg << "[INFO] [" << ros::Time::now() << "]: " << msg;
+        logging_model_msg << "[INFO] [" << ros::Time::now() << "]: " << _sender.str() << msg;
 				break;
 		}
 		case(Warn) : {
 				ROS_WARN_STREAM(msg);
-				logging_model_msg << "[INFO] [" << ros::Time::now() << "]: " << msg;
+        logging_model_msg << "[INFO] [" << ros::Time::now() << "]: " << _sender.str() << msg;
 				break;
 		}
 		case(Error) : {
 				ROS_ERROR_STREAM(msg);
-				logging_model_msg << "[ERROR] [" << ros::Time::now() << "]: " << msg;
+        logging_model_msg << "[ERROR] [" << ros::Time::now() << "]: " << _sender.str() << msg;
 				break;
 		}
 		case(Fatal) : {
 				ROS_FATAL_STREAM(msg);
-				logging_model_msg << "[FATAL] [" << ros::Time::now() << "]: " << msg;
+        logging_model_msg << "[FATAL] [" << ros::Time::now() << "]: " << _sender.str() << msg;
 				break;
 		}
 	}

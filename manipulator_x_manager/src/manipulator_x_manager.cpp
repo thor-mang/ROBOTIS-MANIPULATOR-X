@@ -32,9 +32,11 @@
 
 
 #include "robotis_controller/robotis_controller.h"
+
+/* Motion Module Header */
 #include "manipulator_x_position_ctrl_module/position_ctrl_module.h"
 
-//using namespace manipulator_x_manager;
+using namespace manipulator_x4_position_ctrl_module;
 
 int main(int argc, char **argv)
 {
@@ -50,7 +52,7 @@ int main(int argc, char **argv)
   std::string init_file   = nh.param<std::string>("init_file_path", "");
 
   /* gazebo simulation */
-  controller->gazebo_mode_ = nh.param<bool>("gazebo", true);
+  controller->gazebo_mode_ = nh.param<bool>("gazebo", false);
   if (controller->gazebo_mode_ == true)
   {
     ROS_WARN("SET TO GAZEBO MODE!");
@@ -76,11 +78,13 @@ int main(int argc, char **argv)
     controller->loadOffset(offset_file);
   }
 
+  sleep(1);
+
   /* Add Sensor Module */
   //Nothing
 
   /* Add Motion Module */
-//  controller->addMotionModule((robotis_framework::MotionModule*)/*  */);
+  controller->addMotionModule((robotis_framework::MotionModule*)ManipulatorX4PositionCtrlModule::getInstance());
 
   controller->startTimer();
 

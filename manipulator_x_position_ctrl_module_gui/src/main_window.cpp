@@ -41,94 +41,75 @@ using namespace Qt;
 
 MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 	: QMainWindow(parent)
-	, qnode(argc,argv)
+  , qnode_(argc,argv)
 {
-	ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
-  QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
+  ui_.setupUi(this);
+  QObject::connect(ui_.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
-  ReadSettings();
 	setWindowIcon(QIcon(":/images/icon.png"));
-	ui.tab_manager->setCurrentIndex(0); // ensure the first tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
-  QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
+  ui_.tab_manager->setCurrentIndex(0);
+  QObject::connect(&qnode_, SIGNAL(rosShutdown()), this, SLOT(close()));
 
-	ui.view_logging->setModel(qnode.loggingModel());
-  QObject::connect(&qnode, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
+  ui_.view_logging->setModel(qnode_.loggingModel());
+  QObject::connect(&qnode_, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
+
+  qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::JointPose>("manipulator_x_position_ctrl_module_msgs::JointPose");
+  QObject::connect(&qnode_, SIGNAL(updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose)),
+                   this, SLOT(updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose)));
 
 
-  if (ui.checkbox_remember_settings->isChecked())
-  {
-    on_button_connect_clicked(true);
-  }
+
+  qnode_.init();
 }
 
 MainWindow::~MainWindow() {}
 
-void MainWindow::showNoMasterMessage()
-{
-	QMessageBox msgBox;
-	msgBox.setText("Couldn't find the ros master.");
-	msgBox.exec();
-  close();
-}
-
-void MainWindow::on_button_connect_clicked(bool check )
-{
-  if ( ui.checkbox_use_environment->isChecked() )
-  {
-    if ( !qnode.init() )
-    {
-			showNoMasterMessage();
-    }
-    else
-    {
-			ui.button_connect->setEnabled(false);
-		}
-  }
-  else
-  {
-    if ( ! qnode.init(ui.line_edit_master->text().toStdString(), ui.line_edit_host->text().toStdString()) )
-    {
-			showNoMasterMessage();
-    }
-    else
-    {
-			ui.button_connect->setEnabled(false);
-			ui.line_edit_master->setReadOnly(true);
-			ui.line_edit_host->setReadOnly(true);
-			ui.line_edit_topic->setReadOnly(true);
-		}
-  }
-}
-
-void MainWindow::on_checkbox_use_environment_stateChanged(int state)
-{
-	bool enabled;
-  if ( state == 0 )
-  {
-		enabled = true;
-  }
-  else
-  {
-		enabled = false;
-	}
-	ui.line_edit_master->setEnabled(enabled);
-	ui.line_edit_host->setEnabled(enabled);
-	//ui.line_edit_topic->setEnabled(enabled);
-}
-
 void MainWindow::updateLoggingView()
 {
-  ui.view_logging->scrollToBottom();
+  ui_.view_logging->scrollToBottom();
+}
+
+void MainWindow::on_set_control_mode_pushButton_clicked(bool check)
+{
+  std_msgs::String msg;
+  msg.data = "set_position_control_mode";
+
+  qnode_.sendSetModeMsg(msg);
+}
+
+void MainWindow::on_get_present_position_pushButton_clicked(bool check)
+{
+  qnode_.getJointPresentPosition();
+}
+
+void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
+{
+  manipulator_x_position_ctrl_module_msgs::JointPose msg;
+
+  msg.mov_time = 1.5;
+  msg.position.push_back(ui_.joint1_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint2_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint3_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint4_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
+
+  qnode_.sendJointGoalPositionMsg(msg);
+}
+
+void MainWindow::updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg)
+{
+  ui_.joint1_pre_pos_lineEdit->setText(QString::number(msg.position[0]*RADIAN2DEGREE, 1, 1));
+  ui_.joint2_pre_pos_lineEdit->setText(QString::number(msg.position[1]*RADIAN2DEGREE, 1, 1));
+  ui_.joint3_pre_pos_lineEdit->setText(QString::number(msg.position[2]*RADIAN2DEGREE, 1, 1));
+  ui_.joint4_pre_pos_lineEdit->setText(QString::number(msg.position[3]*RADIAN2DEGREE, 1, 1));
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
-  QMessageBox::about(this, tr("About ..."),tr("<h2>PACKAGE_NAME Test Program 0.10</h2><p>Copyright Yujin Robot</p><p>This package needs an about description.</p>"));
+  QMessageBox::about(this, tr("About ..."),tr("<p>Copyright ROBOTIS</p>"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	WriteSettings();
 	QMainWindow::closeEvent(event);
 }
 

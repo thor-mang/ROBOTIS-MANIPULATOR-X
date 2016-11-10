@@ -8,29 +8,23 @@ project(manipulator_x_position_ctrl_module)
 # Packages
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
   dynamixel_sdk
   robotis_device
+  robotis_controller_msgs
   robotis_framework_common
+  robotis_math
+  roscpp
+  std_msgs
+  sensor_msgs
+  cmake_modules
+  manipulator_x_position_ctrl_module_msgs
 )
+
+find_package(Eigen REQUIRED)
 
 ################################################################################
 # Declare ROS messages, services and actions
 ################################################################################
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
-
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
 
 ################################################################################
 # Declare ROS dynamic reconfigure parameters
@@ -56,6 +50,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_library(manipulator_x_position_ctrl_module src/position_ctrl_module.cpp)
