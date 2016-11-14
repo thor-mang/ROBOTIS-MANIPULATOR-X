@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>740</height>
+    <height>767</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -26,7 +26,7 @@
    <string>Manipulator-X4 Position Control Module GUI</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/images.qrc">
+   <iconset resource="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -116,7 +116,7 @@
    <property name="minimumSize">
     <size>
      <width>400</width>
-     <height>698</height>
+     <height>726</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -143,6 +143,18 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -176,6 +188,9 @@
                </item>
                <item row="7" column="0">
                 <widget class="QDoubleSpinBox" name="joint3_des_pos_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-999.990000000000009</double>
+                 </property>
                  <property name="maximum">
                   <double>999.990000000000009</double>
                  </property>
@@ -190,6 +205,9 @@
                </item>
                <item row="5" column="0">
                 <widget class="QDoubleSpinBox" name="joint2_des_pos_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-999.990000000000009</double>
+                 </property>
                  <property name="maximum">
                   <double>999.990000000000009</double>
                  </property>
@@ -197,6 +215,9 @@
                </item>
                <item row="2" column="0">
                 <widget class="QDoubleSpinBox" name="joint1_des_pos_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-999.990000000000009</double>
+                 </property>
                  <property name="maximum">
                   <double>999.990000000000009</double>
                  </property>
@@ -239,6 +260,9 @@
                </item>
                <item row="9" column="0">
                 <widget class="QDoubleSpinBox" name="joint4_des_pos_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-999.990000000000009</double>
+                 </property>
                  <property name="maximum">
                   <double>999.990000000000009</double>
                  </property>
@@ -376,9 +400,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="get_present_position_pushButton">
+      <widget class="QPushButton" name="init_position_pushButton">
        <property name="text">
-        <string>Get Present Joint Position</string>
+        <string>Init Position</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="zero_position_pushButton">
+       <property name="text">
+        <string>Zero Position</string>
        </property>
       </widget>
      </item>
@@ -433,7 +464,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resources/images.qrc"/>
+  <include location="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

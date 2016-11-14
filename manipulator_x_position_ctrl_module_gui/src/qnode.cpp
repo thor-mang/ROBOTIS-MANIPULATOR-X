@@ -65,15 +65,24 @@ bool QNode::init()
   ros::NodeHandle nh;
 
 	// Add your ros communications here.
-  set_ctrl_module_pub_ = nh.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 10);
-  set_mode_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_mode_msg", 10);
-  set_goel_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
-                                  "/robotis/manipulator_x4_position_ctrl/send_goal_position", 10);
-
   status_msg_sub_ = nh.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
 
+  set_ctrl_module_pub_ = nh.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 10);
+  set_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_module_msg", 10);
+
+  enable_joint_control_mode_pub_ = nh.advertise<std_msgs::String>(
+                                  "/robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10);
+  set_init_position_pub_ = nh.advertise<std_msgs::String>(
+                                  "/robotis/manipulator_x4_position_ctrl/set_init_position", 10);
+  set_zero_position_pub_ = nh.advertise<std_msgs::String>(
+                                  "/robotis/manipulator_x4_position_ctrl/send_zero_position", 10);
+  set_goal_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
+                                  "/robotis/manipulator_x4_position_ctrl/send_goal_position", 10);
   joint_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>(
                                   "/robotis/manipulator_x4_position_ctrl/joint_present_position", 10);
+
+  enable_task_space_control_mode_pub_ = nh.advertise<std_msgs::String>(
+                                  "/robotis/manipulator_x4_position_ctrl/enable_tack_space_control_mode", 10);
 
   getJointPresentPosition();
 
@@ -88,7 +97,27 @@ void QNode::sendSetModeMsg(std_msgs::String msg)
   str_msg.data = "manipulator_x4_position_ctrl";
   set_ctrl_module_pub_.publish(str_msg);
 
-  set_mode_msg_pub_.publish(msg);
+  set_module_msg_pub_.publish(msg);
+}
+
+void QNode::sendEnableJointControlMode(std_msgs::String msg)
+{
+  enable_joint_control_mode_pub_.publish(msg);
+}
+
+void QNode::sendEnableTaskSpaceControlMode(std_msgs::String msg)
+{
+  enable_task_space_control_mode_pub_.publish(msg);
+}
+
+void QNode::setZeroPosition(std_msgs::String msg)
+{
+  set_zero_position_pub_.publish(msg);
+}
+
+void QNode::setInitPosition(std_msgs::String msg)
+{
+  set_init_position_pub_.publish(msg);
 }
 
 void QNode::getJointPresentPosition(void)
@@ -108,7 +137,7 @@ void QNode::getJointPresentPosition(void)
 
 void QNode::sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg)
 {
-  set_goel_joint_position_pub_.publish(msg);
+  set_goal_joint_position_pub_.publish(msg);
 }
 
 void QNode::run()
@@ -126,7 +155,14 @@ void QNode::run()
 
 void QNode::statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg)
 {
-  log((LogLevel) msg->type, msg->status_msg, msg->module_name);
+  if (msg->status_msg == "End Trajectory")
+  {
+    getJointPresentPosition();
+  }
+  else
+  {
+    log((LogLevel) msg->type, msg->status_msg, msg->module_name);
+  }
 }
 
 void QNode::log( const LogLevel &level, const std::string &msg, std::string sender)

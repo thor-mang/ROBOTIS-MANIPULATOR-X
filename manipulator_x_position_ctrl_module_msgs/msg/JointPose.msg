@@ -1,3 +1,3 @@
 string[]   joint_name
 float64[]  position
-float64    mov_time
+float64    move_time

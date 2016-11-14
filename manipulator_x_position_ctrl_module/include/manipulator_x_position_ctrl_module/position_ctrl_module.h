@@ -36,23 +36,27 @@
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
 #include <ros/package.h>
+
 #include <std_msgs/Float64.h>
 #include <std_msgs/String.h>
 #include <sensor_msgs/JointState.h>
+
+#include <map>
 #include <boost/thread.hpp>
 #include <yaml-cpp/yaml.h>
-#include <map>
 #include <eigen3/Eigen/Eigen>
-
 #include <fstream>
 
+#include "robotis_math/robotis_math.h"
 #include "robotis_framework_common/motion_module.h"
 #include "robotis_controller_msgs/StatusMsg.h"
+#include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
 
 namespace manipulator_x4_position_ctrl_module
 {
 #define MAX_JOINT_NUM (4)
+#define ITERATION_TIME (0.008)
 
 class ManipulatorX4PositionCtrlModule
   : public robotis_framework::MotionModule,
@@ -62,27 +66,48 @@ class ManipulatorX4PositionCtrlModule
   int control_cycle_msec_;
   boost::thread queue_thread_;
 
+  bool jointControlMode_;
+  bool taskspaceControlMode_;
+
   bool using_gazebo_;
+  bool is_moving_;
+  double move_time_;
+  int all_time_steps_;
+  int step_cnt_;
 
   ros::Publisher status_msg_pub_;
   ros::ServiceServer joint_present_position_server_;
 
-  ros::Subscriber set_mode_msg_sub_;
+  ros::Subscriber set_module_msg_sub_;
+  ros::Subscriber set_init_position_sub_;
+  ros::Subscriber set_zero_position_sub_;
   ros::Subscriber joint_goal_position_sub_;
+  ros::Subscriber enable_joint_control_mode_sub_;
+  ros::Subscriber enable_task_space_control_mode_sub_;
 
-  std::map<std::string, uint8_t> joint_name_to_id_;
+  std::map<std::string, uint8_t> joint_id_;
   Eigen::VectorXd joint_present_position_;
   Eigen::VectorXd joint_present_velocity_;
   Eigen::VectorXd joint_present_current_;
   Eigen::VectorXd joint_goal_position_;
 
+  Eigen::MatrixXd joint_goal_trajectory_;
+
   void queueThread();
   void publishStatusMsg(unsigned int type, std::string msg);
-  void setModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setModuleMsgCallback(const std_msgs::String::ConstPtr &msg);
 
+  void enableJointControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setInitPoseMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setZeroPoseMsgCallback(const std_msgs::String::ConstPtr &msg);
   bool getJointPresentPositionCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
                                        manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
   void setJointGoalPositionCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg);
+
+  void enableTaskSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+
+  void calculateGoalJointTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
+  void parseIniPoseData(const std::string &path);
 
  public:
   ManipulatorX4PositionCtrlModule();

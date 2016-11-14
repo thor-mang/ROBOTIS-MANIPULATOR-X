@@ -67,8 +67,12 @@ Q_OBJECT
 
   void sendSetModeMsg(std_msgs::String msg);
   void statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg);
+  void sendEnableTaskSpaceControlMode(std_msgs::String msg);
+  void sendEnableJointControlMode(std_msgs::String msg);
   void getJointPresentPosition(void);
   void sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void setZeroPosition(std_msgs::String msg);
+  void setInitPosition(std_msgs::String msg);
 
 Q_SIGNALS:
 	void loggingUpdated();
@@ -83,9 +87,13 @@ private:
   ros::Subscriber status_msg_sub_;
   ros::ServiceClient joint_present_position_client_;
 
-  ros::Publisher set_mode_msg_pub_;
+  ros::Publisher set_module_msg_pub_;
+  ros::Publisher enable_joint_control_mode_pub_;
+  ros::Publisher set_init_position_pub_;
+  ros::Publisher set_zero_position_pub_;
   ros::Publisher set_ctrl_module_pub_;
-  ros::Publisher set_goel_joint_position_pub_;
+  ros::Publisher set_goal_joint_position_pub_;
+  ros::Publisher enable_task_space_control_mode_pub_;
 
   QStringListModel logging_model;
 };

@@ -42,6 +42,9 @@
 
 namespace manipulator_x_position_ctrl_module_gui
 {
+#define JOINT_CONTROL (0)
+#define TASK_SPACE_CONTROL (1)
+
 class MainWindow : public QMainWindow
 {
 Q_OBJECT
@@ -58,18 +61,15 @@ Q_OBJECT
   void updateLoggingView(); // no idea why this can't connect automatically
   void on_set_control_mode_pushButton_clicked(bool check);
   void on_send_goal_position_pushButton_clicked(bool check);
-  void on_get_present_position_pushButton_clicked(bool check);
+  void on_zero_position_pushButton_clicked(bool check);
+  void on_init_position_pushButton_clicked(bool check);
 
   void updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void changeControlMode(int index);
 
  private:
   Ui::MainWindowDesign ui_;
   QNode qnode_;
-
-//  std::vector<std::string> joint_name_;
-
-//  QList<QAbstractSpinBox *> present_joint_angle_spinbox_;
-//  QList<QAbstractSpinBox *> desired_joint_angle_spinbox_;
 };
 
 }  // namespace manipulator_x_position_ctrl_module_gui

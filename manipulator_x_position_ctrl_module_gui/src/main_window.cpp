@@ -57,7 +57,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   QObject::connect(&qnode_, SIGNAL(updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose)),
                    this, SLOT(updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose)));
 
-
+  QObject::connect(ui_.manipulator_x4_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(changeControlMode(int)));
 
   qnode_.init();
 }
@@ -77,16 +77,48 @@ void MainWindow::on_set_control_mode_pushButton_clicked(bool check)
   qnode_.sendSetModeMsg(msg);
 }
 
-void MainWindow::on_get_present_position_pushButton_clicked(bool check)
+void MainWindow::on_zero_position_pushButton_clicked(bool check)
 {
-  qnode_.getJointPresentPosition();
+  std_msgs::String msg;
+  msg.data = "init_position";
+
+  qnode_.setZeroPosition(msg);
+}
+
+void MainWindow::on_init_position_pushButton_clicked(bool check)
+{
+  std_msgs::String msg;
+  msg.data = "zero_position";
+
+  qnode_.setInitPosition(msg);
+}
+
+void MainWindow::changeControlMode(int index)
+{
+  std_msgs::String str_msg;
+
+  if (index == JOINT_CONTROL)
+  {
+    str_msg.data = "set_joint_control_mode";
+    qnode_.sendEnableJointControlMode(str_msg);
+  }
+  else if (index == TASK_SPACE_CONTROL)
+  {
+    str_msg.data = "set_task_space_control_mode";
+    qnode_.sendEnableTaskSpaceControlMode(str_msg);
+  }
 }
 
 void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
 {
   manipulator_x_position_ctrl_module_msgs::JointPose msg;
 
-  msg.mov_time = 1.5;
+  msg.move_time = 1.5;
+  msg.joint_name.push_back("joint1");
+  msg.joint_name.push_back("joint2");
+  msg.joint_name.push_back("joint3");
+  msg.joint_name.push_back("joint4");
+
   msg.position.push_back(ui_.joint1_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
   msg.position.push_back(ui_.joint2_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
   msg.position.push_back(ui_.joint3_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
