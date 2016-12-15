@@ -40,8 +40,10 @@
 
 /* Motion Module Header */
 #include "manipulator_x_position_ctrl_module/position_ctrl_module.h"
+#include "manipulator_x_gripper_module/gripper_module.h"
 
 using namespace manipulator_x4_position_ctrl_module;
+using namespace manipulator_x4_gripper_module;
 
 int main(int argc, char **argv)
 {
@@ -90,6 +92,7 @@ int main(int argc, char **argv)
 
   /* Add Motion Module */
   controller->addMotionModule((robotis_framework::MotionModule*)ManipulatorX4PositionCtrlModule::getInstance());
+  controller->addMotionModule((robotis_framework::MotionModule*)ManipulatorX4GripperModule::getInstance());
 
   controller->startTimer();
 

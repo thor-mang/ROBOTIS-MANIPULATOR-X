@@ -35,8 +35,8 @@
  *      Author: sch, Darby Lim
  */
 
-#ifndef MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H
-#define MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H
+#ifndef MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MODULE_H
+#define MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MODULE_H
 
 #include <map>
 #include <ros/ros.h>
@@ -60,4 +60,56 @@
 #include "robotis_controller_msgs/JointCtrlModule.h"
 #include "robotis_controller_msgs/StatusMsg.h"
 
-#endif // MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H
+namespace manipulator_x4_gripper_module
+{
+#define MAX_GRIPPER_NUM (1)
+#define ITERATION_TIME  (0.008)
+
+class ManipulatorX4GripperModule
+  : public robotis_framework::MotionModule,
+    public robotis_framework::Singleton<ManipulatorX4GripperModule>
+{
+private:
+  int control_cycle_msec_;
+  boost::thread queue_thread_;
+
+  ros::Publisher status_msg_pub_;
+
+  ros::Subscriber set_gripper_module_msg_sub_;
+  ros::Subscriber gripper_goal_position_sub_;
+
+  std::map<std::string, uint8_t> joint_id_;
+
+  bool using_gazebo_;
+  bool is_moving_;
+  double move_time_;
+  int all_time_steps_, step_cnt_;
+
+  Eigen::VectorXd joint_present_position_;
+  Eigen::VectorXd joint_present_velocity_;
+  Eigen::VectorXd joint_present_current_;
+  Eigen::VectorXd joint_goal_position_;
+
+  Eigen::MatrixXd joint_goal_trajectory_;
+
+  void queueThread();
+
+  void setModuleMsgCallback(const std_msgs::String::ConstPtr& msg);
+  void setGripperPositionCallback(const std_msgs::Float64::ConstPtr& msg);
+
+  void calculateGoalJointTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
+  void publishStatusMsg(unsigned int type, std::string msg);
+
+public:
+  ManipulatorX4GripperModule();
+  virtual ~ManipulatorX4GripperModule();
+
+  void initialize(const int control_cycle_msec, robotis_framework::Robot *robot);
+  void process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors);
+
+  void stop();
+  bool isRunning();
+};
+}
+
+#endif // MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MODULE_H

@@ -69,9 +69,11 @@ Q_OBJECT
   void on_send_goal_position_pushButton_clicked(bool check);
   void on_zero_position_pushButton_clicked(bool check);
   void on_init_position_pushButton_clicked(bool check);
+  void on_gripper_goal_position_toggleButton_clicked(bool check);
 
   void updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg);
   void changeControlMode(int index);
+  void changeGripperPosition(int position);
 
  private:
   Ui::MainWindowDesign ui_;

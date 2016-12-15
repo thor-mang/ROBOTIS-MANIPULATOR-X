@@ -89,19 +89,19 @@ void ManipulatorX4PositionCtrlModule::queueThread()
   nh.setCallbackQueue(&callback_queue);
 
   status_msg_pub_  = nh.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 10);
-  set_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_module_msg", 10,
-                                   &ManipulatorX4PositionCtrlModule::setModuleMsgCallback, this);
+  set_position_ctrl_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_position_ctrl_module_msg", 10,
+                                   &ManipulatorX4PositionCtrlModule::setPositionCtrlModuleMsgCallback, this);
 
-  enable_joint_control_mode_sub_ = nh.subscribe("robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10,
-                                                &ManipulatorX4PositionCtrlModule::enableJointControlModeMsgCallback, this);
+  enable_joint_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10,
+                                                &ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback, this);
   set_init_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_init_position", 10,
-                                        &ManipulatorX4PositionCtrlModule::setInitPoseMsgCallback, this);
+                                        &ManipulatorX4PositionCtrlModule::setInitPositionMsgCallback, this);
   set_zero_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/send_zero_position", 10,
-                                        &ManipulatorX4PositionCtrlModule::setZeroPoseMsgCallback, this);
+                                        &ManipulatorX4PositionCtrlModule::setZeroPositionMsgCallback, this);
   joint_present_position_server_ = nh.advertiseService("/robotis/manipulator_x4_position_ctrl/joint_present_position",
-                                                       &ManipulatorX4PositionCtrlModule::getJointPresentPositionCallback, this);
+                                                       &ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback, this);
   joint_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/send_goal_position", 10,
-                                          &ManipulatorX4PositionCtrlModule::setJointGoalPositionCallback, this);
+                                          &ManipulatorX4PositionCtrlModule::setJointGoalPositionMsgCallback, this);
 
   enable_task_space_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/enable_tack_space_control_mode", 10,
                                                      &ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback, this);
@@ -113,23 +113,16 @@ void ManipulatorX4PositionCtrlModule::queueThread()
   }
 }
 
-void ManipulatorX4PositionCtrlModule::setModuleMsgCallback(const std_msgs::String::ConstPtr& msg)
+void ManipulatorX4PositionCtrlModule::setPositionCtrlModuleMsgCallback(const std_msgs::String::ConstPtr& msg)
 {
   publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Manipulator-X4 Poition Control Module");
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Control Mode");
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Space Control Mode");
 
-  jointControlMode_ = true;
-  taskspaceControlMode_ = false;
-
-//  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Init Position");
-
-//  std::string pose_path;
-//  pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
-
-//  parseIniPoseData(pose_path);
+  jointSpaceControlMode_ = true;
+  taskSpaceControlMode_ = false;
 }
 
-void ManipulatorX4PositionCtrlModule::enableJointControlModeMsgCallback(const std_msgs::String::ConstPtr &msg)
+void ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg)
 {
   if (enable_ == false)
   {
@@ -137,13 +130,13 @@ void ManipulatorX4PositionCtrlModule::enableJointControlModeMsgCallback(const st
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Control Mode");
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Space Control Mode");
 
-  jointControlMode_ = true;
-  taskspaceControlMode_ = false;
+  jointSpaceControlMode_ = true;
+  taskSpaceControlMode_ = false;
 }
 
-void ManipulatorX4PositionCtrlModule::setInitPoseMsgCallback(const std_msgs::String::ConstPtr &msg)
+void ManipulatorX4PositionCtrlModule::setInitPositionMsgCallback(const std_msgs::String::ConstPtr &msg)
 {
   if (enable_ == false)
   {
@@ -151,15 +144,22 @@ void ManipulatorX4PositionCtrlModule::setInitPoseMsgCallback(const std_msgs::Str
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Init Position");
+  if (is_moving_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Init Position");
 
-  std::string pose_path;
-  pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
+    std::string pose_path;
+    pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/initial_pose.yaml";
 
-  parseIniPoseData(pose_path);
+    parseIniPoseData(pose_path);
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+  }
 }
 
-void ManipulatorX4PositionCtrlModule::setZeroPoseMsgCallback(const std_msgs::String::ConstPtr &msg)
+void ManipulatorX4PositionCtrlModule::setZeroPositionMsgCallback(const std_msgs::String::ConstPtr &msg)
 {
   if (enable_ == false)
   {
@@ -167,15 +167,22 @@ void ManipulatorX4PositionCtrlModule::setZeroPoseMsgCallback(const std_msgs::Str
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Zero Position");
+  if (is_moving_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Zero Position");
 
-  std::string pose_path;
-  pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/zero_pose.yaml";
+    std::string pose_path;
+    pose_path = ros::package::getPath("manipulator_x_position_ctrl_module") + "/config/zero_pose.yaml";
 
-  parseIniPoseData(pose_path);
+    parseIniPoseData(pose_path);
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+  }
 }
 
-bool ManipulatorX4PositionCtrlModule::getJointPresentPositionCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
+bool ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
                                                                       manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res)
 {
   if (enable_ == false)
@@ -197,7 +204,7 @@ bool ManipulatorX4PositionCtrlModule::getJointPresentPositionCallback(manipulato
   return true;
 }
 
-void ManipulatorX4PositionCtrlModule::setJointGoalPositionCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg)
+void ManipulatorX4PositionCtrlModule::setJointGoalPositionMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg)
 {
   if (enable_ == false)
   {
@@ -205,21 +212,28 @@ void ManipulatorX4PositionCtrlModule::setJointGoalPositionCallback(const manipul
     return;
   }
 
-  if (jointControlMode_ == true)
+  if (jointSpaceControlMode_ == true)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Goal Position");
-
-    Eigen::VectorXd initial_position = joint_goal_position_;
-    Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
-
-    move_time_ = msg->move_time;
-
-    for (int it = 0; it < msg->joint_name.size(); it++)
+    if (is_moving_ == false)
     {
-      target_position(joint_id_[msg->joint_name[it]]-1) = msg->position[it];
-    }
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Goal Position");
 
-    calculateGoalJointTrajectory(initial_position, target_position);
+      Eigen::VectorXd initial_position = joint_goal_position_;
+      Eigen::VectorXd target_position = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+
+      move_time_ = msg->move_time;
+
+      for (int it = 0; it < msg->joint_name.size(); it++)
+      {
+        target_position(joint_id_[msg->joint_name[it]]-1) = msg->position[it];
+      }
+
+      calculateGoalJointTrajectory(initial_position, target_position);
+    }
+    else
+    {
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+    }
   }
   else
   {
@@ -241,18 +255,20 @@ void ManipulatorX4PositionCtrlModule::calculateGoalJointTrajectory(Eigen::Vector
     double init_position_value = initial_position(index);
     double target_position_value = target_position(index);
 
-    Eigen::MatrixXd tra =
+    Eigen::MatrixXd trajectory =
         robotis_framework::calcMinimumJerkTra(init_position_value, 0.0, 0.0,
                                               target_position_value, 0.0, 0.0,
                                               ITERATION_TIME, move_time_);
 
     // Block of size (p,q), starting at (i,j)
     // block(i,j,p,q)
-    joint_goal_trajectory_.block(0, index, all_time_steps_, 1) = tra;
+    joint_goal_trajectory_.block(0, index, all_time_steps_, 1) = trajectory;
   }
 
   step_cnt_ = 0;
   is_moving_ = true;
+
+  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Start Trajectory");
 }
 
 void ManipulatorX4PositionCtrlModule::parseIniPoseData(const std::__cxx11::string &path)
@@ -269,8 +285,8 @@ void ManipulatorX4PositionCtrlModule::parseIniPoseData(const std::__cxx11::strin
     return;
   }
 
-  jointControlMode_ = true;
-  taskspaceControlMode_ = false;
+  jointSpaceControlMode_ = true;
+  taskSpaceControlMode_ = false;
 
   Eigen::VectorXd initial_position = joint_goal_position_;
 
@@ -306,8 +322,8 @@ void ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback(cons
 
   publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Task Space Control Mode");
 
-  jointControlMode_ = false;
-  taskspaceControlMode_ = true;
+  jointSpaceControlMode_ = false;
+  taskSpaceControlMode_ = true;
 }
 
 void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors)
@@ -341,14 +357,14 @@ void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_fram
   /* Set Joint Pose */
   if (is_moving_ == true)
   {
-    if (jointControlMode_ == true)
+    if (jointSpaceControlMode_ == true)
     {
       for (int index = 0; index < MAX_JOINT_NUM; index++)
       {
         joint_goal_position_(index) = joint_goal_trajectory_(step_cnt_, index);
       }
     }
-    else if (taskspaceControlMode_ == true)
+    else if (taskSpaceControlMode_ == true)
     {
         //TODO
     }
@@ -381,7 +397,7 @@ void ManipulatorX4PositionCtrlModule::stop()
 
 bool ManipulatorX4PositionCtrlModule::isRunning()
 {
-  return false;
+  return is_moving_;
 }
 
 void ManipulatorX4PositionCtrlModule::publishStatusMsg(unsigned int type, std::string msg)
@@ -389,7 +405,7 @@ void ManipulatorX4PositionCtrlModule::publishStatusMsg(unsigned int type, std::s
   robotis_controller_msgs::StatusMsg status_msg;
   status_msg.header.stamp = ros::Time::now();
   status_msg.type = type;
-  status_msg.module_name = "Manipulator_X4_Position_ctrl";
+  status_msg.module_name = "Manipulator_X4_Position_Ctrl";
   status_msg.status_msg = msg;
 
   status_msg_pub_.publish(status_msg);

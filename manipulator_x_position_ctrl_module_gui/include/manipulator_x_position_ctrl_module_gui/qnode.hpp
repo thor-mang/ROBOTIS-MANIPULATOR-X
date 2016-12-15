@@ -44,6 +44,7 @@
 #include <QThread>
 #include <QStringListModel>
 #include <std_msgs/String.h>
+#include <std_msgs/Float64.h>
 
 #include "robotis_controller_msgs/StatusMsg.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
@@ -70,7 +71,7 @@ Q_OBJECT
   QStringListModel* loggingModel() {return &logging_model;}
   void log(const LogLevel &level, const std::string &msg, std::string sender);
 
-  void sendSetModeMsg(std_msgs::String msg);
+  void sendSetModuleMsg(std_msgs::String msg);
   void statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg);
   void sendEnableTaskSpaceControlMode(std_msgs::String msg);
   void sendEnableJointControlMode(std_msgs::String msg);
@@ -78,6 +79,7 @@ Q_OBJECT
   void sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
   void setZeroPosition(std_msgs::String msg);
   void setInitPosition(std_msgs::String msg);
+  void sendGripperGoalPositionMsg(std_msgs::Float64 msg);
 
 Q_SIGNALS:
 	void loggingUpdated();
@@ -92,7 +94,9 @@ private:
   ros::Subscriber status_msg_sub_;
   ros::ServiceClient joint_present_position_client_;
 
-  ros::Publisher set_module_msg_pub_;
+  ros::Publisher set_position_ctrl_module_msg_pub_;
+  ros::Publisher set_gripper_module_msg_pub_;
+  ros::Publisher gripper_goal_position_pub_;
   ros::Publisher enable_joint_control_mode_pub_;
   ros::Publisher set_init_position_pub_;
   ros::Publisher set_zero_position_pub_;

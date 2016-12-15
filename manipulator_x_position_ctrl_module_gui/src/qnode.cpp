@@ -73,7 +73,10 @@ bool QNode::init()
   status_msg_sub_ = nh.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
 
   set_ctrl_module_pub_ = nh.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 10);
-  set_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_module_msg", 10);
+  set_position_ctrl_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_module_msg", 10);
+  set_gripper_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_gripper/set_module_msg", 10);
+
+  gripper_goal_position_pub_ = nh.advertise<std_msgs::Float64>("/robotis/manipulator_x4_gripper/send_goal_position", 10);
 
   enable_joint_control_mode_pub_ = nh.advertise<std_msgs::String>(
                                   "/robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10);
@@ -95,14 +98,18 @@ bool QNode::init()
 	return true;
 }
 
-void QNode::sendSetModeMsg(std_msgs::String msg)
+void QNode::sendSetModuleMsg(std_msgs::String msg)
 {
   std_msgs::String str_msg;
 
   str_msg.data = "manipulator_x4_position_ctrl";
   set_ctrl_module_pub_.publish(str_msg);
 
-  set_module_msg_pub_.publish(msg);
+  str_msg.data = "gripper_module";
+  set_ctrl_module_pub_.publish(str_msg);
+
+  set_position_ctrl_module_msg_pub_.publish(msg);
+  set_gripper_module_msg_pub_.publish(msg);
 }
 
 void QNode::sendEnableJointControlMode(std_msgs::String msg)
@@ -143,6 +150,11 @@ void QNode::getJointPresentPosition(void)
 void QNode::sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg)
 {
   set_goal_joint_position_pub_.publish(msg);
+}
+
+void QNode::sendGripperGoalPositionMsg(std_msgs::Float64 msg)
+{
+  gripper_goal_position_pub_.publish(msg);
 }
 
 void QNode::run()

@@ -62,8 +62,10 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   QObject::connect(&qnode_, SIGNAL(updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose)),
                    this, SLOT(updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose)));
 
-  QObject::connect(ui_.manipulator_x4_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(changeControlMode(int)));
+ // ui_.gripper_goal_position_horizontalSlider->
+  QObject::connect(ui_.gripper_goal_position_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(changeGripperPosition(int)));
 
+  QObject::connect(ui_.manipulator_x4_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(changeControlMode(int)));
   qnode_.init();
 }
 
@@ -77,9 +79,9 @@ void MainWindow::updateLoggingView()
 void MainWindow::on_set_control_mode_pushButton_clicked(bool check)
 {
   std_msgs::String msg;
-  msg.data = "set_position_control_mode";
+  msg.data = "set_module";
 
-  qnode_.sendSetModeMsg(msg);
+  qnode_.sendSetModuleMsg(msg);
 }
 
 void MainWindow::on_zero_position_pushButton_clicked(bool check)
@@ -114,6 +116,43 @@ void MainWindow::changeControlMode(int index)
   }
 }
 
+void MainWindow::on_gripper_goal_position_toggleButton_clicked(bool check)
+{
+  std_msgs::Float64 position;
+
+
+  if (ui_.gripper_goal_position_toggleButton->isChecked())
+  {
+    ui_.gripper_goal_position_toggleButton->setText("Gripper On");
+
+    position.data = 0.0 * DEGREE2RADIAN;
+    qnode_.sendGripperGoalPositionMsg(position);
+
+    ui_.gripper_present_position_lineEdit->setText(QString::number(0.0));
+    ui_.gripper_goal_position_horizontalSlider->setSliderPosition(0);
+  }
+  else
+  {
+    ui_.gripper_goal_position_toggleButton->setText("Gripper Off");
+
+    position.data = 170.0 * DEGREE2RADIAN;
+    qnode_.sendGripperGoalPositionMsg(position);
+
+    ui_.gripper_present_position_lineEdit->setText(QString::number(140.0));
+    ui_.gripper_goal_position_horizontalSlider->setSliderPosition(140);
+  }
+}
+
+void MainWindow::changeGripperPosition(int position)
+{
+  std_msgs::Float64 gripper_position;
+  gripper_position.data = position * DEGREE2RADIAN;
+
+  qnode_.sendGripperGoalPositionMsg(gripper_position);
+
+  ui_.gripper_present_position_lineEdit->setText(QString::number(position));
+}
+
 void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
 {
   manipulator_x_position_ctrl_module_msgs::JointPose msg;
@@ -124,20 +163,20 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
   msg.joint_name.push_back("joint3");
   msg.joint_name.push_back("joint4");
 
-  msg.position.push_back(ui_.joint1_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint2_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint3_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint4_des_pos_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint1_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint2_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint3_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+  msg.position.push_back(ui_.joint4_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
 
   qnode_.sendJointGoalPositionMsg(msg);
 }
 
 void MainWindow::updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg)
 {
-  ui_.joint1_pre_pos_lineEdit->setText(QString::number(msg.position[0]*RADIAN2DEGREE, 1, 1));
-  ui_.joint2_pre_pos_lineEdit->setText(QString::number(msg.position[1]*RADIAN2DEGREE, 1, 1));
-  ui_.joint3_pre_pos_lineEdit->setText(QString::number(msg.position[2]*RADIAN2DEGREE, 1, 1));
-  ui_.joint4_pre_pos_lineEdit->setText(QString::number(msg.position[3]*RADIAN2DEGREE, 1, 1));
+  ui_.joint1_present_position_lineEdit->setText(QString::number(msg.position[0]*RADIAN2DEGREE, 1, 1));
+  ui_.joint2_present_position_lineEdit->setText(QString::number(msg.position[1]*RADIAN2DEGREE, 1, 1));
+  ui_.joint3_present_position_lineEdit->setText(QString::number(msg.position[2]*RADIAN2DEGREE, 1, 1));
+  ui_.joint4_present_position_lineEdit->setText(QString::number(msg.position[3]*RADIAN2DEGREE, 1, 1));
 }
 
 void MainWindow::on_actionAbout_triggered()

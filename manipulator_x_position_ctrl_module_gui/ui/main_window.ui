@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>767</height>
+    <height>772</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -26,7 +26,7 @@
    <string>Manipulator-X4 Position Control Module GUI</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc">
+   <iconset resource="../resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -116,7 +116,7 @@
    <property name="minimumSize">
     <size>
      <width>400</width>
-     <height>726</height>
+     <height>731</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -187,7 +187,7 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <widget class="QDoubleSpinBox" name="joint3_des_pos_doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="joint3_goal_position_doubleSpinBox">
                  <property name="minimum">
                   <double>-999.990000000000009</double>
                  </property>
@@ -204,7 +204,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QDoubleSpinBox" name="joint2_des_pos_doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="joint2_goal_position_doubleSpinBox">
                  <property name="minimum">
                   <double>-999.990000000000009</double>
                  </property>
@@ -214,7 +214,7 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QDoubleSpinBox" name="joint1_des_pos_doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="joint1_goal_position_doubleSpinBox">
                  <property name="minimum">
                   <double>-999.990000000000009</double>
                  </property>
@@ -231,16 +231,31 @@
                 </widget>
                </item>
                <item row="12" column="0">
-                <widget class="QPushButton" name="gripper_des_pos_pushButton">
+                <widget class="QPushButton" name="gripper_goal_position_toggleButton">
                  <property name="text">
-                  <string>On</string>
+                  <string>Gripper Off</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item row="11" column="0">
-                <widget class="QSlider" name="gripper_des_pos_horizontalSlider">
+                <widget class="QSlider" name="gripper_goal_position_horizontalSlider">
+                 <property name="maximum">
+                  <number>140</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>30</number>
+                 </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="tickPosition">
+                  <enum>QSlider::NoTicks</enum>
                  </property>
                 </widget>
                </item>
@@ -259,7 +274,7 @@
                 </widget>
                </item>
                <item row="9" column="0">
-                <widget class="QDoubleSpinBox" name="joint4_des_pos_doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="joint4_goal_position_doubleSpinBox">
                  <property name="minimum">
                   <double>-999.990000000000009</double>
                  </property>
@@ -288,7 +303,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="joint1_pre_pos_lineEdit">
+                <widget class="QLineEdit" name="joint1_present_position_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -308,7 +323,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLineEdit" name="joint2_pre_pos_lineEdit">
+                <widget class="QLineEdit" name="joint2_present_position_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -328,7 +343,7 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QLineEdit" name="joint3_pre_pos_lineEdit">
+                <widget class="QLineEdit" name="joint3_present_position_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -348,7 +363,7 @@
                 </widget>
                </item>
                <item row="3" column="1">
-                <widget class="QLineEdit" name="joint4_pre_pos_lineEdit">
+                <widget class="QLineEdit" name="joint4_present_position_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -368,7 +383,7 @@
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QLineEdit" name="gripper_pre_pos_lineEdit">
+                <widget class="QLineEdit" name="gripper_present_position_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -464,7 +479,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc"/>
+  <include location="../resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

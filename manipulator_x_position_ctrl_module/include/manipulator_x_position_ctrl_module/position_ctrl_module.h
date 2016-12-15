@@ -71,8 +71,8 @@ class ManipulatorX4PositionCtrlModule
   int control_cycle_msec_;
   boost::thread queue_thread_;
 
-  bool jointControlMode_;
-  bool taskspaceControlMode_;
+  bool jointSpaceControlMode_;
+  bool taskSpaceControlMode_;
 
   bool using_gazebo_;
   bool is_moving_;
@@ -83,7 +83,7 @@ class ManipulatorX4PositionCtrlModule
   ros::Publisher status_msg_pub_;
   ros::ServiceServer joint_present_position_server_;
 
-  ros::Subscriber set_module_msg_sub_;
+  ros::Subscriber set_position_ctrl_module_msg_sub_;
   ros::Subscriber set_init_position_sub_;
   ros::Subscriber set_zero_position_sub_;
   ros::Subscriber joint_goal_position_sub_;
@@ -100,14 +100,14 @@ class ManipulatorX4PositionCtrlModule
 
   void queueThread();
   void publishStatusMsg(unsigned int type, std::string msg);
-  void setModuleMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setPositionCtrlModuleMsgCallback(const std_msgs::String::ConstPtr &msg);
 
-  void enableJointControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
-  void setInitPoseMsgCallback(const std_msgs::String::ConstPtr &msg);
-  void setZeroPoseMsgCallback(const std_msgs::String::ConstPtr &msg);
-  bool getJointPresentPositionCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
+  void enableJointSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setInitPositionMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setZeroPositionMsgCallback(const std_msgs::String::ConstPtr &msg);
+  bool getJointPresentPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
                                        manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
-  void setJointGoalPositionCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg);
+  void setJointGoalPositionMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg);
 
   void enableTaskSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
 
