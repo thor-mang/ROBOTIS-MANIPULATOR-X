@@ -29,23 +29,18 @@
  *******************************************************************************/
 
 /*
- * main.cpp
+ * gripper_module.cpp
  *
  *  Created on: Jul 6, 2016
  *      Author: sch, Darby Lim
  */
 
-#include <QtGui>
-#include <QApplication>
-#include "../include/manipulator_x_position_ctrl_module_gui/main_window.hpp"
+#include <ros/ros.h>
 
 int main(int argc, char **argv)
 {
-  QApplication app(argc, argv);
-  manipulator_x_position_ctrl_module_gui::MainWindow w(argc,argv);
-  w.show();
-  app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-  int result = app.exec();
+  // Set up ROS.
+  ros::init(argc, argv, "gripper_module");
 
-	return result;
+  ROS_INFO("Hello world!");
 }

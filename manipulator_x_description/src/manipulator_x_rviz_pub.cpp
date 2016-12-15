@@ -32,7 +32,7 @@
  * manipulator_x_rviz_pub.cpp
  *
  *  Created on: Jul 8, 2016
- *      Author: sch
+ *      Author: sch, Darby Lim
  */
 
 #include <ros/ros.h>

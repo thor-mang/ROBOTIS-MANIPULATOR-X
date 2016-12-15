@@ -29,23 +29,35 @@
  *******************************************************************************/
 
 /*
- * main.cpp
+ * gripper_module.h
  *
  *  Created on: Jul 6, 2016
  *      Author: sch, Darby Lim
  */
 
-#include <QtGui>
-#include <QApplication>
-#include "../include/manipulator_x_position_ctrl_module_gui/main_window.hpp"
+#ifndef MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H
+#define MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H
 
-int main(int argc, char **argv)
-{
-  QApplication app(argc, argv);
-  manipulator_x_position_ctrl_module_gui::MainWindow w(argc,argv);
-  w.show();
-  app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-  int result = app.exec();
+#include <map>
+#include <ros/ros.h>
+#include <ros/callback_queue.h>
+#include <ros/package.h>
+#include <std_msgs/Int16.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Wrench.h>
+#include <sensor_msgs/JointState.h>
+#include <boost/thread.hpp>
+#include <yaml-cpp/yaml.h>
 
-	return result;
-}
+#include <fstream>
+
+#include "robotis_math/robotis_math.h"
+#include "robotis_framework_common/motion_module.h"
+
+#include "robotis_controller_msgs/JointCtrlModule.h"
+#include "robotis_controller_msgs/StatusMsg.h"
+
+#endif // MOTION_MODULE_MANIPULATOR_X4_GRIPPER_MOTION_MODULE_H

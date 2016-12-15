@@ -6,8 +6,9 @@
      manipulator_x_position_ctrl_module_gui
   </description>
   <license>BSD</license>
+  <author email="sch@robotis.com">SCH</author>
   <author email="thlim@robotis.com">Darby Lim</author>
-  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <maintainer email="sch@robotis.com">SCH</maintainer>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>qt_build</build_depend>
   <build_depend>roscpp</build_depend>

@@ -272,9 +272,9 @@
   <joint name="grip_joint" type="prismatic">
     <parent link="link5"/>
     <child link="grip_link"/>
-    <origin xyz="0.0982 -0.036 0.0" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit velocity="6.5" effort="1000" lower="${0.0}" upper="${0.025}" />
+    <origin xyz="0.064 0.0 0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="6.5" effort="1000" lower="0.0" upper="0.0" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -292,14 +292,14 @@
   <!-- Grip Link -->
   <link name="grip_link">
     <collision>
-      <origin xyz="-0.0982 0.016 0" rpy="0 0 0"/>
+      <origin xyz="-0.064 -0.020 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
-      <origin xyz="-0.0982 0.016 0" rpy="0 0 0"/>
+      <origin xyz="-0.064 -0.020 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip1.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -319,9 +319,9 @@
   <joint name="grip_joint_sub" type="prismatic">
     <parent link="link5"/>
     <child link="grip_link_sub"/>
-    <origin xyz="0.0982 0.036 0" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
-    <limit velocity="6.5" effort="1000" lower="${0.0}" upper="${0.025}" />
+    <origin xyz="0.064 0.0 0" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="0.0" upper="0.0" />
     <dynamics damping="0.7"/>
   </joint>
 
@@ -339,14 +339,14 @@
   <!-- Grip Link Sub -->
   <link name="grip_link_sub">
     <collision>
-      <origin xyz="-0.0982 -0.056 0" rpy="0 0 0"/>
+      <origin xyz="-0.064 -0.020 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
 
     <visual>
-      <origin xyz="-0.0982 -0.056 0" rpy="0 0 0"/>
+      <origin xyz="-0.064 -0.020 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://manipulator_x_description/meshes/manipulator_x_link_grip2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
