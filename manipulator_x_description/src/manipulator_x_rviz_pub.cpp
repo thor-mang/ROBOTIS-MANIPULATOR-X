@@ -50,10 +50,12 @@ void present_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg
     _present_msg.name.push_back( msg->name[ _index ] );
     _present_msg.position.push_back( msg->position[ _index ] );
 
-    if ( _present_msg.name[ _index ] == "grip_joint" )
+    if ( _present_msg.name[ _index ] == "joint4" )
     {
+      _present_msg.name.push_back("grip_joint");
+      _present_msg.position.push_back(_present_msg.position[ _index ] * 0.01);
       _present_msg.name.push_back("grip_joint_sub");
-      _present_msg.position.push_back(_present_msg.position[ _index ]);
+      _present_msg.position.push_back(_present_msg.position[ _index ] * 0.01);
     }
   }
   present_joint_states_pub.publish( _present_msg );
@@ -68,10 +70,12 @@ void goal_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg )
     _goal_msg.name.push_back( msg->name[ _index ] );
     _goal_msg.position.push_back( msg->position[ _index ] );
 
-    if ( _goal_msg.name[ _index ] == "grip_joint" )
+    if ( _goal_msg.name[ _index ] == "joint4" )
     {
+      _goal_msg.name.push_back("grip_joint");
+      _goal_msg.position.push_back(_goal_msg.position[ _index ] * 0.01);
       _goal_msg.name.push_back("grip_joint_sub");
-      _goal_msg.position.push_back(_goal_msg.position[ _index ]);
+      _goal_msg.position.push_back(_goal_msg.position[ _index ] * 0.01);
     }
   }
   goal_joint_states_pub.publish( _goal_msg );

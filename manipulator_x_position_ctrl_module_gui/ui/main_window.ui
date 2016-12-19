@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>772</height>
+    <height>787</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -116,7 +116,7 @@
    <property name="minimumSize">
     <size>
      <width>400</width>
-     <height>731</height>
+     <height>746</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -179,10 +179,13 @@
                <string>Goal position</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="10" column="0">
-                <widget class="QLabel" name="gripper_des_pos_label">
-                 <property name="text">
-                  <string>Gripper</string>
+               <item row="5" column="0">
+                <widget class="QDoubleSpinBox" name="joint2_goal_position_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-999.990000000000009</double>
+                 </property>
+                 <property name="maximum">
+                  <double>999.990000000000009</double>
                  </property>
                 </widget>
                </item>
@@ -196,6 +199,13 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="joint1_des_pos_label">
+                 <property name="text">
+                  <string>Joint 1</string>
+                 </property>
+                </widget>
+               </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="joint2_des_pos_label">
                  <property name="text">
@@ -203,8 +213,15 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <widget class="QDoubleSpinBox" name="joint2_goal_position_doubleSpinBox">
+               <item row="6" column="0">
+                <widget class="QLabel" name="joint3_des_pos_label">
+                 <property name="text">
+                  <string>Joint 3</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QDoubleSpinBox" name="joint4_goal_position_doubleSpinBox">
                  <property name="minimum">
                   <double>-999.990000000000009</double>
                  </property>
@@ -227,59 +244,6 @@
                 <widget class="QLabel" name="joint4_des_pos_label">
                  <property name="text">
                   <string>Joint 4</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
-                <widget class="QPushButton" name="gripper_goal_position_toggleButton">
-                 <property name="text">
-                  <string>Gripper Off</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="0">
-                <widget class="QSlider" name="gripper_goal_position_horizontalSlider">
-                 <property name="maximum">
-                  <number>140</number>
-                 </property>
-                 <property name="pageStep">
-                  <number>30</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="tickPosition">
-                  <enum>QSlider::NoTicks</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="joint1_des_pos_label">
-                 <property name="text">
-                  <string>Joint 1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="joint3_des_pos_label">
-                 <property name="text">
-                  <string>Joint 3</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QDoubleSpinBox" name="joint4_goal_position_doubleSpinBox">
-                 <property name="minimum">
-                  <double>-999.990000000000009</double>
-                 </property>
-                 <property name="maximum">
-                  <double>999.990000000000009</double>
                  </property>
                 </widget>
                </item>
@@ -402,6 +366,53 @@
             <string>Task_space_control</string>
            </attribute>
           </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QGroupBox" name="gripper_groupBox">
+          <property name="title">
+           <string>Gripper position</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QSlider" name="gripper_goal_position_horizontalSlider">
+             <property name="maximum">
+              <number>140</number>
+             </property>
+             <property name="pageStep">
+              <number>30</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="gripper_goal_position_toggleButton">
+             <property name="text">
+              <string>Gripper Open</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

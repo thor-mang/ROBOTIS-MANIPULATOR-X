@@ -87,7 +87,7 @@
     <origin xyz="0.012 0.0 0.034" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.9}" upper="${pi*0.9}" />
-    <dynamics damping="0.7"/>
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran1">
@@ -134,7 +134,7 @@
     <origin xyz="0.0 0.0 0.04235" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
-    <dynamics damping="0.7"/>
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran2">
@@ -181,7 +181,7 @@
     <origin xyz="0.024 0.0 0.12165" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
-    <dynamics damping="0.7"/>
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran3">
@@ -228,7 +228,7 @@
     <origin xyz="0.1235 0.0 0.0" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit velocity="6.5" effort="1000" lower="${-pi*0.5}" upper="${pi*0.5}" />
-    <dynamics damping="0.7"/>
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran4">
@@ -274,8 +274,8 @@
     <child link="grip_link"/>
     <origin xyz="0.064 0.0 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit velocity="6.5" effort="1000" lower="0.0" upper="0.0" />
-    <dynamics damping="0.7"/>
+    <limit velocity="6.5" effort="1000" lower="-0.01" upper="0.035" />
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran7">
@@ -321,8 +321,8 @@
     <child link="grip_link_sub"/>
     <origin xyz="0.064 0.0 0" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
-    <limit velocity="6.5" effort="1000" lower="0.0" upper="0.0" />
-    <dynamics damping="0.7"/>
+    <limit velocity="6.5" effort="1000" lower="-0.01" upper="0.035" />
+    <dynamics damping="0.1"/>
   </joint>
 
   <transmission name="tran8">

@@ -108,8 +108,9 @@ void QNode::sendSetModuleMsg(std_msgs::String msg)
   str_msg.data = "gripper_module";
   set_ctrl_module_pub_.publish(str_msg);
 
-  set_position_ctrl_module_msg_pub_.publish(msg);
   set_gripper_module_msg_pub_.publish(msg);
+  set_position_ctrl_module_msg_pub_.publish(msg);
+
 }
 
 void QNode::sendEnableJointControlMode(std_msgs::String msg)

@@ -123,7 +123,7 @@ void MainWindow::on_gripper_goal_position_toggleButton_clicked(bool check)
 
   if (ui_.gripper_goal_position_toggleButton->isChecked())
   {
-    ui_.gripper_goal_position_toggleButton->setText("Gripper On");
+    ui_.gripper_goal_position_toggleButton->setText("Gripper Closed");
 
     position.data = 0.0 * DEGREE2RADIAN;
     qnode_.sendGripperGoalPositionMsg(position);
@@ -133,7 +133,7 @@ void MainWindow::on_gripper_goal_position_toggleButton_clicked(bool check)
   }
   else
   {
-    ui_.gripper_goal_position_toggleButton->setText("Gripper Off");
+    ui_.gripper_goal_position_toggleButton->setText("Gripper Open");
 
     position.data = 170.0 * DEGREE2RADIAN;
     qnode_.sendGripperGoalPositionMsg(position);
