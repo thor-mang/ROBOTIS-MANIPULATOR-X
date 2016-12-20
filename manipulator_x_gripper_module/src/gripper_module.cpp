@@ -81,10 +81,10 @@ void ManipulatorX4GripperModule::queueThread()
   nh.setCallbackQueue(&callback_queue);
 
   status_msg_pub_ = nh.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 10);
-  set_gripper_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4_gripper/set_module_msg", 10,
+  set_gripper_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4/gripper/set_module_msg", 10,
                                    &ManipulatorX4GripperModule::setModuleMsgCallback, this);
 
-  gripper_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4_gripper/send_goal_position", 10,
+  gripper_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4/gripper/send_goal_position", 10,
                                           &ManipulatorX4GripperModule::setGripperPositionCallback, this);
 
   while (nh.ok())

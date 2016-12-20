@@ -20,10 +20,10 @@
 
   <!-- Load the URDF into the ROS Parameter Server -->
   <param name="robot_description"
-	 command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_4dof.xacro'"/>
+   command="$(find xacro)/xacro.py '$(find manipulator_x_description)/urdf/manipulator_x_4dof.xacro'"/>
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
      args="-urdf -model manipulator_x -z 0.0 -param robot_description"/>
 
   <!-- ros_control robotis manipulator launch file -->

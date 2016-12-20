@@ -73,24 +73,24 @@ bool QNode::init()
   status_msg_sub_ = nh.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
 
   set_ctrl_module_pub_ = nh.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 10);
-  set_position_ctrl_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_position_ctrl/set_module_msg", 10);
-  set_gripper_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4_gripper/set_module_msg", 10);
+  set_position_ctrl_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4/position_ctrl/set_module_msg", 10);
+  set_gripper_module_msg_pub_ = nh.advertise<std_msgs::String>("/robotis/manipulator_x4/gripper/set_module_msg", 10);
 
-  gripper_goal_position_pub_ = nh.advertise<std_msgs::Float64>("/robotis/manipulator_x4_gripper/send_goal_position", 10);
+  gripper_goal_position_pub_ = nh.advertise<std_msgs::Float64>("/robotis/manipulator_x4/gripper/send_goal_position", 10);
 
   enable_joint_control_mode_pub_ = nh.advertise<std_msgs::String>(
-                                  "/robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/enable_joint_control_mode", 10);
   set_init_position_pub_ = nh.advertise<std_msgs::String>(
-                                  "/robotis/manipulator_x4_position_ctrl/set_init_position", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/set_init_position", 10);
   set_zero_position_pub_ = nh.advertise<std_msgs::String>(
-                                  "/robotis/manipulator_x4_position_ctrl/send_zero_position", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/send_zero_position", 10);
   set_goal_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
-                                  "/robotis/manipulator_x4_position_ctrl/send_goal_position", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/send_goal_position", 10);
   joint_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>(
-                                  "/robotis/manipulator_x4_position_ctrl/joint_present_position", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/joint_present_position", 10);
 
   enable_task_space_control_mode_pub_ = nh.advertise<std_msgs::String>(
-                                  "/robotis/manipulator_x4_position_ctrl/enable_tack_space_control_mode", 10);
+                                  "/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10);
 
   getJointPresentPosition();
 

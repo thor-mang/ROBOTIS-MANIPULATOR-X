@@ -89,21 +89,21 @@ void ManipulatorX4PositionCtrlModule::queueThread()
   nh.setCallbackQueue(&callback_queue);
 
   status_msg_pub_  = nh.advertise<robotis_controller_msgs::StatusMsg>("/robotis/status", 10);
-  set_position_ctrl_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_position_ctrl_module_msg", 10,
+  set_position_ctrl_module_msg_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/set_module_msg", 10,
                                    &ManipulatorX4PositionCtrlModule::setPositionCtrlModuleMsgCallback, this);
 
-  enable_joint_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/enable_joint_control_mode", 10,
+  enable_joint_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/enable_joint_control_mode", 10,
                                                 &ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback, this);
-  set_init_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/set_init_position", 10,
+  set_init_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/set_init_position", 10,
                                         &ManipulatorX4PositionCtrlModule::setInitPositionMsgCallback, this);
-  set_zero_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/send_zero_position", 10,
+  set_zero_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/send_zero_position", 10,
                                         &ManipulatorX4PositionCtrlModule::setZeroPositionMsgCallback, this);
-  joint_present_position_server_ = nh.advertiseService("/robotis/manipulator_x4_position_ctrl/joint_present_position",
+  joint_present_position_server_ = nh.advertiseService("/robotis/manipulator_x4/position_ctrl/joint_present_position",
                                                        &ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback, this);
-  joint_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/send_goal_position", 10,
+  joint_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/send_goal_position", 10,
                                           &ManipulatorX4PositionCtrlModule::setJointGoalPositionMsgCallback, this);
 
-  enable_task_space_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4_position_ctrl/enable_tack_space_control_mode", 10,
+  enable_task_space_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10,
                                                      &ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback, this);
 
   while (nh.ok())

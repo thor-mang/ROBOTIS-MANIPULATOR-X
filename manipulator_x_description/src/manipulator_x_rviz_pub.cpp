@@ -47,15 +47,19 @@ void present_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg
 
   for ( int _index = 0 ; _index < msg->name.size(); _index++ )
   {
-    _present_msg.name.push_back( msg->name[ _index ] );
-    _present_msg.position.push_back( msg->position[ _index ] );
 
-    if ( _present_msg.name[ _index ] == "joint4" )
+
+    if ( msg->name[ _index ] == "grip_joint" )
     {
-      _present_msg.name.push_back("grip_joint");
-      _present_msg.position.push_back(_present_msg.position[ _index ] * 0.01);
+      _present_msg.name.push_back( msg->name[ _index ] );
+      _present_msg.position.push_back( msg->position[ _index ] * 0.01);
       _present_msg.name.push_back("grip_joint_sub");
-      _present_msg.position.push_back(_present_msg.position[ _index ] * 0.01);
+      _present_msg.position.push_back(_present_msg.position[ _index ]);
+    }
+    else
+    {
+      _present_msg.name.push_back( msg->name[ _index ] );
+      _present_msg.position.push_back( msg->position[ _index ] );
     }
   }
   present_joint_states_pub.publish( _present_msg );
@@ -67,15 +71,19 @@ void goal_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg )
 
   for ( int _index = 0 ; _index < msg->name.size(); _index++ )
   {
-    _goal_msg.name.push_back( msg->name[ _index ] );
-    _goal_msg.position.push_back( msg->position[ _index ] );
 
-    if ( _goal_msg.name[ _index ] == "joint4" )
+
+    if ( msg->name[ _index ] == "grip_joint" )
     {
-      _goal_msg.name.push_back("grip_joint");
-      _goal_msg.position.push_back(_goal_msg.position[ _index ] * 0.01);
+      _goal_msg.name.push_back( msg->name[ _index ] );
+      _goal_msg.position.push_back( msg->position[ _index ] * 0.01);
       _goal_msg.name.push_back("grip_joint_sub");
-      _goal_msg.position.push_back(_goal_msg.position[ _index ] * 0.01);
+      _goal_msg.position.push_back(_goal_msg.position[ _index ]);
+    }
+    else
+    {
+      _goal_msg.name.push_back( msg->name[ _index ] );
+      _goal_msg.position.push_back( msg->position[ _index ] );
     }
   }
   goal_joint_states_pub.publish( _goal_msg );
@@ -83,11 +91,11 @@ void goal_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg )
 
 int main( int argc , char **argv )
 {
-  ros::init( argc , argv , "manipulator_x_publisher" );
+  ros::init( argc , argv , "manipulator_x4_publisher" );
   ros::NodeHandle nh("~");
 
-  present_joint_states_pub  = nh.advertise<sensor_msgs::JointState>("/robotis/manipulator_x/present_joint_states", 0);
-  goal_joint_states_pub  = nh.advertise<sensor_msgs::JointState>("/robotis/manipulator_x/goal_joint_states", 0);
+  present_joint_states_pub  = nh.advertise<sensor_msgs::JointState>("/robotis/manipulator_x4/present_joint_states", 0);
+  goal_joint_states_pub  = nh.advertise<sensor_msgs::JointState>("/robotis/manipulator_x4/goal_joint_states", 0);
 
   ros::Subscriber present_joint_states_sub = nh.subscribe("/robotis/present_joint_states", 5, present_joint_states_callback);
   ros::Subscriber goal_joint_states_sub = nh.subscribe("/robotis/goal_joint_states", 5, goal_joint_states_callback);

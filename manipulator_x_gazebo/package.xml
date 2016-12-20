@@ -2,7 +2,7 @@
 <package>
   <name>manipulator_x_gazebo</name>
   <version>0.0.0</version>
-  <description>The manipulator_x_gazebo package</description>
+  <description>The manipulator_x4_gazebo package</description>
   <license>BSD</license>
   <author email="sch@robotis.com">SCH</author>
   <author email="thlim@robotis.com">Darby Lim</author>

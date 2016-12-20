@@ -3,7 +3,7 @@ robotis_manipulator_x:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 125
- 
+
   # Position Controllers ---------------------------------------
   joint1_position:
     type: effort_controllers/JointPositionController

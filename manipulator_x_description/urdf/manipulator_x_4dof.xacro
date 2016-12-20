@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<!-- ROBOTIS Manipulator-X -->
-<robot name="robotis_manipulator_x" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- ROBOTIS Manipulator-X4 -->
+<robot name="/robotis/manipulator_x4" xmlns:xacro="http://www.ros.org/wiki/xacro">
   
   <!-- some parameters -->
   <xacro:property name="pi" value="3.141592654" />
