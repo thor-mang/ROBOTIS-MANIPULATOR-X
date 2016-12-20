@@ -2,7 +2,7 @@
 
 <launch>
     <arg name="use_gripper"	default="true" />
-    <arg name="use_gazebo"	default="false" />
+    <arg name="use_gazebo"	default="true" />
 
     <param name="gripper"          	value="$(arg use_gripper)"   type="bool"/> 
     <param name="gazebo"                value="$(arg use_gazebo)"    type="bool"/>
