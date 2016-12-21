@@ -47,8 +47,6 @@ void present_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg
 
   for ( int _index = 0 ; _index < msg->name.size(); _index++ )
   {
-
-
     if ( msg->name[ _index ] == "grip_joint" )
     {
       _present_msg.name.push_back( msg->name[ _index ] );
@@ -71,8 +69,6 @@ void goal_joint_states_callback( const sensor_msgs::JointState::ConstPtr& msg )
 
   for ( int _index = 0 ; _index < msg->name.size(); _index++ )
   {
-
-
     if ( msg->name[ _index ] == "grip_joint" )
     {
       _goal_msg.name.push_back( msg->name[ _index ] );

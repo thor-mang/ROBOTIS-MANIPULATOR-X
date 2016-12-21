@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- ROBOTIS Manipulator-X4 -->
-<robot name="/robotis/manipulator_x4" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="/gazebo/robotis/manipulator_x4" xmlns:xacro="http://www.ros.org/wiki/xacro">
   
   <!-- some parameters -->
   <xacro:property name="pi" value="3.141592654" />
@@ -71,13 +71,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.00025 0.00000 0.01780" rpy="0 0 0"/>
       <mass value="0.087"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       <inertia ixx="0.00001378" ixy="0.0" ixz="-0.00000025" iyy="0.00002381" iyz="0.0" izz="0.00002107" />
     </inertial>
--->
+
   </link>
 
   <!-- Joint 1 -->
@@ -93,10 +93,10 @@
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="joint1">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor1">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -118,13 +118,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.00002 -0.00045 0.03293" rpy="0 0 0"/>
       <mass value="0.117"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       <inertia ixx="0.00004110" ixy="0.0" ixz="-0.00000025" iyy="0.00002381" iyz="0.0" izz="0.00002107" />
     </inertial>
--->
+
   </link>
 
   <!-- Joint 2 -->
@@ -140,10 +140,10 @@
   <transmission name="tran2">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="joint2">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor2">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -165,13 +165,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.00966 -0.00034 0.11795" rpy="0 0 0"/>
       <mass value="0.156"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       <inertia ixx="0.00041624" ixy="0.00000017" ixz="-0.00004492" iyy="0.00042758" iyz="0.00000159" izz="0.00005317" />
     </inertial>
--->
+
   </link>
 
   <!-- Joint 3 -->
@@ -187,10 +187,10 @@
   <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="joint3">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor3">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -212,13 +212,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.11076 -0.00035 0.00050" rpy="0 0 0"/>
       <mass value="0.149"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       <inertia ixx="0.00003083" ixy="0.00000147" ixz="-0.00000222" iyy="0.00036703" iyz="-0.00000003" izz="0.00037667" />
     </inertial>
--->
+
   </link>
 
   <!-- Joint 4 -->
@@ -234,10 +234,10 @@
   <transmission name="tran4">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="joint4">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor4">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -259,13 +259,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.03767 0.00262 -0.00043" rpy="0 0 0"/>
       <mass value="0.124"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
       <inertia ixx="0.00004822" ixy="-0.00000148" ixz="0.00000024" iyy="0.00004342" iyz="0.00000014" izz="0.00005784" />
     </inertial>
--->
+
   </link>
 
   <!-- Grip Joint -->
@@ -281,10 +281,10 @@
   <transmission name="tran7">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="grip_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor7">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -306,13 +306,13 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.02666 -0.00910 -0.02300" rpy="0 0 0"/>
       <mass value="0.06721"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
       <inertia ixx="0.00002875" ixy="-0.00000593" ixz="-0.00000006" iyy="0.00006646" iyz="-0.00000009" izz="0.00005474" />
     </inertial>
--->
+
   </link>
 
   <!-- Grip Joint Sub -->
@@ -328,10 +328,10 @@
   <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="grip_joint_sub">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor8">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -353,12 +353,12 @@
       <material name="grey"/>
     </visual>
 
-<!--    <inertial>
+    <inertial>
       <origin xyz="0.02666 0.00910 -0.02300" rpy="0 0 0"/>
       <mass value="0.06721"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
       <inertia ixx="0.00002875" ixy="0.00000593" ixz="0.00000006" iyy="0.00006646" iyz="-0.00000009" izz="0.00005474" />
     </inertial>
--->
+
   </link>
 </robot>
