@@ -1,4 +1,4 @@
-robotis_manipulator_x:
+gazebo/robotis/manipulator_x4:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
@@ -6,31 +6,25 @@ robotis_manipulator_x:
 
   # Position Controllers ---------------------------------------
   joint1_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: joint1
-    pid: {p: 9000.0, i: 0.1, d: 500.0}
 
   joint2_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: joint2
-    pid: {p: 9000.0, i: 0.1, d: 500.0}
 
   joint3_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: joint3
-    pid: {p: 6000.0, i: 0.1, d: 500.0}
 
   joint4_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: joint4
-    pid: {p: 6000.0, i: 0.1, d: 500.0}
 
   grip_joint_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: grip_joint
-    pid: {p: 6000.0, i: 0.1, d: 500.0}
 
   grip_joint_sub_position:
-    type: effort_controllers/JointPositionController
+    type: position_controllers/JointPositionController
     joint: grip_joint_sub
-    pid: {p: 6000.0, i: 0.1, d: 500.0}

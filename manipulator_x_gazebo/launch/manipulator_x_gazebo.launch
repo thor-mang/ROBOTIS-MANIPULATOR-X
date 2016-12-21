@@ -1,5 +1,4 @@
 <?xml version="1.0" ?>
-
 <launch>
   <!-- These are the arguments you can pass this launch file, for example paused:=true -->
   <arg name="paused" default="true"/>
@@ -28,4 +27,8 @@
 
   <!-- ros_control robotis manipulator launch file -->
   <include file="$(find manipulator_x_gazebo)/launch/position_controller_4dof.launch"/>
+
+  <!-- gripper pub -->
+  <node name="gazebo_grip_pub" pkg="manipulator_x_gazebo" type="manipulator_x_gazebo_grip_pub">
+  </node>
 </launch>
