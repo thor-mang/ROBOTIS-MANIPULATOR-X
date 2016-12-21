@@ -52,11 +52,23 @@
 #include <eigen3/Eigen/Eigen>
 #include <fstream>
 
+#include <kdl/joint.hpp>
+#include <kdl/chain.hpp>
+#include <kdl/chaindynparam.hpp>
+#include <kdl/jacobian.hpp>
+#include <kdl/chainjnttojacsolver.hpp>
+#include <kdl/chainfksolver.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainiksolvervel_pinv.hpp>
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+
 #include "robotis_math/robotis_math.h"
 #include "robotis_framework_common/motion_module.h"
 #include "robotis_controller_msgs/StatusMsg.h"
 #include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
 
 namespace manipulator_x4_position_ctrl_module
 {
@@ -68,51 +80,84 @@ class ManipulatorX4PositionCtrlModule
     public robotis_framework::Singleton<ManipulatorX4PositionCtrlModule>
 {
  private:
+  bool using_gazebo_;
+
   int control_cycle_msec_;
   boost::thread queue_thread_;
 
-  bool jointSpaceControlMode_;
-  bool taskSpaceControlMode_;
-
-  bool using_gazebo_;
-  bool is_moving_;
-  double move_time_;
-  int all_time_steps_;
-  int step_cnt_;
-
-  ros::Publisher status_msg_pub_;
-  ros::ServiceServer joint_present_position_server_;
-
-  ros::Subscriber set_position_ctrl_module_msg_sub_;
-  ros::Subscriber set_init_position_sub_;
-  ros::Subscriber set_zero_position_sub_;
-  ros::Subscriber joint_goal_position_sub_;
-  ros::Subscriber enable_joint_control_mode_sub_;
-  ros::Subscriber enable_task_space_control_mode_sub_;
-
+  // Joint states
   std::map<std::string, uint8_t> joint_id_;
+
   Eigen::VectorXd joint_present_position_;
   Eigen::VectorXd joint_present_velocity_;
   Eigen::VectorXd joint_present_current_;
   Eigen::VectorXd joint_goal_position_;
 
+  // Publisher
+  ros::Publisher status_msg_pub_;
+  ros::ServiceServer joint_present_position_server_;
+  ros::ServiceServer joint_kinematics_position_server_;
+
+  // Subscriber
+  ros::Subscriber set_position_ctrl_module_msg_sub_;
+
+  ros::Subscriber enable_joint_control_mode_sub_;
+  ros::Subscriber set_init_position_sub_;
+  ros::Subscriber set_zero_position_sub_;
+  ros::Subscriber joint_goal_position_sub_;
+
+  ros::Subscriber enable_task_space_control_mode_sub_;
+  ros::Subscriber set_kinematics_pose_msg_sub_;
+
+  // Control Mode
+  bool jointSpaceControlMode_;
+  bool taskSpaceControlMode_;
+
+  // Trajectory
+  bool is_moving_;
+  double move_time_;
+  int all_time_steps_;
+  int step_cnt_;
+
+  // Joint Space Control
   Eigen::MatrixXd joint_goal_trajectory_;
+
+  // Task Space Control
+  KDL::Chain chain_;
+  KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
+  KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
+  KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
+
+  Eigen::MatrixXd jacobian_;
+  geometry_msgs::Pose present_kinematics_position_;
+
+  Eigen::MatrixXd task_goal_trajectory_;
+  Eigen::Quaterniond initial_orientation_, target_orientation_;
 
   void queueThread();
   void publishStatusMsg(unsigned int type, std::string msg);
   void setPositionCtrlModuleMsgCallback(const std_msgs::String::ConstPtr &msg);
 
+  bool getJointPresentPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
+                                       manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
+  bool getJointKinematicsPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Request &req,
+                                             manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Response &res);
+
   void enableJointSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
   void setInitPositionMsgCallback(const std_msgs::String::ConstPtr &msg);
   void setZeroPositionMsgCallback(const std_msgs::String::ConstPtr &msg);
-  bool getJointPresentPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
-                                       manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
   void setJointGoalPositionMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr &msg);
 
   void enableTaskSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void setKinematicsPositionMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr &msg);
 
   void calculateGoalJointTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
+  void calculateGoalTaskTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
   void parseIniPoseData(const std::string &path);
+  void setKinematicsChain(void);
+  void calcJacobian();
+  void calcForwardKinematics();
+  bool calcInverseKinematics(int cnt);
 
  public:
   ManipulatorX4PositionCtrlModule();

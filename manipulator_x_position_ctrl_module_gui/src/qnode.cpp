@@ -91,6 +91,8 @@ bool QNode::init()
 
   enable_task_space_control_mode_pub_ = nh.advertise<std_msgs::String>(
                                   "/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10);
+  set_kinematics_pose_msg_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>(
+                                 "/robotis/manipulator_x4/position_ctrl/set_kinematics_position", 10);
 
   getJointPresentPosition();
 
@@ -110,7 +112,6 @@ void QNode::sendSetModuleMsg(std_msgs::String msg)
 
   set_gripper_module_msg_pub_.publish(msg);
   set_position_ctrl_module_msg_pub_.publish(msg);
-
 }
 
 void QNode::sendEnableJointControlMode(std_msgs::String msg)
@@ -153,6 +154,11 @@ void QNode::sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::Jo
   set_goal_joint_position_pub_.publish(msg);
 }
 
+void QNode::sendKinematicsPositionMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
+{
+  set_kinematics_pose_msg_pub_.publish(msg);
+}
+
 void QNode::sendGripperGoalPositionMsg(std_msgs::Float64 msg)
 {
   gripper_goal_position_pub_.publish(msg);
@@ -173,7 +179,7 @@ void QNode::run()
 
 void QNode::statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg)
 {
-  if (msg->status_msg == "End Trajectory")
+  if (msg->status_msg == "End Trajectoy")
   {
     getJointPresentPosition();
   }

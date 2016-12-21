@@ -48,7 +48,7 @@
 
 namespace manipulator_x_position_ctrl_module_gui
 {
-#define JOINT_CONTROL (0)
+#define JOINT_SPACE_CONTROL (0)
 #define TASK_SPACE_CONTROL (1)
 
 class MainWindow : public QMainWindow
@@ -65,7 +65,7 @@ Q_OBJECT
 	void on_actionAbout_triggered();
 
   void updateLoggingView(); // no idea why this can't connect automatically
-  void on_set_control_mode_pushButton_clicked(bool check);
+  void on_set_control_module_pushButton_clicked(bool check);
   void on_send_goal_position_pushButton_clicked(bool check);
   void on_zero_position_pushButton_clicked(bool check);
   void on_init_position_pushButton_clicked(bool check);
@@ -78,6 +78,7 @@ Q_OBJECT
  private:
   Ui::MainWindowDesign ui_;
   QNode qnode_;
+  uint8_t control_mode_;
 };
 
 }  // namespace manipulator_x_position_ctrl_module_gui

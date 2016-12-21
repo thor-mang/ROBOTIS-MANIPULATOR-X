@@ -17,10 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   cmake_modules
+
   manipulator_x_position_ctrl_module_msgs
 )
 
 find_package(Eigen REQUIRED)
+find_package(Orocos-KDL)
 
 ################################################################################
 # Declare ROS messages, services and actions
@@ -47,11 +49,12 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
+  ${Orocos-KDL_INCLUDE_DIRS}
 )
 
 add_library(manipulator_x_position_ctrl_module src/position_ctrl_module.cpp)
 add_dependencies(manipulator_x_position_ctrl_module ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(manipulator_x_position_ctrl_module yaml-cpp ${catkin_LIBRARIES})
+target_link_libraries(manipulator_x_position_ctrl_module yaml-cpp /opt/ros/kinetic/lib/liborocos-kdl.so ${catkin_LIBRARIES})
 
 ################################################################################
 # Install

@@ -76,12 +76,14 @@ void MainWindow::updateLoggingView()
   ui_.view_logging->scrollToBottom();
 }
 
-void MainWindow::on_set_control_mode_pushButton_clicked(bool check)
+void MainWindow::on_set_control_module_pushButton_clicked(bool check)
 {
   std_msgs::String msg;
   msg.data = "set_module";
 
   qnode_.sendSetModuleMsg(msg);
+
+  control_mode_ = JOINT_SPACE_CONTROL;
 }
 
 void MainWindow::on_zero_position_pushButton_clicked(bool check)
@@ -90,6 +92,8 @@ void MainWindow::on_zero_position_pushButton_clicked(bool check)
   msg.data = "init_position";
 
   qnode_.setZeroPosition(msg);
+
+  ui_.manipulator_x4_tabWidget->setCurrentIndex(JOINT_SPACE_CONTROL);
 }
 
 void MainWindow::on_init_position_pushButton_clicked(bool check)
@@ -98,21 +102,29 @@ void MainWindow::on_init_position_pushButton_clicked(bool check)
   msg.data = "zero_position";
 
   qnode_.setInitPosition(msg);
+
+  ui_.manipulator_x4_tabWidget->setCurrentIndex(JOINT_SPACE_CONTROL);
 }
 
 void MainWindow::changeControlMode(int index)
 {
   std_msgs::String str_msg;
 
-  if (index == JOINT_CONTROL)
+  control_mode_ = index;
+
+  if (control_mode_ == JOINT_SPACE_CONTROL)
   {
     str_msg.data = "set_joint_control_mode";
     qnode_.sendEnableJointControlMode(str_msg);
+
+    ui_.send_goal_position_pushButton->setText("Send Goal Joint Position");
   }
-  else if (index == TASK_SPACE_CONTROL)
+  else if (control_mode_ == TASK_SPACE_CONTROL)
   {
     str_msg.data = "set_task_space_control_mode";
     qnode_.sendEnableTaskSpaceControlMode(str_msg);
+
+    ui_.send_goal_position_pushButton->setText("Send Kinematics Position");
   }
 }
 
@@ -155,20 +167,46 @@ void MainWindow::changeGripperPosition(int position)
 
 void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
 {
-  manipulator_x_position_ctrl_module_msgs::JointPose msg;
+  if (control_mode_ == JOINT_SPACE_CONTROL)
+  {
+    manipulator_x_position_ctrl_module_msgs::JointPose msg;
 
-  msg.move_time = 1.5;
-  msg.joint_name.push_back("joint1");
-  msg.joint_name.push_back("joint2");
-  msg.joint_name.push_back("joint3");
-  msg.joint_name.push_back("joint4");
+    msg.move_time = 1.5;
+    msg.joint_name.push_back("joint1");
+    msg.joint_name.push_back("joint2");
+    msg.joint_name.push_back("joint3");
+    msg.joint_name.push_back("joint4");
 
-  msg.position.push_back(ui_.joint1_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint2_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint3_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
-  msg.position.push_back(ui_.joint4_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+    msg.position.push_back(ui_.joint1_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+    msg.position.push_back(ui_.joint2_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+    msg.position.push_back(ui_.joint3_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
+    msg.position.push_back(ui_.joint4_goal_position_doubleSpinBox->value()*DEGREE2RADIAN);
 
-  qnode_.sendJointGoalPositionMsg(msg);
+    qnode_.sendJointGoalPositionMsg(msg);
+  }
+  else if (control_mode_ == TASK_SPACE_CONTROL)
+  {
+    manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
+
+    msg.group_name = "arm";
+    msg.move_time = 1.5;
+
+    msg.pose.position.x = ui_.goal_x_doubleSpinBox->value();
+    msg.pose.position.y = ui_.goal_y_doubleSpinBox->value();
+    msg.pose.position.z = ui_.goal_z_doubleSpinBox->value();
+
+    double roll  = ui_.goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
+    double pitch = ui_.goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
+    double yaw   = ui_.goal_yaw_doubleSpinBox->value() * DEGREE2RADIAN;
+
+    Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
+
+    msg.pose.orientation.x = quaternion.x();
+    msg.pose.orientation.y = quaternion.y();
+    msg.pose.orientation.z = quaternion.z();
+
+    qnode_.sendKinematicsPositionMsg(msg);
+  }
 }
 
 void MainWindow::updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg)

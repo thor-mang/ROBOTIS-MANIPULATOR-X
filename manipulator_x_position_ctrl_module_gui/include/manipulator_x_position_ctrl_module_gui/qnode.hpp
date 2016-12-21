@@ -47,7 +47,10 @@
 #include <std_msgs/Float64.h>
 
 #include "robotis_controller_msgs/StatusMsg.h"
+#include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
 #endif
 
 namespace manipulator_x_position_ctrl_module_gui
@@ -80,6 +83,7 @@ Q_OBJECT
   void setZeroPosition(std_msgs::String msg);
   void setInitPosition(std_msgs::String msg);
   void sendGripperGoalPositionMsg(std_msgs::Float64 msg);
+  void sendKinematicsPositionMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
 
 Q_SIGNALS:
 	void loggingUpdated();
@@ -95,14 +99,18 @@ private:
   ros::ServiceClient joint_present_position_client_;
 
   ros::Publisher set_position_ctrl_module_msg_pub_;
+
   ros::Publisher set_gripper_module_msg_pub_;
   ros::Publisher gripper_goal_position_pub_;
+
   ros::Publisher enable_joint_control_mode_pub_;
   ros::Publisher set_init_position_pub_;
   ros::Publisher set_zero_position_pub_;
   ros::Publisher set_ctrl_module_pub_;
   ros::Publisher set_goal_joint_position_pub_;
+
   ros::Publisher enable_task_space_control_mode_pub_;
+  ros::Publisher set_kinematics_pose_msg_pub_;
 
   QStringListModel logging_model;
 };
