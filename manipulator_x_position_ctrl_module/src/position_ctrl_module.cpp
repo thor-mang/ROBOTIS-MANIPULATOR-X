@@ -165,7 +165,7 @@ bool ManipulatorX4PositionCtrlModule::getJointKinematicsPositionMsgCallback(mani
   calcForwardKinematics();
 
   res.position_ctrl_kinematics_pose.group_name = "arm";
-  res.position_ctrl_kinematics_pose.pose = present_kinematics_position_;
+  res.position_ctrl_kinematics_pose.position = present_kinematics_position_;
 
   return true;
 }
@@ -421,10 +421,14 @@ void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
     max_joint_position_limit(index) = max_position_limit[index]*DEGREE2RADIAN;
   }
 
+   // Kinematics & Dynamics Parameter
+  dyn_param_ = new KDL::ChainDynParam(chain_, KDL::Vector(0.0, 0.0, -9.81));
+
   // Forward kinematics solver
   forward_kinematics_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
 
   // Inverse kinematics solver
+  inverse_vel_kinematics_solver_ = new KDL::ChainIkSolverVel_pinv(chain_);
   inverse_pos_kinematics_solver_ = new KDL::ChainIkSolverPos_NR_JL(chain_, min_joint_position_limit, max_joint_position_limit,
                                                                    *forward_kinematics_solver_,
                                                                    *inverse_vel_kinematics_solver_);
@@ -534,7 +538,7 @@ void ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback(const man
       publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Kinematics Position");
 
       Eigen::VectorXd initial_position = Eigen::VectorXd::Zero(3);
-      Eigen::VectorXd target_position = Eigen::VectorXd::Zero(3);
+      Eigen::VectorXd target_position  = Eigen::VectorXd::Zero(3);
 
       move_time_ = msg->move_time;
 
@@ -544,19 +548,19 @@ void ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback(const man
       initial_position(1) = present_kinematics_position_.position.y;
       initial_position(2) = present_kinematics_position_.position.z;
 
-      target_position(0) = msg->pose.position.x;
-      target_position(1) = msg->pose.position.y;
-      target_position(2) = msg->pose.position.z;
+      target_position(0) = msg->position.position.x;
+      target_position(1) = msg->position.position.y;
+      target_position(2) = msg->position.position.z;
 
       initial_orientation_.x() = present_kinematics_position_.orientation.x;
       initial_orientation_.y() = present_kinematics_position_.orientation.y;
       initial_orientation_.z() = present_kinematics_position_.orientation.z;
       initial_orientation_.w() = present_kinematics_position_.orientation.w;
 
-      target_orientation_.x() = msg->pose.orientation.x;
-      target_orientation_.y() = msg->pose.orientation.y;
-      target_orientation_.z() = msg->pose.orientation.z;
-      target_orientation_.w() = msg->pose.orientation.w;
+      target_orientation_.x() = msg->position.orientation.x;
+      target_orientation_.y() = msg->position.orientation.y;
+      target_orientation_.z() = msg->position.orientation.z;
+      target_orientation_.w() = msg->position.orientation.w;
 
       calculateGoalTaskTrajectory(initial_position, target_position);
     }

@@ -76,20 +76,26 @@ Q_OBJECT
 
   void sendSetModuleMsg(std_msgs::String msg);
   void statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg);
-  void sendEnableTaskSpaceControlMode(std_msgs::String msg);
-  void sendEnableJointControlMode(std_msgs::String msg);
-  void getJointPresentPosition(void);
-  void sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+
   void setZeroPosition(std_msgs::String msg);
   void setInitPosition(std_msgs::String msg);
+
   void sendGripperGoalPositionMsg(std_msgs::Float64 msg);
+
+  void sendEnableJointControlMode(std_msgs::String msg);
+  void sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void getJointPresentPosition(void);
+
+  void sendEnableTaskSpaceControlMode(std_msgs::String msg);
   void sendKinematicsPositionMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
+  void getKinematicsPresentPosition(void);
 
 Q_SIGNALS:
 	void loggingUpdated();
   void rosShutdown();
 
-  void updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void updateJointPresentPosition(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void updateKinematicsPresentPosition(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
 
 private:
 	int init_argc;
@@ -111,6 +117,7 @@ private:
 
   ros::Publisher enable_task_space_control_mode_pub_;
   ros::Publisher set_kinematics_pose_msg_pub_;
+  ros::ServiceClient kinematics_present_position_client_;
 
   QStringListModel logging_model;
 };

@@ -59,8 +59,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   QObject::connect(&qnode_, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
 
   qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::JointPose>("manipulator_x_position_ctrl_module_msgs::JointPose");
-  QObject::connect(&qnode_, SIGNAL(updateJointPresentPose(manipulator_x_position_ctrl_module_msgs::JointPose)),
+  QObject::connect(&qnode_, SIGNAL(updateJointPresentPosition(manipulator_x_position_ctrl_module_msgs::JointPose)),
                    this, SLOT(updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose)));
+
+  qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("manipulator_x_position_ctrl_module_msgs::KinematicsPose");
+  QObject::connect(&qnode_, SIGNAL(updateKinematicsPresentPosition(manipulator_x_position_ctrl_module_msgs::KinematicsPose)),
+                   this, SLOT(updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::KinematicsPose)));
 
  // ui_.gripper_goal_position_horizontalSlider->
   QObject::connect(ui_.gripper_goal_position_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(changeGripperPosition(int)));
@@ -191,9 +195,9 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
     msg.group_name = "arm";
     msg.move_time = 1.5;
 
-    msg.pose.position.x = ui_.goal_x_doubleSpinBox->value();
-    msg.pose.position.y = ui_.goal_y_doubleSpinBox->value();
-    msg.pose.position.z = ui_.goal_z_doubleSpinBox->value();
+    msg.position.position.x = ui_.goal_x_doubleSpinBox->value();
+    msg.position.position.y = ui_.goal_y_doubleSpinBox->value();
+    msg.position.position.z = ui_.goal_z_doubleSpinBox->value();
 
     double roll  = ui_.goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
     double pitch = ui_.goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
@@ -201,9 +205,9 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
 
     Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
 
-    msg.pose.orientation.x = quaternion.x();
-    msg.pose.orientation.y = quaternion.y();
-    msg.pose.orientation.z = quaternion.z();
+    msg.position.orientation.x = quaternion.x();
+    msg.position.orientation.y = quaternion.y();
+    msg.position.orientation.z = quaternion.z();
 
     qnode_.sendKinematicsPositionMsg(msg);
   }
@@ -215,6 +219,38 @@ void MainWindow::updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_modu
   ui_.joint2_present_position_lineEdit->setText(QString::number(msg.position[1]*RADIAN2DEGREE, 1, 1));
   ui_.joint3_present_position_lineEdit->setText(QString::number(msg.position[2]*RADIAN2DEGREE, 1, 1));
   ui_.joint4_present_position_lineEdit->setText(QString::number(msg.position[3]*RADIAN2DEGREE, 1, 1));
+
+  ui_.joint1_goal_position_doubleSpinBox->setValue(msg.position[0]*RADIAN2DEGREE);
+  ui_.joint2_goal_position_doubleSpinBox->setValue(msg.position[1]*RADIAN2DEGREE);
+  ui_.joint3_goal_position_doubleSpinBox->setValue(msg.position[2]*RADIAN2DEGREE);
+  ui_.joint4_goal_position_doubleSpinBox->setValue(msg.position[3]*RADIAN2DEGREE);
+}
+
+void MainWindow::updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
+{
+  ui_.present_x_lineEdit->setText(QString::number(msg.position.position.x, 'f', 4));
+  ui_.present_y_lineEdit->setText(QString::number(msg.position.position.y, 'f', 4));
+  ui_.present_z_lineEdit->setText(QString::number(msg.position.position.z, 'f', 4));
+
+  ui_.goal_x_doubleSpinBox->setValue(msg.position.position.x);
+  ui_.goal_y_doubleSpinBox->setValue(msg.position.position.y);
+  ui_.goal_z_doubleSpinBox->setValue(msg.position.position.z);
+
+  Eigen::Quaterniond quaterion;
+  quaterion.x() = msg.position.orientation.x;
+  quaterion.y() = msg.position.orientation.y;
+  quaterion.z() = msg.position.orientation.z;
+  quaterion.w() = msg.position.orientation.w;
+
+  Eigen::MatrixXd orientation = robotis_framework::convertQuaternionToRPY(quaterion);
+
+  ui_.present_roll_lineEdit->setText(QString::number(orientation.coeff(0,0) * RADIAN2DEGREE, 'f', 4));
+  ui_.present_pitch_lineEdit->setText(QString::number(orientation.coeff(1,0) * RADIAN2DEGREE, 'f', 4));
+  ui_.present_yaw_lineEdit->setText(QString::number(orientation.coeff(2,0) * RADIAN2DEGREE, 'f', 4));
+
+  ui_.goal_roll_doubleSpinBox->setValue(orientation.coeff(0,0) * RADIAN2DEGREE);
+  ui_.goal_pitch_doubleSpinBox->setValue(orientation.coeff(1,0) * RADIAN2DEGREE);
+  ui_.goal_yaw_doubleSpinBox->setValue(orientation.coeff(2,0) * RADIAN2DEGREE);
 }
 
 void MainWindow::on_actionAbout_triggered()

@@ -93,6 +93,8 @@ bool QNode::init()
                                   "/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10);
   set_kinematics_pose_msg_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>(
                                  "/robotis/manipulator_x4/position_ctrl/set_kinematics_position", 10);
+  kinematics_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetKinematicsPose>(
+                                  "/robotis/manipulator_x4/position_ctrl/joint_kinematics_position", 10);
 
   getJointPresentPosition();
 
@@ -145,7 +147,22 @@ void QNode::getJointPresentPosition(void)
     msg.joint_name = srv.response.position_ctrl_joint_pose.joint_name;
     msg.position = srv.response.position_ctrl_joint_pose.position;
 
-    Q_EMIT updateJointPresentPose(msg);
+    Q_EMIT updateJointPresentPosition(msg);
+  }
+}
+
+void QNode::getKinematicsPresentPosition(void)
+{
+  manipulator_x_position_ctrl_module_msgs::GetKinematicsPose srv;
+
+  if (kinematics_present_position_client_.call(srv))
+  {
+    manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
+
+    msg.group_name = srv.response.position_ctrl_kinematics_pose.group_name;
+    msg.position = srv.response.position_ctrl_kinematics_pose.position;
+
+    Q_EMIT updateKinematicsPresentPosition(msg);
   }
 }
 
@@ -179,14 +196,13 @@ void QNode::run()
 
 void QNode::statusMsgCallback(const robotis_controller_msgs::StatusMsg::ConstPtr &msg)
 {
-  if (msg->status_msg == "End Trajectoy")
+  if (msg->status_msg == "End Trajectory")
   {
     getJointPresentPosition();
+    getKinematicsPresentPosition();
   }
-  else
-  {
-    log((LogLevel) msg->type, msg->status_msg, msg->module_name);
-  }
+
+  log((LogLevel) msg->type, msg->status_msg, msg->module_name);
 }
 
 void QNode::log( const LogLevel &level, const std::string &msg, std::string sender)

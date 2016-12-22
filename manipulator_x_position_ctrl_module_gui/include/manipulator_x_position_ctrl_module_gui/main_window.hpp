@@ -72,6 +72,7 @@ Q_OBJECT
   void on_gripper_goal_position_toggleButton_clicked(bool check);
 
   void updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose msg);
+  void updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
   void changeControlMode(int index);
   void changeGripperPosition(int position);
 

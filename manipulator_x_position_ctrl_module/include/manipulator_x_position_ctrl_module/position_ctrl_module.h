@@ -124,11 +124,11 @@ class ManipulatorX4PositionCtrlModule
 
   // Task Space Control
   KDL::Chain chain_;
+  KDL::ChainDynParam *dyn_param_ = NULL;
   KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
   KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
   KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
 
-  Eigen::MatrixXd jacobian_;
   geometry_msgs::Pose present_kinematics_position_;
 
   Eigen::MatrixXd task_goal_trajectory_;
