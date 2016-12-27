@@ -10,9 +10,9 @@ project(manipulator_x_position_ctrl_module)
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
   robotis_device
-  robotis_math
   robotis_controller_msgs
   robotis_framework_common
+  robotis_math
   roscpp
   std_msgs
   sensor_msgs
@@ -37,8 +37,8 @@ find_package(Orocos-KDL)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES manipulator_x_position_ctrl_module
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs
+  DEPENDS EIGEN3
 )
 
 ################################################################################

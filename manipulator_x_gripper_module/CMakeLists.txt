@@ -10,9 +10,9 @@ project(manipulator_x_gripper_module)
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
   robotis_device
-  robotis_math
   robotis_controller_msgs
   robotis_framework_common
+  robotis_math
   roscpp
   std_msgs
   geometry_msgs
@@ -36,8 +36,8 @@ find_package(Eigen REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES manipulator_x_gripper_module
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs
+  DEPENDS EIGEN3
 )
 
 ################################################################################
