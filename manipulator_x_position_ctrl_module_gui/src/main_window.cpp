@@ -208,6 +208,7 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
     msg.position.orientation.x = quaternion.x();
     msg.position.orientation.y = quaternion.y();
     msg.position.orientation.z = quaternion.z();
+    msg.position.orientation.w = quaternion.w();
 
     qnode_.sendKinematicsPositionMsg(msg);
   }

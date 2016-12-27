@@ -1,5 +1,5 @@
 <launch>
-  <arg name="use_gazebo" default="true"/>
+  <arg name="use_gazebo" default="false"/>
 
   <param name="gazebo"                   value="$(arg use_gazebo)"    type="bool"/>
   <param name="gazebo_robot_name"        value="gazebo/robotis/manipulator_x4"/>

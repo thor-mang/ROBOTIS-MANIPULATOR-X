@@ -50,7 +50,7 @@ include_directories(
 )
 
 add_executable(manipulator_x_manager src/manipulator_x_manager.cpp)
-#add_dependencies(manipulator_x_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(manipulator_x_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(manipulator_x_manager ${catkin_LIBRARIES})
 
 ################################################################################

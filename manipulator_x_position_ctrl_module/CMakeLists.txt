@@ -10,14 +10,13 @@ project(manipulator_x_position_ctrl_module)
 find_package(catkin REQUIRED COMPONENTS
   dynamixel_sdk
   robotis_device
+  robotis_math
   robotis_controller_msgs
   robotis_framework_common
-  robotis_math
   roscpp
   std_msgs
   sensor_msgs
   cmake_modules
-
   manipulator_x_position_ctrl_module_msgs
 )
 

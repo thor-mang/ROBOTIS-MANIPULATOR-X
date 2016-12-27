@@ -61,7 +61,7 @@ QNode::~QNode()
 
 bool QNode::init()
 {
-	ros::init(init_argc,init_argv,"manipulator_x_position_ctrl_module_gui");
+  ros::init(init_argc,init_argv,"manipulator_x_position_ctrl_module_gui");
   if ( ! ros::master::check() )
   {
 		return false;

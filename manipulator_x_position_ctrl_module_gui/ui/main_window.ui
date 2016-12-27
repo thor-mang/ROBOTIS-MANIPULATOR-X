@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>787</height>
+    <height>793</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -26,7 +26,7 @@
    <string>Manipulator-X4 Position Control Module GUI</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/images.qrc">
+   <iconset resource="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -116,7 +116,7 @@
    <property name="minimumSize">
     <size>
      <width>400</width>
-     <height>746</height>
+     <height>752</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -165,8 +165,17 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QTabWidget" name="manipulator_x4_tabWidget">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="currentIndex">
            <number>0</number>
+          </property>
+          <property name="tabsClosable">
+           <bool>false</bool>
+          </property>
+          <property name="movable">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="Joint_space_control_tab">
            <attribute name="title">
@@ -840,7 +849,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resources/images.qrc"/>
+  <include location="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

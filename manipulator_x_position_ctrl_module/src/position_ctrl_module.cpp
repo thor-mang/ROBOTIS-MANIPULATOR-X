@@ -134,7 +134,7 @@ bool ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback(manipul
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return false;
   }
 
@@ -156,7 +156,7 @@ bool ManipulatorX4PositionCtrlModule::getJointKinematicsPositionMsgCallback(mani
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return false;
   }
 
@@ -174,21 +174,28 @@ void ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback(con
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Space Control Mode");
+  if (is_moving_ == false && step_cnt_ == 0)
+  {
+    jointSpaceControlMode_ = true;
+    taskSpaceControlMode_ = false;
 
-  jointSpaceControlMode_ = true;
-  taskSpaceControlMode_ = false;
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Space Control Mode");
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Wait untill the trajectory is ended");
+  }
 }
 
 void ManipulatorX4PositionCtrlModule::setInitPositionMsgCallback(const std_msgs::String::ConstPtr &msg)
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
@@ -211,7 +218,7 @@ void ManipulatorX4PositionCtrlModule::setZeroPositionMsgCallback(const std_msgs:
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
@@ -234,7 +241,7 @@ void ManipulatorX4PositionCtrlModule::setJointGoalPositionMsgCallback(const mani
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
@@ -342,77 +349,77 @@ void ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback(cons
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Task Space Control Mode");
+  if (is_moving_ == false && step_cnt_ == 0)
+  {
+    jointSpaceControlMode_ = false;
+    taskSpaceControlMode_ = true;
 
-  jointSpaceControlMode_ = false;
-  taskSpaceControlMode_ = true;
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Task Space Control Mode");
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Wait until the trajectory is ended");
+  }
 }
 
 void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
 {
-//  if (using_gazebo_ == true)
-//  {
-    chain_.addSegment(KDL::Segment("Base",
-                                   KDL::Joint(KDL::Joint::None),
-                                   KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
-                                   KDL::RigidBodyInertia(0.08659,
-                                                         KDL::Vector(0.00025, 0.0, -0.02420),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint1",
-                                   KDL::Joint(KDL::Joint::RotZ),
-                                   KDL::Frame(KDL::Vector(0.0, 0.0, 0.04235)),
-                                   KDL::RigidBodyInertia(0.117,
-                                                         KDL::Vector(0.00002, -0.00045, 0.03293),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint2",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.024, 0.0, 0.12165)),
-                                   KDL::RigidBodyInertia(0.156,
-                                                         KDL::Vector(0.00966, -0.00034, 0.11795),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint3",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.1235, 0.0, 0.0)),
-                                   KDL::RigidBodyInertia(0.149,
-                                                         KDL::Vector(0.11076, -0.00035, 0.00050),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-    chain_.addSegment(KDL::Segment("Joint4",
-                                   KDL::Joint(KDL::Joint::RotY),
-                                   KDL::Frame(KDL::Vector(0.064, 0.0, 0.0)),
-                                   KDL::RigidBodyInertia(0.124,
-                                                         KDL::Vector(0.03767, 0.00262, -0.00043),
-                                                         KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                         )
-                                   )
-                      );
-//  }
-//  else
-//  {
-
-//  }
+  chain_.addSegment(KDL::Segment("Base",
+                                 KDL::Joint(KDL::Joint::None),
+                                 KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
+                                 KDL::RigidBodyInertia(0.087,
+                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                       )
+                                 )
+                    );
+  chain_.addSegment(KDL::Segment("Joint1",
+                                 KDL::Joint(KDL::Joint::RotZ),
+                                 KDL::Frame(KDL::Vector(0.0, 0.0, 0.04235)),
+                                 KDL::RigidBodyInertia(0.087,
+                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                       )
+                                 )
+                    );
+  chain_.addSegment(KDL::Segment("Joint2",
+                                 KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                 KDL::Frame(KDL::Vector(0.024, 0.0, 0.12165)),
+                                 KDL::RigidBodyInertia(0.087,
+                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                       )
+                                 )
+                    );
+  chain_.addSegment(KDL::Segment("Joint3",
+                                 KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                 KDL::Frame(KDL::Vector(0.1235, 0.0, 0.0)),
+                                 KDL::RigidBodyInertia(0.087,
+                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                       )
+                                 )
+                    );
+  chain_.addSegment(KDL::Segment("Joint4",
+                                 KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
+                                 KDL::Frame(KDL::Vector(0.064, 0.0, 0.0)),
+                                 KDL::RigidBodyInertia(0.087,
+                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+                                                       )
+                                 )
+                    );
 
   // Set Joint Limits
   std::vector<double> min_position_limit, max_position_limit;
-  min_position_limit.push_back(-160.0);   max_position_limit.push_back(160.0);  // joint1
-  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint2
-  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint3
-  min_position_limit.push_back(-90.0);    max_position_limit.push_back(90.0);   // joint4
+  min_position_limit.push_back(-180.0);    max_position_limit.push_back(180.0);   // joint1
+  min_position_limit.push_back(-100.0);    max_position_limit.push_back(100.0);   // joint2
+  min_position_limit.push_back(-100.0);    max_position_limit.push_back(100.0);   // joint3
+  min_position_limit.push_back(-100.0);    max_position_limit.push_back(100.0);   // joint4
 
   KDL::JntArray min_joint_position_limit(MAX_JOINT_NUM), max_joint_position_limit(MAX_JOINT_NUM);
   for (int index = 0; index < MAX_JOINT_NUM; index++)
@@ -420,9 +427,6 @@ void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
     min_joint_position_limit(index) = min_position_limit[index]*DEGREE2RADIAN;
     max_joint_position_limit(index) = max_position_limit[index]*DEGREE2RADIAN;
   }
-
-   // Kinematics & Dynamics Parameter
-  dyn_param_ = new KDL::ChainDynParam(chain_, KDL::Vector(0.0, 0.0, -9.81));
 
   // Forward kinematics solver
   forward_kinematics_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
@@ -496,7 +500,7 @@ void ManipulatorX4PositionCtrlModule::calculateGoalTaskTrajectory(Eigen::VectorX
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
@@ -527,7 +531,7 @@ void ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback(const man
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
@@ -571,7 +575,7 @@ void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_fram
 {
   if (enable_ == false)
   {
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, set position control module");
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
     return;
   }
 
