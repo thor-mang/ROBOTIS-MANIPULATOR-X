@@ -54,8 +54,6 @@
 
 #include <kdl/joint.hpp>
 #include <kdl/chain.hpp>
-#include <kdl/chaindynparam.hpp>
-#include <kdl/jacobian.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>

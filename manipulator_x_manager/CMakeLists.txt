@@ -10,11 +10,11 @@ project(manipulator_x_manager)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   dynamixel_sdk
+  robotis_math
   robotis_framework_common
   robotis_device
   robotis_controller
   robotis_controller_msgs
-  robotis_math
 
   cmake_modules
 
