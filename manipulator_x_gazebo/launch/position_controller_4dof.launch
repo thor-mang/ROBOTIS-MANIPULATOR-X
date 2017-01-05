@@ -5,7 +5,7 @@
 
   <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-  output="screen" ns="/gazebo/robotis/manipulator_x4" args="joint_state_controller
+  output="screen" ns="/gazebo_manipulator_x4" args="joint_state_controller
                                                     joint1_position
                                                     joint2_position
                                                     joint3_position

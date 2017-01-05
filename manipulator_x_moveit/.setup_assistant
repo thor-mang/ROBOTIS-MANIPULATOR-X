@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: manipulator_x_description
+    relative_path: urdf/manipulator_x_4dof.xacro
+  SRDF:
+    relative_path: config/gazebo_manipulator_x4.srdf
+  CONFIG:
+    author_name: Darby Lim
+    author_email: thlim@robotis.com
+    generated_timestamp: 1482827201

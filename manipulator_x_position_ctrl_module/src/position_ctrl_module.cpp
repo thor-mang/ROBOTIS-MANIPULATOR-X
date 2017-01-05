@@ -370,47 +370,47 @@ void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
 {
   chain_.addSegment(KDL::Segment("Base",
                                  KDL::Joint(KDL::Joint::None),
-                                 KDL::Frame(KDL::Vector(0.012, 0.0, 0.034)),
-                                 KDL::RigidBodyInertia(0.087,
-                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
-                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                       )
+                                 KDL::Frame(KDL::Vector(0.012, 0.0, 0.034))
+//                                 KDL::RigidBodyInertia(0.087,
+//                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+//                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+//                                                       )
                                  )
                     );
   chain_.addSegment(KDL::Segment("Joint1",
                                  KDL::Joint(KDL::Joint::RotZ),
-                                 KDL::Frame(KDL::Vector(0.0, 0.0, 0.04235)),
-                                 KDL::RigidBodyInertia(0.087,
-                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
-                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                       )
+                                 KDL::Frame(KDL::Vector(0.0, 0.0, 0.04235))
+//                                 KDL::RigidBodyInertia(0.087,
+//                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+//                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+//                                                       )
                                  )
                     );
   chain_.addSegment(KDL::Segment("Joint2",
                                  KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                 KDL::Frame(KDL::Vector(0.024, 0.0, 0.12165)),
-                                 KDL::RigidBodyInertia(0.087,
-                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
-                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                       )
+                                 KDL::Frame(KDL::Vector(0.024, 0.0, 0.12165))
+//                                 KDL::RigidBodyInertia(0.087,
+//                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+//                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+//                                                       )
                                  )
                     );
   chain_.addSegment(KDL::Segment("Joint3",
                                  KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                 KDL::Frame(KDL::Vector(0.1235, 0.0, 0.0)),
-                                 KDL::RigidBodyInertia(0.087,
-                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
-                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                       )
+                                 KDL::Frame(KDL::Vector(0.1235, 0.0, 0.0))
+//                                 KDL::RigidBodyInertia(0.087,
+//                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+//                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+//                                                       )
                                  )
                     );
   chain_.addSegment(KDL::Segment("Joint4",
                                  KDL::Joint("minus_RotY", KDL::Vector(0,0,0), KDL::Vector(0,-1,0), KDL::Joint::RotAxis),
-                                 KDL::Frame(KDL::Vector(0.064, 0.0, 0.0)),
-                                 KDL::RigidBodyInertia(0.087,
-                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
-                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
-                                                       )
+                                 KDL::Frame(KDL::Vector(0.064, 0.0, 0.0))
+//                                 KDL::RigidBodyInertia(0.087,
+//                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
+//                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+//                                                       )
                                  )
                     );
 
