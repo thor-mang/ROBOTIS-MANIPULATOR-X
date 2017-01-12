@@ -26,7 +26,7 @@
    <string>Manipulator-X4 Position Control Module GUI</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc">
+   <iconset resource="../resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -116,7 +116,7 @@
    <property name="minimumSize">
     <size>
      <width>400</width>
-     <height>752</height>
+     <height>788</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -169,7 +169,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <property name="tabsClosable">
            <bool>false</bool>
@@ -555,7 +555,7 @@
             <item>
              <widget class="QGroupBox" name="goal_position_orientation_groupBox">
               <property name="title">
-               <string>Goal position (m)  and orientation (degree)</string>
+               <string>Goal position (m) and orientation (degree)</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
                <item row="0" column="0">
@@ -725,6 +725,292 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="Motion_planning_tab">
+           <attribute name="title">
+            <string>Motion_planning</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="title">
+               <string>Present position (m) and orientation (degree)</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="0" column="0">
+                <widget class="QLabel" name="motion_present_x_label">
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="motion_present_x_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="motion_present_roll_label">
+                 <property name="text">
+                  <string>Roll</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLineEdit" name="motion_present_roll_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="motion_present_y_label">
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="motion_present_y_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="motion_present_pitch_label">
+                 <property name="text">
+                  <string>Pitch</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLineEdit" name="motion_present_pitch_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="motion_present_z_label">
+                 <property name="text">
+                  <string>Z</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="motion_present_z_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="motion_present_yaw_label">
+                 <property name="text">
+                  <string>Yaw</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLineEdit" name="motion_present_yaw_lineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_2">
+              <property name="title">
+               <string>Goal position (m) and orientation (degree)</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_7">
+               <item row="3" column="0">
+                <widget class="QLabel" name="motion_goal_y_label_2">
+                 <property name="text">
+                  <string>Y</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="motion_goal_roll_label">
+                 <property name="text">
+                  <string>Roll</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QDoubleSpinBox" name="motion_goal_roll_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="motion_goal_x_doubleSpinBox">
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.001000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="motion_goal_y_doubleSpinBox">
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.001000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="motion_goal_z_label">
+                 <property name="text">
+                  <string>Z</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLabel" name="motion_goal_yaw_label">
+                 <property name="text">
+                  <string>Yaw</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="motion_goal_z_doubleSpinBox">
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.001000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLabel" name="motion_goal_pitch_label">
+                 <property name="text">
+                  <string>Pitch</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="motion_goal_x_label">
+                 <property name="text">
+                  <string>X</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="3">
+                <widget class="QDoubleSpinBox" name="motion_goal_yaw_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="3">
+                <widget class="QDoubleSpinBox" name="motion_goal_pitch_doubleSpinBox">
+                 <property name="minimum">
+                  <double>-1000.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -748,7 +1034,10 @@
            <item>
             <widget class="QSlider" name="gripper_goal_position_horizontalSlider">
              <property name="maximum">
-              <number>140</number>
+              <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>10</number>
              </property>
              <property name="pageStep">
               <number>30</number>
@@ -849,7 +1138,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../../../dynamixel-workbench/dynamixel_workbench_single_manager_gui/resources/images.qrc"/>
+  <include location="../resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

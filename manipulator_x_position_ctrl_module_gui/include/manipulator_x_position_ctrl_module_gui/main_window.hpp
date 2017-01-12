@@ -49,7 +49,8 @@
 namespace manipulator_x_position_ctrl_module_gui
 {
 #define JOINT_SPACE_CONTROL (0)
-#define TASK_SPACE_CONTROL (1)
+#define TASK_SPACE_CONTROL  (1)
+#define MOTION_PLANNING     (2)
 
 class MainWindow : public QMainWindow
 {

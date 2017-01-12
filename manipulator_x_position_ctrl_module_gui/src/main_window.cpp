@@ -130,6 +130,10 @@ void MainWindow::changeControlMode(int index)
 
     ui_.send_goal_position_pushButton->setText("Send Kinematics Position");
   }
+  else if (control_mode_ = MOTION_PLANNING)
+  {
+
+  }
 }
 
 void MainWindow::on_gripper_goal_position_toggleButton_clicked(bool check)
@@ -139,23 +143,23 @@ void MainWindow::on_gripper_goal_position_toggleButton_clicked(bool check)
 
   if (ui_.gripper_goal_position_toggleButton->isChecked())
   {
-    ui_.gripper_goal_position_toggleButton->setText("Gripper Closed");
+    ui_.gripper_goal_position_toggleButton->setText("Gripper Open");
 
-    position.data = 0.0 * DEGREE2RADIAN;
+    position.data = 120 * DEGREE2RADIAN;
     qnode_.sendGripperGoalPositionMsg(position);
 
-    ui_.gripper_present_position_lineEdit->setText(QString::number(0.0));
+    ui_.gripper_present_position_lineEdit->setText(QString::number(30.0));
     ui_.gripper_goal_position_horizontalSlider->setSliderPosition(0);
   }
   else
   {
-    ui_.gripper_goal_position_toggleButton->setText("Gripper Open");
+    ui_.gripper_goal_position_toggleButton->setText("Gripper Close");
 
-    position.data = 170.0 * DEGREE2RADIAN;
+    position.data = 0 * DEGREE2RADIAN;
     qnode_.sendGripperGoalPositionMsg(position);
 
-    ui_.gripper_present_position_lineEdit->setText(QString::number(140.0));
-    ui_.gripper_goal_position_horizontalSlider->setSliderPosition(140);
+    ui_.gripper_present_position_lineEdit->setText(QString::number(-30.0));
+    ui_.gripper_goal_position_horizontalSlider->setSliderPosition(100);
   }
 }
 
