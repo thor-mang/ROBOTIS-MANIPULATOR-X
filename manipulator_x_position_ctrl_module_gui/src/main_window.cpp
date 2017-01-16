@@ -63,7 +63,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
                    this, SLOT(updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::JointPose)));
 
   qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("manipulator_x_position_ctrl_module_msgs::KinematicsPose");
-  QObject::connect(&qnode_, SIGNAL(updateKinematicsPresentPosition(manipulator_x_position_ctrl_module_msgs::KinematicsPose)),
+  QObject::connect(&qnode_, SIGNAL(updateKinematicsPresentPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose)),
                    this, SLOT(updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::KinematicsPose)));
 
  // ui_.gripper_goal_position_horizontalSlider->
@@ -98,6 +98,11 @@ void MainWindow::on_zero_position_pushButton_clicked(bool check)
   qnode_.setZeroPosition(msg);
 
   ui_.manipulator_x4_tabWidget->setCurrentIndex(JOINT_SPACE_CONTROL);
+
+  ui_.joint1_goal_position_doubleSpinBox->setValue(0);
+  ui_.joint2_goal_position_doubleSpinBox->setValue(0);
+  ui_.joint3_goal_position_doubleSpinBox->setValue(0);
+  ui_.joint4_goal_position_doubleSpinBox->setValue(0);
 }
 
 void MainWindow::on_init_position_pushButton_clicked(bool check)
@@ -108,6 +113,11 @@ void MainWindow::on_init_position_pushButton_clicked(bool check)
   qnode_.setInitPosition(msg);
 
   ui_.manipulator_x4_tabWidget->setCurrentIndex(JOINT_SPACE_CONTROL);
+
+  ui_.joint1_goal_position_doubleSpinBox->setValue(0);
+  ui_.joint2_goal_position_doubleSpinBox->setValue(70);
+  ui_.joint3_goal_position_doubleSpinBox->setValue(-30);
+  ui_.joint4_goal_position_doubleSpinBox->setValue(-40);
 }
 
 void MainWindow::changeControlMode(int index)
@@ -128,11 +138,13 @@ void MainWindow::changeControlMode(int index)
     str_msg.data = "set_task_space_control_mode";
     qnode_.sendEnableTaskSpaceControlMode(str_msg);
 
-    ui_.send_goal_position_pushButton->setText("Send Kinematics Position");
+    ui_.send_goal_position_pushButton->setText("Send Kinematics Pose");
   }
   else if (control_mode_ = MOTION_PLANNING)
   {
+    qnode_.sendEnableMotionPlanningMode(str_msg);
 
+    ui_.send_goal_position_pushButton->setText("Send Target Pose");
   }
 }
 
@@ -199,9 +211,9 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
     msg.group_name = "arm";
     msg.move_time = 1.5;
 
-    msg.position.position.x = ui_.goal_x_doubleSpinBox->value();
-    msg.position.position.y = ui_.goal_y_doubleSpinBox->value();
-    msg.position.position.z = ui_.goal_z_doubleSpinBox->value();
+    msg.pose.position.x = ui_.goal_x_doubleSpinBox->value();
+    msg.pose.position.y = ui_.goal_y_doubleSpinBox->value();
+    msg.pose.position.z = ui_.goal_z_doubleSpinBox->value();
 
     double roll  = ui_.goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
     double pitch = ui_.goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
@@ -209,12 +221,36 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
 
     Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
 
-    msg.position.orientation.x = quaternion.x();
-    msg.position.orientation.y = quaternion.y();
-    msg.position.orientation.z = quaternion.z();
-    msg.position.orientation.w = quaternion.w();
+    msg.pose.orientation.x = quaternion.x();
+    msg.pose.orientation.y = quaternion.y();
+    msg.pose.orientation.z = quaternion.z();
+    msg.pose.orientation.w = quaternion.w();
 
     qnode_.sendKinematicsPositionMsg(msg);
+  }
+  else if (control_mode_ == MOTION_PLANNING)
+  {
+    manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
+
+    msg.group_name = "arm";
+    msg.move_time = 1.5;
+
+    msg.pose.position.x = ui_.goal_x_doubleSpinBox->value();
+    msg.pose.position.y = ui_.goal_y_doubleSpinBox->value();
+    msg.pose.position.z = ui_.goal_z_doubleSpinBox->value();
+
+    double roll  = ui_.goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
+    double pitch = ui_.goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
+    double yaw   = ui_.goal_yaw_doubleSpinBox->value() * DEGREE2RADIAN;
+
+    Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
+
+    msg.pose.orientation.x = quaternion.x();
+    msg.pose.orientation.y = quaternion.y();
+    msg.pose.orientation.z = quaternion.z();
+    msg.pose.orientation.w = quaternion.w();
+
+    qnode_.sendMotionPlanningTargetPoseMsg(msg);
   }
 }
 
@@ -225,27 +261,35 @@ void MainWindow::updateJointPresentPoseLineEdit(manipulator_x_position_ctrl_modu
   ui_.joint3_present_position_lineEdit->setText(QString::number(msg.position[2]*RADIAN2DEGREE, 1, 1));
   ui_.joint4_present_position_lineEdit->setText(QString::number(msg.position[3]*RADIAN2DEGREE, 1, 1));
 
-  ui_.joint1_goal_position_doubleSpinBox->setValue(msg.position[0]*RADIAN2DEGREE);
-  ui_.joint2_goal_position_doubleSpinBox->setValue(msg.position[1]*RADIAN2DEGREE);
-  ui_.joint3_goal_position_doubleSpinBox->setValue(msg.position[2]*RADIAN2DEGREE);
-  ui_.joint4_goal_position_doubleSpinBox->setValue(msg.position[3]*RADIAN2DEGREE);
+//  ui_.joint1_goal_position_doubleSpinBox->setValue(msg.position[0]*RADIAN2DEGREE);
+//  ui_.joint2_goal_position_doubleSpinBox->setValue(msg.position[1]*RADIAN2DEGREE);
+//  ui_.joint3_goal_position_doubleSpinBox->setValue(msg.position[2]*RADIAN2DEGREE);
+//  ui_.joint4_goal_position_doubleSpinBox->setValue(msg.position[3]*RADIAN2DEGREE);
 }
 
 void MainWindow::updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
 {
-  ui_.present_x_lineEdit->setText(QString::number(msg.position.position.x, 'f', 4));
-  ui_.present_y_lineEdit->setText(QString::number(msg.position.position.y, 'f', 4));
-  ui_.present_z_lineEdit->setText(QString::number(msg.position.position.z, 'f', 4));
+  ui_.present_x_lineEdit->setText(QString::number(msg.pose.position.x, 'f', 4));
+  ui_.present_y_lineEdit->setText(QString::number(msg.pose.position.y, 'f', 4));
+  ui_.present_z_lineEdit->setText(QString::number(msg.pose.position.z, 'f', 4));
 
-  ui_.goal_x_doubleSpinBox->setValue(msg.position.position.x);
-  ui_.goal_y_doubleSpinBox->setValue(msg.position.position.y);
-  ui_.goal_z_doubleSpinBox->setValue(msg.position.position.z);
+  ui_.goal_x_doubleSpinBox->setValue(msg.pose.position.x);
+  ui_.goal_y_doubleSpinBox->setValue(msg.pose.position.y);
+  ui_.goal_z_doubleSpinBox->setValue(msg.pose.position.z);
+
+  ui_.motion_present_x_lineEdit->setText(QString::number(msg.pose.position.x, 'f', 4));
+  ui_.motion_present_y_lineEdit->setText(QString::number(msg.pose.position.y, 'f', 4));
+  ui_.motion_present_z_lineEdit->setText(QString::number(msg.pose.position.z, 'f', 4));
+
+  ui_.motion_goal_x_doubleSpinBox->setValue(msg.pose.position.x);
+  ui_.motion_goal_y_doubleSpinBox->setValue(msg.pose.position.y);
+  ui_.motion_goal_z_doubleSpinBox->setValue(msg.pose.position.z);
 
   Eigen::Quaterniond quaterion;
-  quaterion.x() = msg.position.orientation.x;
-  quaterion.y() = msg.position.orientation.y;
-  quaterion.z() = msg.position.orientation.z;
-  quaterion.w() = msg.position.orientation.w;
+  quaterion.x() = msg.pose.orientation.x;
+  quaterion.y() = msg.pose.orientation.y;
+  quaterion.z() = msg.pose.orientation.z;
+  quaterion.w() = msg.pose.orientation.w;
 
   Eigen::MatrixXd orientation = robotis_framework::convertQuaternionToRPY(quaterion);
 
@@ -256,6 +300,14 @@ void MainWindow::updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl
   ui_.goal_roll_doubleSpinBox->setValue(orientation.coeff(0,0) * RADIAN2DEGREE);
   ui_.goal_pitch_doubleSpinBox->setValue(orientation.coeff(1,0) * RADIAN2DEGREE);
   ui_.goal_yaw_doubleSpinBox->setValue(orientation.coeff(2,0) * RADIAN2DEGREE);
+
+  ui_.motion_present_roll_lineEdit->setText(QString::number(orientation.coeff(0,0) * RADIAN2DEGREE, 'f', 4));
+  ui_.motion_present_pitch_lineEdit->setText(QString::number(orientation.coeff(1,0) * RADIAN2DEGREE, 'f', 4));
+  ui_.motion_present_yaw_lineEdit->setText(QString::number(orientation.coeff(2,0) * RADIAN2DEGREE, 'f', 4));
+
+  ui_.motion_goal_roll_doubleSpinBox->setValue(orientation.coeff(0,0) * RADIAN2DEGREE);
+  ui_.motion_goal_pitch_doubleSpinBox->setValue(orientation.coeff(1,0) * RADIAN2DEGREE);
+  ui_.motion_goal_yaw_doubleSpinBox->setValue(orientation.coeff(2,0) * RADIAN2DEGREE);
 }
 
 void MainWindow::on_actionAbout_triggered()

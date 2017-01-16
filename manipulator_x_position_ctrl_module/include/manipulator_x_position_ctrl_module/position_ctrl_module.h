@@ -54,6 +54,7 @@
 
 #include <kdl/joint.hpp>
 #include <kdl/chain.hpp>
+#include <kdl/jacobian.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -63,10 +64,14 @@
 #include "robotis_math/robotis_math.h"
 #include "robotis_framework_common/motion_module.h"
 #include "robotis_controller_msgs/StatusMsg.h"
+
 #include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
+
+#include "manipulator_x_position_ctrl_module/motion_planning_tool.h"
+#include "moveit_msgs/DisplayTrajectory.h"
 
 namespace manipulator_x4_position_ctrl_module
 {
@@ -82,6 +87,7 @@ class ManipulatorX4PositionCtrlModule
 
   int control_cycle_msec_;
   boost::thread queue_thread_;
+  boost::thread* trajectory_generate_tread_;
 
   // Joint states
   std::map<std::string, uint8_t> joint_id_;
@@ -107,9 +113,14 @@ class ManipulatorX4PositionCtrlModule
   ros::Subscriber enable_task_space_control_mode_sub_;
   ros::Subscriber set_kinematics_pose_msg_sub_;
 
+  ros::Subscriber enable_motion_planning_mode_sub_;
+  ros::Subscriber display_planned_path_sub_;
+  ros::Subscriber execute_planned_path_sub_;
+
   // Control Mode
   bool jointSpaceControlMode_;
   bool taskSpaceControlMode_;
+  bool motionPlanningMode_;
 
   // Trajectory
   bool is_moving_;
@@ -125,11 +136,19 @@ class ManipulatorX4PositionCtrlModule
   KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
   KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
   KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
+  KDL::ChainJntToJacSolver *jacobian_solver_;
 
+  Eigen::MatrixXd jacobian_;
   geometry_msgs::Pose present_kinematics_position_;
 
   Eigen::MatrixXd task_goal_trajectory_;
   Eigen::Quaterniond initial_orientation_, target_orientation_;
+
+  // Motion Planning
+  motion_planning_tool::MotionPlanningTool *motionPlanningTool_;
+  bool moveit_execution_;
+
+  void init( std::string description );
 
   void queueThread();
   void publishStatusMsg(unsigned int type, std::string msg);
@@ -147,6 +166,11 @@ class ManipulatorX4PositionCtrlModule
 
   void enableTaskSpaceControlModeMsgCallback(const std_msgs::String::ConstPtr &msg);
   void setKinematicsPositionMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr &msg);
+
+  void enableMotionPlanningModeMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void displayPlannedPathMsgCallback(const moveit_msgs::DisplayTrajectory::ConstPtr& msg);
+  void executePlannedPathMsgCallback(const std_msgs::String::ConstPtr &msg);
+  void moveItTragectoryGenerateThread();
 
   void calculateGoalJointTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
   void calculateGoalTaskTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);

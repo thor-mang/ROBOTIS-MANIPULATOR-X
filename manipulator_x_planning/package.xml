@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<package>
+  <name>manipulator_x_planning</name>
+  <version>0.0.1</version>
+  <description>The manipulator_x_planning package</description>
+  <license>BSD</license>
+  <maintainer email="demo@todo.todo">demo</maintainer>
+  <author email="sch@robotis.com">SCH</author>
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <maintainer email="sch@robotis.com">SCH</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>control_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>moveit_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>robotis_controller_msgs</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>interactive_markers</build_depend>
+  <build_depend>industrial_trajectory_filters</build_depend>
+  <build_depend>manipulator_x_position_ctrl_module_msgs</build_depend>
+  <run_depend>control_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>moveit_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>cmake_modules</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>moveit_fake_controller_manager</run_depend>
+  <run_depend>moveit_ros_planning_interface</run_depend>
+  <run_depend>moveit_ros_perception</run_depend>
+  <run_depend>interactive_markers</run_depend>
+  <run_depend>industrial_trajectory_filters</run_depend>
+  <run_depend>manipulator_x_position_ctrl_module_msgs</run_depend>
+  <export>
+  </export>
+</package>
+
+
+
+

@@ -90,12 +90,15 @@ Q_OBJECT
   void sendKinematicsPositionMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
   void getKinematicsPresentPosition(void);
 
+  void sendEnableMotionPlanningMode(std_msgs::String msg);
+  void sendMotionPlanningTargetPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
+
 Q_SIGNALS:
 	void loggingUpdated();
   void rosShutdown();
 
   void updateJointPresentPosition(manipulator_x_position_ctrl_module_msgs::JointPose msg);
-  void updateKinematicsPresentPosition(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
+  void updateKinematicsPresentPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
 
 private:
 	int init_argc;
@@ -113,11 +116,14 @@ private:
   ros::Publisher set_init_position_pub_;
   ros::Publisher set_zero_position_pub_;
   ros::Publisher set_ctrl_module_pub_;
-  ros::Publisher set_goal_joint_position_pub_;
+  ros::Publisher send_goal_joint_position_pub_;
 
   ros::Publisher enable_task_space_control_mode_pub_;
   ros::Publisher set_kinematics_pose_msg_pub_;
-  ros::ServiceClient kinematics_present_position_client_;
+  ros::ServiceClient kinematics_present_pose_client_;
+
+  ros::Publisher enable_motion_planning_mode_pub_;
+  ros::Publisher set_motion_planning_pose_msg_pub_;
 
   QStringListModel logging_model;
 };

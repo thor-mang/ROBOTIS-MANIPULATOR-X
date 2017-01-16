@@ -83,8 +83,8 @@ bool QNode::init()
   set_init_position_pub_ = nh.advertise<std_msgs::String>(
                                   "/robotis/manipulator_x4/position_ctrl/set_init_position", 10);
   set_zero_position_pub_ = nh.advertise<std_msgs::String>(
-                                  "/robotis/manipulator_x4/position_ctrl/send_zero_position", 10);
-  set_goal_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
+                                  "/robotis/manipulator_x4/position_ctrl/set_zero_position", 10);
+  send_goal_joint_position_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>(
                                   "/robotis/manipulator_x4/position_ctrl/send_goal_position", 10);
   joint_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>(
                                   "/robotis/manipulator_x4/position_ctrl/joint_present_position", 10);
@@ -92,9 +92,14 @@ bool QNode::init()
   enable_task_space_control_mode_pub_ = nh.advertise<std_msgs::String>(
                                   "/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10);
   set_kinematics_pose_msg_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>(
-                                 "/robotis/manipulator_x4/position_ctrl/set_kinematics_position", 10);
-  kinematics_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetKinematicsPose>(
-                                  "/robotis/manipulator_x4/position_ctrl/joint_kinematics_position", 10);
+                                 "/robotis/manipulator_x4/position_ctrl/kinematics_target_pose", 10);
+  kinematics_present_pose_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetKinematicsPose>(
+                                  "/robotis/manipulator_x4/position_ctrl/kinematics_present_pose", 10);
+
+  enable_motion_planning_mode_pub_ = nh.advertise<std_msgs::String>(
+                                  "/robotis/manipulator_x4/position_ctrl/enable_motion_planning_mode", 10);
+  set_motion_planning_pose_msg_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>(
+                                 "/robotis/manipulator_x4/position_ctrl/motion_planning_target_pose", 10);
 
   getJointPresentPosition();
 
@@ -126,6 +131,11 @@ void QNode::sendEnableTaskSpaceControlMode(std_msgs::String msg)
   enable_task_space_control_mode_pub_.publish(msg);
 }
 
+void QNode::sendEnableMotionPlanningMode(std_msgs::String msg)
+{
+  enable_motion_planning_mode_pub_.publish(msg);
+}
+
 void QNode::setZeroPosition(std_msgs::String msg)
 {
   set_zero_position_pub_.publish(msg);
@@ -155,25 +165,30 @@ void QNode::getKinematicsPresentPosition(void)
 {
   manipulator_x_position_ctrl_module_msgs::GetKinematicsPose srv;
 
-  if (kinematics_present_position_client_.call(srv))
+  if (kinematics_present_pose_client_.call(srv))
   {
     manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
 
     msg.group_name = srv.response.position_ctrl_kinematics_pose.group_name;
-    msg.position = srv.response.position_ctrl_kinematics_pose.position;
+    msg.pose = srv.response.position_ctrl_kinematics_pose.pose;
 
-    Q_EMIT updateKinematicsPresentPosition(msg);
+    Q_EMIT updateKinematicsPresentPose(msg);
   }
 }
 
 void QNode::sendJointGoalPositionMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg)
 {
-  set_goal_joint_position_pub_.publish(msg);
+  send_goal_joint_position_pub_.publish(msg);
 }
 
 void QNode::sendKinematicsPositionMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
 {
   set_kinematics_pose_msg_pub_.publish(msg);
+}
+
+void QNode::sendMotionPlanningTargetPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
+{
+  set_motion_planning_pose_msg_pub_.publish(msg);
 }
 
 void QNode::sendGripperGoalPositionMsg(std_msgs::Float64 msg)

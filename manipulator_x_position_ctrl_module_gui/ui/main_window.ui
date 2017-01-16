@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1219</width>
-    <height>793</height>
+    <height>829</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -751,6 +751,9 @@
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -770,6 +773,9 @@
                 <widget class="QLineEdit" name="motion_present_roll_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -791,6 +797,9 @@
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -810,6 +819,9 @@
                 <widget class="QLineEdit" name="motion_present_pitch_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -831,6 +843,9 @@
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -850,6 +865,9 @@
                 <widget class="QLineEdit" name="motion_present_yaw_lineEdit">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>

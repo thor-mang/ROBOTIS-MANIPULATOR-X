@@ -5,4 +5,3 @@ controller_list:
       - joint2
       - joint3
       - joint4
-      - grip_joint

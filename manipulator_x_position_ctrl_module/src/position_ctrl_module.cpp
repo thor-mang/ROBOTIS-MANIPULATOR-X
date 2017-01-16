@@ -45,7 +45,8 @@ ManipulatorX4PositionCtrlModule::ManipulatorX4PositionCtrlModule()
     is_moving_(false),
     move_time_(0.0),
     all_time_steps_(0),
-    step_cnt_(0)
+    step_cnt_(0),
+    moveit_execution_(false)
 {
   enable_ = false; //motion_module.h
   module_name_ = "manipulator_x4_position_ctrl";
@@ -65,6 +66,8 @@ ManipulatorX4PositionCtrlModule::ManipulatorX4PositionCtrlModule()
   joint_present_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
   joint_present_current_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
   joint_goal_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+
+  motionPlanningTool_ = new motion_planning_tool::MotionPlanningTool();
 }
 
 ManipulatorX4PositionCtrlModule::~ManipulatorX4PositionCtrlModule()
@@ -81,6 +84,8 @@ void ManipulatorX4PositionCtrlModule::initialize(const int control_cycle_msec, r
 
   control_cycle_msec_ = control_cycle_msec;
   queue_thread_ = boost::thread(boost::bind(&ManipulatorX4PositionCtrlModule::queueThread, this));
+
+  motionPlanningTool_->init("robot_description");
 }
 
 void ManipulatorX4PositionCtrlModule::queueThread()
@@ -96,22 +101,29 @@ void ManipulatorX4PositionCtrlModule::queueThread()
 
   joint_present_position_server_ = nh.advertiseService("/robotis/manipulator_x4/position_ctrl/joint_present_position",
                                                        &ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback, this);
-  joint_kinematics_position_server_ = nh.advertiseService("/robotis/manipulator_x4/position_ctrl/joint_kinematics_position",
+  joint_kinematics_position_server_ = nh.advertiseService("/robotis/manipulator_x4/position_ctrl/kinematics_present_pose",
                                                        &ManipulatorX4PositionCtrlModule::getJointKinematicsPositionMsgCallback, this);
 
   enable_joint_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/enable_joint_control_mode", 10,
                                                 &ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback, this);
   set_init_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/set_init_position", 10,
                                         &ManipulatorX4PositionCtrlModule::setInitPositionMsgCallback, this);
-  set_zero_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/send_zero_position", 10,
+  set_zero_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/set_zero_position", 10,
                                         &ManipulatorX4PositionCtrlModule::setZeroPositionMsgCallback, this);
   joint_goal_position_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/send_goal_position", 10,
                                           &ManipulatorX4PositionCtrlModule::setJointGoalPositionMsgCallback, this);
 
   enable_task_space_control_mode_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10,
                                                      &ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback, this);
-  set_kinematics_pose_msg_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/set_kinematics_position", 10,
+  set_kinematics_pose_msg_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/kinematics_target_pose", 10,
                                               &ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback, this);
+
+  enable_motion_planning_mode_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/enable_motion_planning_mode", 10,
+                                                  &ManipulatorX4PositionCtrlModule::enableMotionPlanningModeMsgCallback, this);
+  execute_planned_path_sub_ = nh.subscribe("/robotis/manipulator_x4/position_ctrl/execute_planned_path", 10,
+                                                                 &ManipulatorX4PositionCtrlModule::executePlannedPathMsgCallback, this);
+  display_planned_path_sub_ = nh.subscribe("/move_group/display_planned_path", 10,
+                                          &ManipulatorX4PositionCtrlModule::displayPlannedPathMsgCallback, this);
 
   while (nh.ok())
   {
@@ -127,6 +139,7 @@ void ManipulatorX4PositionCtrlModule::setPositionCtrlModuleMsgCallback(const std
 
   jointSpaceControlMode_ = true;
   taskSpaceControlMode_ = false;
+  motionPlanningMode_ = false;
 }
 
 bool ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
@@ -148,6 +161,8 @@ bool ManipulatorX4PositionCtrlModule::getJointPresentPositionMsgCallback(manipul
     res.position_ctrl_joint_pose.position.push_back(joint_present_position_(joint_id_[joint_name]-1));
   }
 
+  calcJacobian();
+
   return true;
 }
 
@@ -165,7 +180,7 @@ bool ManipulatorX4PositionCtrlModule::getJointKinematicsPositionMsgCallback(mani
   calcForwardKinematics();
 
   res.position_ctrl_kinematics_pose.group_name = "arm";
-  res.position_ctrl_kinematics_pose.position = present_kinematics_position_;
+  res.position_ctrl_kinematics_pose.pose = present_kinematics_position_;
 
   return true;
 }
@@ -178,10 +193,11 @@ void ManipulatorX4PositionCtrlModule::enableJointSpaceControlModeMsgCallback(con
     return;
   }
 
-  if (is_moving_ == false && step_cnt_ == 0)
+  if (is_moving_ == false)
   {
     jointSpaceControlMode_ = true;
-    taskSpaceControlMode_ = false;
+    taskSpaceControlMode_  = false;
+    motionPlanningMode_    = false;
 
     publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Space Control Mode");
   }
@@ -353,10 +369,11 @@ void ManipulatorX4PositionCtrlModule::enableTaskSpaceControlModeMsgCallback(cons
     return;
   }
 
-  if (is_moving_ == false && step_cnt_ == 0)
+  if (is_moving_ == false)
   {
     jointSpaceControlMode_ = false;
-    taskSpaceControlMode_ = true;
+    taskSpaceControlMode_  = true;
+    motionPlanningMode_    = false;
 
     publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Task Space Control Mode");
   }
@@ -429,6 +446,7 @@ void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
   }
 
   // Forward kinematics solver
+  jacobian_solver_ = new KDL::ChainJntToJacSolver(chain_);
   forward_kinematics_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
 
   // Inverse kinematics solver
@@ -487,13 +505,26 @@ bool ManipulatorX4PositionCtrlModule::calcInverseKinematics(int cnt)
 
     return false;
   }
-
-  for (int index = 0; index < MAX_JOINT_NUM; index++)
+  else
   {
-    joint_goal_position_(index) = kdl_desired_joint_position(index);
-  }
+    for (int index = 0; index < MAX_JOINT_NUM; index++)
+    {
+      joint_goal_position_(index) = kdl_desired_joint_position(index);
+    }
 
-  return true;
+    return true;
+  }
+}
+
+void ManipulatorX4PositionCtrlModule::calcJacobian()
+{
+  KDL::JntArray kdl_joint_position;
+  kdl_joint_position.data = joint_goal_position_;
+
+  KDL::Jacobian jacobian(MAX_JOINT_NUM);
+  jacobian_solver_->JntToJac(kdl_joint_position, jacobian);
+
+  jacobian_ = jacobian.data;
 }
 
 void ManipulatorX4PositionCtrlModule::calculateGoalTaskTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position)
@@ -539,7 +570,7 @@ void ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback(const man
   {
     if (taskSpaceControlMode_ == true)
     {
-      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Kinematics Position");
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Joint Kinematics Pose");
 
       Eigen::VectorXd initial_position = Eigen::VectorXd::Zero(3);
       Eigen::VectorXd target_position  = Eigen::VectorXd::Zero(3);
@@ -552,22 +583,188 @@ void ManipulatorX4PositionCtrlModule::setKinematicsPositionMsgCallback(const man
       initial_position(1) = present_kinematics_position_.position.y;
       initial_position(2) = present_kinematics_position_.position.z;
 
-      target_position(0) = msg->position.position.x;
-      target_position(1) = msg->position.position.y;
-      target_position(2) = msg->position.position.z;
+      target_position(0) = msg->pose.position.x;
+      target_position(1) = msg->pose.position.y;
+      target_position(2) = msg->pose.position.z;
 
       initial_orientation_.x() = present_kinematics_position_.orientation.x;
       initial_orientation_.y() = present_kinematics_position_.orientation.y;
       initial_orientation_.z() = present_kinematics_position_.orientation.z;
       initial_orientation_.w() = present_kinematics_position_.orientation.w;
 
-      target_orientation_.x() = msg->position.orientation.x;
-      target_orientation_.y() = msg->position.orientation.y;
-      target_orientation_.z() = msg->position.orientation.z;
-      target_orientation_.w() = msg->position.orientation.w;
+      target_orientation_.x() = msg->pose.orientation.x;
+      target_orientation_.y() = msg->pose.orientation.y;
+      target_orientation_.z() = msg->pose.orientation.z;
+      target_orientation_.w() = msg->pose.orientation.w;
 
       calculateGoalTaskTrajectory(initial_position, target_position);
+
+      moveit_execution_ = true;
     }
+  }
+}
+
+void ManipulatorX4PositionCtrlModule::enableMotionPlanningModeMsgCallback(const std_msgs::String::ConstPtr &msg)
+{
+  if (enable_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
+    return;
+  }
+
+  if (is_moving_ == false)
+  {
+    jointSpaceControlMode_ = false;
+    taskSpaceControlMode_  = false;
+    motionPlanningMode_    = true;
+
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Set Motion Planning Mode");
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Wait until the trajectory is ended");
+  }
+}
+
+void ManipulatorX4PositionCtrlModule::executePlannedPathMsgCallback(const std_msgs::String::ConstPtr &msg)
+{
+  if (is_moving_ == false)
+  {
+    if ( msg->data == "execute")
+    {
+//      Robotis->execute_planned_path = true;
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Planning Execute");
+      moveit_execution_ = true;
+    }
+    else if ( msg->data == "fail")
+    {
+      publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Trajectory");
+      moveit_execution_ = false;
+
+//      ROS_INFO("Planning Fail");
+
+//      if ( DemoName.data == "1_get_ar_pose" )
+//          DemoName.data = "1_get_ar_pose_fail";
+//      else if ( DemoName.data == "2_get_ar_pose" )
+//          DemoName.data = "2_get_ar_pose_fail";
+
+//      robotis_demo_msg_pub_.publish( DemoName );
+    }
+  }
+}
+
+void ManipulatorX4PositionCtrlModule::displayPlannedPathMsgCallback(const moveit_msgs::DisplayTrajectory::ConstPtr &msg)
+{
+  //  # The model id for which this path has been generated
+  //
+  //  string model_id
+
+  //  # The representation of the path contains position values for all the joints that are moving along the path;
+  //  # a sequence of trajectories may be specified
+  //
+  //  RobotTrajectory[] trajectory
+
+  //  # The robot state is used to obtain positions for all/some of the joints of the robot.
+  //  # It is used by the path display node to determine the positions of the joints that are not specified in the joint path message above.
+  //  # If the robot state message contains joint position information for joints that are also mentioned in the joint path message,
+  //  # the positions in the joint path message will overwrite the positions specified in the robot state message.
+  //
+  //  RobotState trajectory_start
+
+  motionPlanningTool_->moveit_msg_ = *msg;
+
+  if (is_moving_ == false)
+  {
+    trajectory_generate_tread_ = new boost::thread(boost::bind(&ManipulatorX4PositionCtrlModule::moveItTragectoryGenerateThread, this));
+    delete trajectory_generate_tread_;
+  }
+  else
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Wait until the trajectory is ended");
+  }
+}
+
+void ManipulatorX4PositionCtrlModule::moveItTragectoryGenerateThread()
+{
+  if (enable_ == false)
+  {
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please, Set Position Control Module");
+    return;
+  }
+
+  std::vector<double> via_time;
+
+
+
+
+  for (int _tra_index = 0; _tra_index < motionPlanningTool_->moveit_msg_.trajectory.size(); _tra_index++)
+  {
+    ROS_INFO("_tra_index = %d", motionPlanningTool_->moveit_msg_.trajectory.size());
+    motionPlanningTool_->points_ = motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points.size();
+
+    motionPlanningTool_->display_planned_path_positions_.resize(motionPlanningTool_->points_, MAX_JOINT_NUM);
+    motionPlanningTool_->display_planned_path_velocities_.resize(motionPlanningTool_->points_, MAX_JOINT_NUM);
+    motionPlanningTool_->display_planned_path_accelerations_.resize(motionPlanningTool_->points_, MAX_JOINT_NUM);
+
+    for (int _point_index = 0; _point_index < motionPlanningTool_->points_; _point_index++)
+    {
+      ROS_INFO("_point_index = %d", motionPlanningTool_->points_);
+      for(int _name_index = 0; _name_index < MAX_JOINT_NUM; _name_index++)
+      {
+        motionPlanningTool_->display_planned_path_positions_.coeffRef(_point_index, _name_index) = joint_goal_position_(_name_index);
+      }
+    }
+
+    for (int _point_index = 0; _point_index < motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points.size(); _point_index++)
+    {
+      motionPlanningTool_->time_from_start_ = motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points[_point_index].time_from_start;
+      via_time.push_back(motionPlanningTool_->time_from_start_.toSec());
+
+      for (int _joint_index = 0; _joint_index < motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.joint_names.size(); _joint_index++)
+      {
+        ROS_INFO("_joint_index = %d", motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.joint_names.size());
+        std::string _joint_name 	  = motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.joint_names[_joint_index];
+
+        double _joint_position 		  = motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points[_point_index].positions	   [_joint_index];
+        double _joint_velocity 	   	= motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points[_point_index].velocities	 [_joint_index];
+        double _joint_acceleration 	= motionPlanningTool_->moveit_msg_.trajectory[_tra_index].joint_trajectory.points[_point_index].accelerations[_joint_index];
+
+        motionPlanningTool_->display_planned_path_positions_.coeffRef     (_point_index , joint_id_[_joint_name]-1) = _joint_position;
+        motionPlanningTool_->display_planned_path_velocities_.coeffRef	  (_point_index , joint_id_[_joint_name]-1) = _joint_velocity;
+        motionPlanningTool_->display_planned_path_accelerations_.coeffRef (_point_index , joint_id_[_joint_name]-1) = _joint_acceleration;
+      }
+    }
+  }
+
+  move_time_ = motionPlanningTool_->time_from_start_.toSec();
+  ROS_INFO("move_time_ = %f", move_time_);
+
+  all_time_steps_ = motionPlanningTool_->points_;
+  ROS_INFO("all_time_steps_ = %d", all_time_steps_ );
+
+//    ROS_INFO("[end] plan trajectory");
+
+//    PRINT_MAT( Moveit->display_planned_path_positions );
+
+  ros::Duration seconds(0.5);
+  seconds.sleep();
+
+//    if ( Robotis->execute_planned_path == true )
+  if (moveit_execution_ == true)
+  {
+    joint_goal_trajectory_ = Eigen::MatrixXd::Zero(all_time_steps_, MAX_JOINT_NUM);
+    joint_goal_trajectory_ = motionPlanningTool_->display_planned_path_positions_;
+
+    is_moving_ = true;
+    step_cnt_ = 0;
+
+    moveit_execution_ = false;
+
+    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "Send Motion Trajectory");
+
+//    Robotis->execute_planned_path = false;
+
+//        ROS_INFO("[start] send trajectory");
   }
 }
 
@@ -599,6 +796,21 @@ void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_fram
     joint_goal_position_(joint_id_[joint_name]-1) = dxl->dxl_state_->goal_position_;
   }
 
+  motionPlanningTool_->kinematic_state_->copyJointGroupPositions(motionPlanningTool_->arm_joint_model_group_, motionPlanningTool_->_arm_joint_values_);
+
+  for (int _arm_index = 0; _arm_index < motionPlanningTool_->_arm_joint_values_.size(); _arm_index++)
+  {
+    ROS_INFO("_arm_index = %d", motionPlanningTool_->_arm_joint_values_.size());
+      motionPlanningTool_->_arm_joint_values_[_arm_index] = joint_goal_position_(_arm_index);
+  }
+
+  motionPlanningTool_->kinematic_state_->setJointGroupPositions(motionPlanningTool_->arm_joint_model_group_, motionPlanningTool_->_arm_joint_values_);
+
+//      const Eigen::Affine3d &curr_end_effector_state = motionPlanningTool_->kinematic_state_->getGlobalLinkTransform("end_effector");
+
+//      Robotis->curr_position =  curr_end_effector_state.translation();
+//      Robotis->curr_orientation =  curr_end_effector_state.rotation();
+
   /* Set Joint Pose */
   if (is_moving_ == true)
   {
@@ -619,6 +831,13 @@ void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_fram
         publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "End Trajectory");
       }
     }
+    else if (motionPlanningMode_ == true)
+    {
+      for (int index = 0; index < MAX_JOINT_NUM; index++)
+      {
+        joint_goal_position_(index) = joint_goal_trajectory_(step_cnt_, index);
+      }
+    }
     step_cnt_++;
   }
 
@@ -637,6 +856,7 @@ void ManipulatorX4PositionCtrlModule::process(std::map<std::string, robotis_fram
 
       is_moving_ = false;
       step_cnt_ = 0;
+      moveit_execution_ = false;
     }
   }
 }
