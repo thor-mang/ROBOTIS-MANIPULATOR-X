@@ -59,7 +59,7 @@
 
 ros::Publisher status_msg_pub;
 ros::Publisher execute_planned_path_msg_pub;
-pthread_t tra_gene;
+pthread_t trajectory_generate;
 manipulator_x_position_ctrl_module_msgs::KinematicsPose kinematics_pose_msg;
 
 void publishStatusMsg(unsigned int type, std::string msg);
@@ -73,7 +73,7 @@ void* plan_trajectory_proc(void* arg)
 
   /* ----- set planning time ----- */
 
-  group.setPlanningTime(5.0);
+  group.setPlanningTime(7.0);
 
   /* set start state */
   group.setStartState(*group.getCurrentState());
@@ -121,7 +121,7 @@ void motionPlanningTargetPoseMsgCallback( const manipulator_x_position_ctrl_modu
 
   kinematics_pose_msg = *msg;
 
-  pthread_create( &tra_gene , NULL , plan_trajectory_proc , NULL );
+  pthread_create( &trajectory_generate , NULL , plan_trajectory_proc , NULL );
 
   return;
 }

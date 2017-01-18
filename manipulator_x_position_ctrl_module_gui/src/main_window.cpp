@@ -140,7 +140,7 @@ void MainWindow::changeControlMode(int index)
 
     ui_.send_goal_position_pushButton->setText("Send Kinematics Pose");
   }
-  else if (control_mode_ = MOTION_PLANNING)
+  else if (control_mode_ == MOTION_PLANNING)
   {
     qnode_.sendEnableMotionPlanningMode(str_msg);
 
@@ -235,13 +235,13 @@ void MainWindow::on_send_goal_position_pushButton_clicked(bool check)
     msg.group_name = "arm";
     msg.move_time = 1.5;
 
-    msg.pose.position.x = ui_.goal_x_doubleSpinBox->value();
-    msg.pose.position.y = ui_.goal_y_doubleSpinBox->value();
-    msg.pose.position.z = ui_.goal_z_doubleSpinBox->value();
+    msg.pose.position.x = ui_.motion_goal_x_doubleSpinBox->value();
+    msg.pose.position.y = ui_.motion_goal_y_doubleSpinBox->value();
+    msg.pose.position.z = ui_.motion_goal_z_doubleSpinBox->value();
 
-    double roll  = ui_.goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
-    double pitch = ui_.goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
-    double yaw   = ui_.goal_yaw_doubleSpinBox->value() * DEGREE2RADIAN;
+    double roll  = ui_.motion_goal_roll_doubleSpinBox->value() * DEGREE2RADIAN;
+    double pitch = ui_.motion_goal_pitch_doubleSpinBox->value() * DEGREE2RADIAN;
+    double yaw   = ui_.motion_goal_yaw_doubleSpinBox->value() * DEGREE2RADIAN;
 
     Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
 
@@ -277,11 +277,11 @@ void MainWindow::updateKinematicsPresentPoseLineEdit(manipulator_x_position_ctrl
   ui_.goal_y_doubleSpinBox->setValue(msg.pose.position.y);
   ui_.goal_z_doubleSpinBox->setValue(msg.pose.position.z);
 
-  ui_.motion_present_x_lineEdit->setText(QString::number(msg.pose.position.x, 'f', 4));
+  ui_.motion_present_x_lineEdit->setText(QString::number(msg.pose.position.x - 0.06, 'f', 4));
   ui_.motion_present_y_lineEdit->setText(QString::number(msg.pose.position.y, 'f', 4));
   ui_.motion_present_z_lineEdit->setText(QString::number(msg.pose.position.z, 'f', 4));
 
-  ui_.motion_goal_x_doubleSpinBox->setValue(msg.pose.position.x);
+  ui_.motion_goal_x_doubleSpinBox->setValue(msg.pose.position.x - 0.06);
   ui_.motion_goal_y_doubleSpinBox->setValue(msg.pose.position.y);
   ui_.motion_goal_z_doubleSpinBox->setValue(msg.pose.position.z);
 

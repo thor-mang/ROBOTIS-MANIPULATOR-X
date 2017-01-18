@@ -23,7 +23,6 @@ find_package(catkin REQUIRED COMPONENTS
   robotis_controller_msgs
   cmake_modules
   manipulator_x_position_ctrl_module_msgs
-  robotis_controller_msgs
 )
 
 find_package(Eigen REQUIRED)

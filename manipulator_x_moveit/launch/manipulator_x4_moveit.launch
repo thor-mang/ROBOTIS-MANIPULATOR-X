@@ -20,10 +20,11 @@
   <!-- We do not have a robot connected, so publish fake joint states -->
   <arg name="use_present" default="true"/>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="/use_gui" value="false"/>
-    <rosparam param="source_list" if="$(arg use_present)">["robotis/manipulator_x4/present_joint_states"]</rosparam>
-    <rosparam param="source_list" unless="$(arg use_present)">["robotis/manipulator_x4/goal_joint_states"]</rosparam>
+  <node name="robotis_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="false"/>
+  <!-- <remap from="/joint_states" to="/robotis/manipulator_x4/joint_states"/> -->
+    <rosparam param="source_list" if="$(arg use_present)">["/robotis/present_joint_states"]</rosparam>
+    <rosparam param="source_list" unless="$(arg use_present)">["/robotis/goal_joint_states"]</rosparam>
   </node>
 
   <!-- Given the published joint states, publish tf for the robot links -->
@@ -45,8 +46,11 @@
 
   <!-- If database loading was enabled, start mongodb as well -->
   <include file="$(find manipulator_x_moveit)/launch/default_warehouse_db.launch" if="$(arg db)">
-    <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
-  </include>
+    <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>-->
+ </include>
+
+  <!-- Gripper Pub-->
+ <!-- <node name="manipulator_x_rviz_pub" pkg="manipulator_x_description" type="manipulator_x_rviz_pub"/> -->
 
   <!-- Planning API -->
   <node name="manipulator_x4_motion_planning" pkg="manipulator_x_planning" type="manipulator_x_planning">

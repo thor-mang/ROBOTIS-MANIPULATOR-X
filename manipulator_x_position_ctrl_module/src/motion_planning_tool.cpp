@@ -6,10 +6,10 @@ MotionPlanningTool::MotionPlanningTool()
 {
   points_ = 10;
 
-  time_from_start_ = ros::Duration( 10.0 ); // movement duration
+  time_from_start_ = ros::Duration(10.0); // movement duration
 
-  display_planned_path_positions_ = Eigen::MatrixXd::Zero(points_ , MAX_JOINT_NUM); // positions of planned path
-  display_planned_path_velocities_ = Eigen::MatrixXd::Zero(points_ , MAX_JOINT_NUM); // positions of planned path
+  display_planned_path_positions_ = Eigen::MatrixXd::Zero(points_ , MAX_JOINT_NUM);     // positions of planned path
+  display_planned_path_velocities_ = Eigen::MatrixXd::Zero(points_ , MAX_JOINT_NUM);    // positions of planned path
   display_planned_path_accelerations_ = Eigen::MatrixXd::Zero(points_ , MAX_JOINT_NUM); // positions of planned path
 
   // initialization

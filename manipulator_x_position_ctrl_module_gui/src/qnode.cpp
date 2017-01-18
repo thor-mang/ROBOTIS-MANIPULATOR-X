@@ -88,7 +88,6 @@ bool QNode::init()
                                   "/robotis/manipulator_x4/position_ctrl/send_goal_position", 10);
   joint_present_position_client_ = nh.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>(
                                   "/robotis/manipulator_x4/position_ctrl/joint_present_position", 10);
-
   enable_task_space_control_mode_pub_ = nh.advertise<std_msgs::String>(
                                   "/robotis/manipulator_x4/position_ctrl/enable_tack_space_control_mode", 10);
   set_kinematics_pose_msg_pub_ = nh.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>(
