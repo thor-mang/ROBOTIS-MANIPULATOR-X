@@ -118,7 +118,6 @@ class ManipulatorX4PositionCtrlModule
   ros::Subscriber display_planned_path_sub_;
   ros::Subscriber set_motion_planning_pose_msg_sub_;
   ros::Subscriber execute_planned_path_sub_;
-  ros::Subscriber rviz_plan_goal_sub_;
 
   // Control Mode
   bool jointSpaceControlMode_;
@@ -174,7 +173,6 @@ class ManipulatorX4PositionCtrlModule
   void setMotionPlanningPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr &msg);
   void displayPlannedPathMsgCallback(const moveit_msgs::DisplayTrajectory::ConstPtr& msg);
   void executePlannedPathMsgCallback(const std_msgs::String::ConstPtr &msg);
-  void rvizPlanGoalMsgCallback(const std_msgs::String::ConstPtr &msg);
   void moveItTragectoryGenerateThread();
 
   void calculateGoalJointTrajectory(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);

@@ -130,8 +130,6 @@ void ManipulatorX4PositionCtrlModule::queueThread()
                                                    &ManipulatorX4PositionCtrlModule::setMotionPlanningPoseMsgCallback, this);
   display_planned_path_sub_ = nh.subscribe("/move_group/display_planned_path", 10,
                                           &ManipulatorX4PositionCtrlModule::displayPlannedPathMsgCallback, this);
-  rviz_plan_goal_sub_ = nh.subscribe("/move_group/goal", 10,
-                                          &ManipulatorX4PositionCtrlModule::rvizPlanGoalMsgCallback, this);
 
   while (nh.ok())
   {
@@ -395,7 +393,7 @@ void ManipulatorX4PositionCtrlModule::setKinematicsChain(void)
 {
   chain_.addSegment(KDL::Segment("Base",
                                  KDL::Joint(KDL::Joint::None),
-                                 KDL::Frame(KDL::Vector(0.012, 0.0, 0.034))
+                                 KDL::Frame(KDL::Vector(0.047, 0.0, 0.137))
 //                                 KDL::RigidBodyInertia(0.087,
 //                                                       KDL::Vector(-0.01175, 0.0, -0.01620),
 //                                                       KDL::RotationalInertia(1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
@@ -671,11 +669,6 @@ void ManipulatorX4PositionCtrlModule::executePlannedPathMsgCallback(const std_ms
 //      robotis_demo_msg_pub_.publish( DemoName );
     }
   }
-}
-
-void ManipulatorX4PositionCtrlModule::rvizPlanGoalMsgCallback(const std_msgs::String::ConstPtr &msg)
-{
-  publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_INFO, "asdfasdfsafd");
 }
 
 void ManipulatorX4PositionCtrlModule::displayPlannedPathMsgCallback(const moveit_msgs::DisplayTrajectory::ConstPtr &msg)
