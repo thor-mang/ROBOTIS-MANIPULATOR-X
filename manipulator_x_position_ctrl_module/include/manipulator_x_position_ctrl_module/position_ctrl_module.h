@@ -118,6 +118,7 @@ class ManipulatorX4PositionCtrlModule
   ros::Subscriber display_planned_path_sub_;
   ros::Subscriber set_motion_planning_pose_msg_sub_;
   ros::Subscriber execute_planned_path_sub_;
+  ros::Subscriber ar_pose_marker_sub_;
 
   // Control Mode
   bool jointSpaceControlMode_;

@@ -24,6 +24,8 @@
   <build_depend>interactive_markers</build_depend>
   <build_depend>industrial_trajectory_filters</build_depend>
   <build_depend>manipulator_x_position_ctrl_module_msgs</build_depend>
+  <build_depend>artoolkit</build_depend>
+  <build_depend>tf</build_depend>
   <run_depend>control_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>sensor_msgs</run_depend>
@@ -39,6 +41,8 @@
   <run_depend>interactive_markers</run_depend>
   <run_depend>industrial_trajectory_filters</run_depend>
   <run_depend>manipulator_x_position_ctrl_module_msgs</run_depend>
+  <run_depend>artoolkit</run_depend>
+  <run_depend>tf</run_depend>
   <export>
   </export>
 </package>
