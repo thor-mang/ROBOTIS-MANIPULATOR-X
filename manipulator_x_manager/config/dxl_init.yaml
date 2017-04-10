@@ -33,15 +33,3 @@ joint6 :   # XM-430
    operating_mode        : 3     
    goal_current          : 0
    homing_offset         : 0
-
-joint7 :   # XM-430
-   return_delay_time     : 0    
-   operating_mode        : 3     
-   goal_current          : 0
-   homing_offset         : 0
-
-grip_joint :   # XM-430
-   return_delay_time     : 0    
-   operating_mode        : 3     
-   goal_current          : 0
-   homing_offset         : -636

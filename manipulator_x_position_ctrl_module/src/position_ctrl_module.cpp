@@ -56,7 +56,7 @@ PositionCtrlModule::PositionCtrlModule()
   result_["joint4"] = new robotis_framework::DynamixelState();
   result_["joint5"] = new robotis_framework::DynamixelState();
   result_["joint6"] = new robotis_framework::DynamixelState();
-  result_["joint7"] = new robotis_framework::DynamixelState();
+//  result_["joint7"] = new robotis_framework::DynamixelState();
 
   joint_name_to_id_["joint1"] = 1;
   joint_name_to_id_["joint2"] = 2;
@@ -64,7 +64,7 @@ PositionCtrlModule::PositionCtrlModule()
   joint_name_to_id_["joint4"] = 4;
   joint_name_to_id_["joint5"] = 5;
   joint_name_to_id_["joint6"] = 6;
-  joint_name_to_id_["joint7"] = 7;
+//  joint_name_to_id_["joint7"] = 7;
 
   present_joint_position_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
   present_joint_velocity_ = Eigen::VectorXd::Zero(MAX_JOINT_NUM);

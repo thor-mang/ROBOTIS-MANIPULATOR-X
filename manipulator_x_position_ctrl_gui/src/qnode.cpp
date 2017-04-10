@@ -49,11 +49,11 @@ void QNode::sendSetModeMsg(std_msgs::String msg)
   str_msg.data = "position_ctrl_module";
   set_ctrl_module_pub_.publish(str_msg);
 
-  str_msg.data = "gripper_module";
-  set_ctrl_module_pub_.publish(str_msg);
+//  str_msg.data = "gripper_module";
+//  set_ctrl_module_pub_.publish(str_msg);
 
   set_position_ctrl_mode_msg_pub_.publish(msg);
-  set_gripper_mode_msg_pub_.publish(msg);
+//  set_gripper_mode_msg_pub_.publish(msg);
 }
 
 void QNode::sendInitialPoseMsg(std_msgs::String msg)

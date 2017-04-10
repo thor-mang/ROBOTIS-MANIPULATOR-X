@@ -79,7 +79,8 @@
 namespace robotis_manipulator_x
 {
 
-#define MAX_JOINT_NUM   (7)
+//#define MAX_JOINT_NUM   (7)
+#define MAX_JOINT_NUM   (6)
 #define TASK_DEMENSION  (6)
 
 enum MODE_SELECT
