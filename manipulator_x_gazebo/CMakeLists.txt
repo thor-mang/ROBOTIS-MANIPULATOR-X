@@ -17,10 +17,10 @@ catkin_package(
   std_msgs
 )
 
-add_executable(manipulator_x_gazebo_grip_pub
-  src/manipulator_x_gazebo_grip_pub.cpp
-)
+#add_executable(manipulator_x_gazebo_grip_pub
+#  src/manipulator_x_gazebo_grip_pub.cpp
+#)
 
-target_link_libraries(manipulator_x_gazebo_grip_pub
-  ${catkin_LIBRARIES}
-)
+#target_link_libraries(manipulator_x_gazebo_grip_pub
+#  ${catkin_LIBRARIES}
+#)

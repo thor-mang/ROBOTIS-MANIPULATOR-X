@@ -34,18 +34,3 @@ robotis_manipulator_x:
     type: effort_controllers/JointPositionController
     joint: joint6
     pid: {p: 6000.0, i: 0.1, d: 400.0}
-
-  joint7_position:
-    type: effort_controllers/JointPositionController
-    joint: joint7
-    pid: {p: 6000.0, i: 0.1, d: 400.0}
-
-  grip_joint_position:
-    type: effort_controllers/JointPositionController
-    joint: grip_joint
-    pid: {p: 6000.0, i: 0.1, d: 400.0}
-
-  grip_joint_sub_position:
-    type: effort_controllers/JointPositionController
-    joint: grip_joint_sub
-    pid: {p: 6000.0, i: 0.1, d: 400.0}

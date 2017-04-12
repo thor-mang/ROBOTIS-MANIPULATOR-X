@@ -44,5 +44,5 @@ add_dependencies(manipulator_x_position_ctrl_module ${${PROJECT_NAME}_EXPORTED_T
 target_link_libraries(manipulator_x_position_ctrl_module
   yaml-cpp
   ${catkin_LIBRARIES}
-  /opt/ros/indigo/lib/liborocos-kdl.so
+#  /opt/ros/indigo/lib/liborocos-kdl.so
 )

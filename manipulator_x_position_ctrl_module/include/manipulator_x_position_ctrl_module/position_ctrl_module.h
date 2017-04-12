@@ -54,15 +54,15 @@
 
 #include <fstream>
 
-#include <kdl/joint.hpp>
-#include <kdl/chain.hpp>
-#include <kdl/chaindynparam.hpp>
-#include <kdl/jacobian.hpp>
-#include <kdl/chainjnttojacsolver.hpp>
-#include <kdl/chainfksolver.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainiksolvervel_pinv.hpp>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
+//#include <kdl/joint.hpp>
+//#include <kdl/chain.hpp>
+//#include <kdl/chaindynparam.hpp>
+//#include <kdl/jacobian.hpp>
+//#include <kdl/chainjnttojacsolver.hpp>
+//#include <kdl/chainfksolver.hpp>
+//#include <kdl/chainfksolverpos_recursive.hpp>
+//#include <kdl/chainiksolvervel_pinv.hpp>
+//#include <kdl/chainiksolverpos_nr_jl.hpp>
 
 #include "robotis_math/robotis_math.h"
 #include "robotis_framework_common/motion_module.h"
@@ -71,10 +71,10 @@
 #include "robotis_controller_msgs/StatusMsg.h"
 
 #include "manipulator_x_position_ctrl_module_msgs/JointPose.h"
-#include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
+//#include "manipulator_x_position_ctrl_module_msgs/KinematicsPose.h"
 
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
-#include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
+//#include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
 
 namespace robotis_manipulator_x
 {
@@ -111,15 +111,15 @@ private:
 
   MODE_SELECT module_control_;
 
-  KDL::Chain chain_;
-  KDL::ChainDynParam *dyn_param_ = NULL;
-  KDL::ChainJntToJacSolver *jacobian_solver_;
-  KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
-  KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
-  KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
+//  KDL::Chain chain_;
+//  KDL::ChainDynParam *dyn_param_ = NULL;
+//  KDL::ChainJntToJacSolver *jacobian_solver_;
+//  KDL::ChainFkSolverPos_recursive *forward_kinematics_solver_;
+//  KDL::ChainIkSolverVel_pinv *inverse_vel_kinematics_solver_;
+//  KDL::ChainIkSolverPos_NR_JL *inverse_pos_kinematics_solver_;
 
-  Eigen::MatrixXd jacobian_;
-  geometry_msgs::Pose present_kinematics_pose_;
+//  Eigen::MatrixXd jacobian_;
+//  geometry_msgs::Pose present_kinematics_pose_;
 
   Eigen::VectorXd present_joint_position_;
   Eigen::VectorXd present_joint_velocity_;
@@ -135,17 +135,17 @@ private:
   Eigen::MatrixXd goal_joint_tra_;
 
   /* Definition for TASK SPACE CONTROL */
-  Eigen::MatrixXd goal_task_tra_;
-  Eigen::Quaterniond initial_orientation_, target_orientation_;
+//  Eigen::MatrixXd goal_task_tra_;
+//  Eigen::Quaterniond initial_orientation_, target_orientation_;
 
   void queueThread();
 
-  void setKinematicsChain();
-  void calcJacobian();
-  void calcForwardKinematics();
-  bool calcInverseKinematics(int cnt);
+//  void setKinematicsChain();
+//  void calcJacobian();
+//  void calcForwardKinematics();
+//  bool calcInverseKinematics(int cnt);
   void calcGoalJointTra(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
-  void calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
+//  void calcGoalTaskTra(Eigen::VectorXd initial_position, Eigen::VectorXd target_position);
 
 public:
   PositionCtrlModule();
@@ -157,15 +157,15 @@ public:
   void parseIniPoseData( const std::string &path );
 
   void enableJointSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg);
-  void enableTaskSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg);
+//  void enableTaskSpaceControlMsgCallback(const std_msgs::Bool::ConstPtr& msg);
 
   void setJointPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::JointPose::ConstPtr& msg);
-  void setKinematicsPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr& msg);
+//  void setKinematicsPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr& msg);
 
   bool getJointPoseCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
                             manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
-  bool getKinematicsPoseCallback(manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Request &req,
-                                 manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Response &res);
+//  bool getKinematicsPoseCallback(manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Request &req,
+//                                 manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Response &res);
 
   void initialize(const int control_cycle_msec, robotis_framework::Robot *robot);
   void process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors);

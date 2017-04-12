@@ -49,7 +49,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   joint_name_.push_back("joint4");
   joint_name_.push_back("joint5");
   joint_name_.push_back("joint6");
-  joint_name_.push_back("joint7");
+//  joint_name_.push_back("joint7");
 
   present_joint_angle_spinbox_.push_back(ui_.joint1_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint2_pre_angle_spinbox);
@@ -57,7 +57,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   present_joint_angle_spinbox_.push_back(ui_.joint4_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint5_pre_angle_spinbox);
   present_joint_angle_spinbox_.push_back(ui_.joint6_pre_angle_spinbox);
-  present_joint_angle_spinbox_.push_back(ui_.joint7_pre_angle_spinbox);
+//  present_joint_angle_spinbox_.push_back(ui_.joint7_pre_angle_spinbox);
 
   desired_joint_angle_spinbox_.push_back(ui_.joint1_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint2_des_angle_spinbox);
@@ -65,21 +65,21 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
   desired_joint_angle_spinbox_.push_back(ui_.joint4_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint5_des_angle_spinbox);
   desired_joint_angle_spinbox_.push_back(ui_.joint6_des_angle_spinbox);
-  desired_joint_angle_spinbox_.push_back(ui_.joint7_des_angle_spinbox);
+//  desired_joint_angle_spinbox_.push_back(ui_.joint7_des_angle_spinbox);
 
-  present_task_space_position_spinbox_.push_back(ui_.pre_position_x_spinbox);
-  present_task_space_position_spinbox_.push_back(ui_.pre_position_y_spinbox);
-  present_task_space_position_spinbox_.push_back(ui_.pre_position_z_spinbox);
-  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_r_spinbox);
-  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_p_spinbox);
-  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_y_spinbox);
+//  present_task_space_position_spinbox_.push_back(ui_.pre_position_x_spinbox);
+//  present_task_space_position_spinbox_.push_back(ui_.pre_position_y_spinbox);
+//  present_task_space_position_spinbox_.push_back(ui_.pre_position_z_spinbox);
+//  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_r_spinbox);
+//  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_p_spinbox);
+//  present_task_space_orientation_spinbox_.push_back(ui_.pre_orientation_y_spinbox);
 
-  desired_task_space_position_spinbox_.push_back(ui_.des_position_x_spinbox);
-  desired_task_space_position_spinbox_.push_back(ui_.des_position_y_spinbox);
-  desired_task_space_position_spinbox_.push_back(ui_.des_position_z_spinbox);
-  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_r_spinbox);
-  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_p_spinbox);
-  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_y_spinbox);
+//  desired_task_space_position_spinbox_.push_back(ui_.des_position_x_spinbox);
+//  desired_task_space_position_spinbox_.push_back(ui_.des_position_y_spinbox);
+//  desired_task_space_position_spinbox_.push_back(ui_.des_position_z_spinbox);
+//  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_r_spinbox);
+//  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_p_spinbox);
+//  desired_task_space_orientation_spinbox_.push_back(ui_.des_orientation_y_spinbox);
 
   /****************************
   ** Connect
@@ -90,11 +90,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
                    this,
                    SLOT(updateJointPoseSpinbox(manipulator_x_position_ctrl_module_msgs::JointPose)));
 
-  qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("manipulator_x_position_ctrl_module_msgs::KinematicsPose");
-  QObject::connect(&qnode_,
-                   SIGNAL(updateKinematicsPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose)),
-                   this,
-                   SLOT(updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose)));
+//  qRegisterMetaType<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("manipulator_x_position_ctrl_module_msgs::KinematicsPose");
+//  QObject::connect(&qnode_,
+//                   SIGNAL(updateKinematicsPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose)),
+//                   this,
+//                   SLOT(updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose)));
 
   /*********************
   ** Auto Start
@@ -119,7 +119,7 @@ void MainWindow::on_set_position_control_mode_button_clicked(bool check)
 void MainWindow::on_go_zero_pose_button_clicked(bool check)
 {
   ui_.joint_space_control_checkbox->setChecked(true);
-  ui_.task_space_control_checkbox->setChecked(false);
+//  ui_.task_space_control_checkbox->setChecked(false);
 
   std_msgs::String msg;
   msg.data = "zero_pose";
@@ -130,7 +130,7 @@ void MainWindow::on_go_zero_pose_button_clicked(bool check)
 void MainWindow::on_go_initial_pose_button_clicked(bool check)
 {
   ui_.joint_space_control_checkbox->setChecked(true);
-  ui_.task_space_control_checkbox->setChecked(false);
+//  ui_.task_space_control_checkbox->setChecked(false);
 
   std_msgs::String msg;
   msg.data = "initial_pose";
@@ -143,10 +143,10 @@ void MainWindow::on_get_pre_value_pushbutton_clicked(bool check)
   qnode_.getJointPose();
 }
 
-void MainWindow::on_get_pre_pose_pushbutton_clicked(bool check)
-{
-  qnode_.getKinematicsPose();
-}
+//void MainWindow::on_get_pre_pose_pushbutton_clicked(bool check)
+//{
+//  qnode_.getKinematicsPose();
+//}
 
 void MainWindow::on_send_des_value_pushbutton_clicked(bool check)
 {
@@ -162,70 +162,70 @@ void MainWindow::on_send_des_value_pushbutton_clicked(bool check)
   qnode_.sendJointPoseMsg(msg);
 }
 
-void MainWindow::on_send_des_pose_pushbutton_clicked(bool check)
-{
-  manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
+//void MainWindow::on_send_des_pose_pushbutton_clicked(bool check)
+//{
+//  manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
 
-  msg.group_name = "arm";
-  msg.mov_time = 1.5;
+//  msg.group_name = "arm";
+//  msg.mov_time = 1.5;
 
-  msg.pose.position.x = ui_.des_position_x_spinbox->value();
-  msg.pose.position.y = ui_.des_position_y_spinbox->value();
-  msg.pose.position.z = ui_.des_position_z_spinbox->value();
+//  msg.pose.position.x = ui_.des_position_x_spinbox->value();
+//  msg.pose.position.y = ui_.des_position_y_spinbox->value();
+//  msg.pose.position.z = ui_.des_position_z_spinbox->value();
 
-  double roll = ui_.des_orientation_r_spinbox->value() * DEGREE2RADIAN;
-  double pitch = ui_.des_orientation_p_spinbox->value() * DEGREE2RADIAN;
-  double yaw = ui_.des_orientation_y_spinbox->value() * DEGREE2RADIAN;
+//  double roll = ui_.des_orientation_r_spinbox->value() * DEGREE2RADIAN;
+//  double pitch = ui_.des_orientation_p_spinbox->value() * DEGREE2RADIAN;
+//  double yaw = ui_.des_orientation_y_spinbox->value() * DEGREE2RADIAN;
 
-  Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
+//  Eigen::Quaterniond quaternion = robotis_framework::convertRPYToQuaternion(roll, pitch, yaw);
 
-  msg.pose.orientation.x = quaternion.x();
-  msg.pose.orientation.y = quaternion.y();
-  msg.pose.orientation.z = quaternion.z();
-  msg.pose.orientation.w = quaternion.w();
+//  msg.pose.orientation.x = quaternion.x();
+//  msg.pose.orientation.y = quaternion.y();
+//  msg.pose.orientation.z = quaternion.z();
+//  msg.pose.orientation.w = quaternion.w();
 
-  qnode_.sendKinematicsPoseMsg(msg);
-}
+//  qnode_.sendKinematicsPoseMsg(msg);
+//}
 
-void MainWindow::on_grip_off_pushbutton_clicked(bool check)
-{
-  std_msgs::Float64 msg;
-  msg.data = -45.0 * DEGREE2RADIAN;
+//void MainWindow::on_grip_off_pushbutton_clicked(bool check)
+//{
+//  std_msgs::Float64 msg;
+//  msg.data = -45.0 * DEGREE2RADIAN;
 
-  qnode_.sendGripperPoseMsg(msg);
-}
+//  qnode_.sendGripperPoseMsg(msg);
+//}
 
-void MainWindow::on_grip_on_pushbutton_clicked(bool check)
-{
-  double value = ui_.grip_joint_des_angle_spinbox->value() * DEGREE2RADIAN;
+//void MainWindow::on_grip_on_pushbutton_clicked(bool check)
+//{
+//  double value = ui_.grip_joint_des_angle_spinbox->value() * DEGREE2RADIAN;
 
-  std_msgs::Float64 msg;
-  msg.data = -1.0 * value;
+//  std_msgs::Float64 msg;
+//  msg.data = -1.0 * value;
 
-  qnode_.sendGripperPoseMsg(msg);
-}
+//  qnode_.sendGripperPoseMsg(msg);
+//}
 
 void MainWindow::on_joint_space_control_checkbox_clicked(bool check)
 {
   std_msgs::Bool msg;
   msg.data = ui_.joint_space_control_checkbox->isChecked();
 
-  if (msg.data == true)
-    ui_.task_space_control_checkbox->setChecked(false);
+//  if (msg.data == true)
+//    ui_.task_space_control_checkbox->setChecked(false);
 
   qnode_.enableJointSpaceControl(msg);
 }
 
-void MainWindow::on_task_space_control_checkbox_clicked(bool check)
-{
-  std_msgs::Bool msg;
-  msg.data = ui_.task_space_control_checkbox->isChecked();
+//void MainWindow::on_task_space_control_checkbox_clicked(bool check)
+//{
+//  std_msgs::Bool msg;
+//  msg.data = ui_.task_space_control_checkbox->isChecked();
 
-  if (msg.data == true)
-    ui_.joint_space_control_checkbox->setChecked(false);
+//  if (msg.data == true)
+//    ui_.joint_space_control_checkbox->setChecked(false);
 
-  qnode_.enableTaskSpaceControl(msg);
-}
+//  qnode_.enableTaskSpaceControl(msg);
+//}
 
 /*****************************************************************************
 ** Implemenation [Slots][manually connected]
@@ -257,33 +257,33 @@ void MainWindow::updateJointPoseSpinbox(manipulator_x_position_ctrl_module_msgs:
   }
 }
 
-void MainWindow::updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
-{
-  Eigen::MatrixXd position = Eigen::MatrixXd::Zero(3,1);
-  position.coeffRef(0,0) = msg.pose.position.x;
-  position.coeffRef(1,0) = msg.pose.position.y;
-  position.coeffRef(2,0) = msg.pose.position.z;
+//void MainWindow::updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
+//{
+//  Eigen::MatrixXd position = Eigen::MatrixXd::Zero(3,1);
+//  position.coeffRef(0,0) = msg.pose.position.x;
+//  position.coeffRef(1,0) = msg.pose.position.y;
+//  position.coeffRef(2,0) = msg.pose.position.z;
 
-  for (int index=0; index<present_task_space_position_spinbox_.size(); index++)
-  {
-    ((QDoubleSpinBox *) present_task_space_position_spinbox_[index])->setValue(position.coeff(index,0));
-    ((QDoubleSpinBox *) desired_task_space_position_spinbox_[index])->setValue(position.coeff(index,0));
-  }
+//  for (int index=0; index<present_task_space_position_spinbox_.size(); index++)
+//  {
+//    ((QDoubleSpinBox *) present_task_space_position_spinbox_[index])->setValue(position.coeff(index,0));
+//    ((QDoubleSpinBox *) desired_task_space_position_spinbox_[index])->setValue(position.coeff(index,0));
+//  }
 
-  Eigen::Quaterniond quaterion;
-  quaterion.x() = msg.pose.orientation.x;
-  quaterion.y() = msg.pose.orientation.y;
-  quaterion.z() = msg.pose.orientation.z;
-  quaterion.w() = msg.pose.orientation.w;
+//  Eigen::Quaterniond quaterion;
+//  quaterion.x() = msg.pose.orientation.x;
+//  quaterion.y() = msg.pose.orientation.y;
+//  quaterion.z() = msg.pose.orientation.z;
+//  quaterion.w() = msg.pose.orientation.w;
 
-  Eigen::MatrixXd orientation = robotis_framework::convertQuaternionToRPY(quaterion);
+//  Eigen::MatrixXd orientation = robotis_framework::convertQuaternionToRPY(quaterion);
 
-  for (int index=0; index<present_task_space_orientation_spinbox_.size(); index++)
-  {
-    ((QDoubleSpinBox *) present_task_space_orientation_spinbox_[index])->setValue(orientation.coeff(index,0) * RADIAN2DEGREE);
-    ((QDoubleSpinBox *) desired_task_space_orientation_spinbox_[index])->setValue(orientation.coeff(index,0) * RADIAN2DEGREE);
-  }
-}
+//  for (int index=0; index<present_task_space_orientation_spinbox_.size(); index++)
+//  {
+//    ((QDoubleSpinBox *) present_task_space_orientation_spinbox_[index])->setValue(orientation.coeff(index,0) * RADIAN2DEGREE);
+//    ((QDoubleSpinBox *) desired_task_space_orientation_spinbox_[index])->setValue(orientation.coeff(index,0) * RADIAN2DEGREE);
+//  }
+//}
 
 /*****************************************************************************
 ** Implementation [Menu]
