@@ -112,21 +112,16 @@ public:
     void sendSetModeMsg(std_msgs::String msg);
     void sendInitialPoseMsg(std_msgs::String msg);
     void sendJointPoseMsg(manipulator_x_position_ctrl_module_msgs::JointPose msg);
-//    void sendKinematicsPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
-//    void sendGripperPoseMsg(std_msgs::Float64 msg);
 
     void enableJointSpaceControl(std_msgs::Bool msg);
-//    void enableTaskSpaceControl(std_msgs::Bool msg);
 
     void getJointPose();
-//    void getKinematicsPose();
 
 Q_SIGNALS:
     void loggingUpdated();
     void rosShutdown();
 
     void updateJointPose(manipulator_x_position_ctrl_module_msgs::JointPose);
-//    void updateKinematicsPose(manipulator_x_position_ctrl_module_msgs::KinematicsPose);
 
 private:
     int init_argc;
@@ -136,17 +131,12 @@ private:
     ros::Publisher set_ctrl_module_pub_;
 
     ros::Publisher set_position_ctrl_mode_msg_pub_;
-//    ros::Publisher set_gripper_mode_msg_pub_;
     ros::Publisher set_initial_pose_msg_pub_;
     ros::Publisher set_joint_pose_msg_pub_;
-//    ros::Publisher set_kinematics_pose_msg_pub_;
-//    ros::Publisher set_gripper_pose_msg_pub_;
 
     ros::Publisher enable_joint_space_control_pub_;
-//    ros::Publisher enable_task_space_control_pub_;
 
     ros::ServiceClient get_joint_pose_client_;
-//    ros::ServiceClient get_kinematics_pose_client_;
 
     ros::Subscriber status_msg_sub_;
 };

@@ -49,11 +49,7 @@ void QNode::sendSetModeMsg(std_msgs::String msg)
   str_msg.data = "position_ctrl_module";
   set_ctrl_module_pub_.publish(str_msg);
 
-//  str_msg.data = "gripper_module";
-//  set_ctrl_module_pub_.publish(str_msg);
-
   set_position_ctrl_mode_msg_pub_.publish(msg);
-//  set_gripper_mode_msg_pub_.publish(msg);
 }
 
 void QNode::sendInitialPoseMsg(std_msgs::String msg)
@@ -66,25 +62,10 @@ void QNode::sendJointPoseMsg(manipulator_x_position_ctrl_module_msgs::JointPose 
   set_joint_pose_msg_pub_.publish(msg);
 }
 
-//void QNode::sendKinematicsPoseMsg(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg)
-//{
-//  set_kinematics_pose_msg_pub_.publish(msg);
-//}
-
-//void QNode::sendGripperPoseMsg(std_msgs::Float64 msg)
-//{
-//  set_gripper_pose_msg_pub_.publish(msg);
-//}
-
 void QNode::enableJointSpaceControl(std_msgs::Bool msg)
 {
   enable_joint_space_control_pub_.publish(msg);
 }
-
-//void QNode::enableTaskSpaceControl(std_msgs::Bool msg)
-//{
-//  enable_task_space_control_pub_.publish(msg);
-//}
 
 void QNode::getJointPose()
 {
@@ -101,21 +82,6 @@ void QNode::getJointPose()
   }
 }
 
-//void QNode::getKinematicsPose()
-//{
-//  manipulator_x_position_ctrl_module_msgs::GetKinematicsPose srv;
-
-//  if (get_kinematics_pose_client_.call(srv))
-//  {
-//    manipulator_x_position_ctrl_module_msgs::KinematicsPose msg;
-
-//    msg.group_name = srv.response.position_ctrl_kinematics_pose.group_name;
-//    msg.pose = srv.response.position_ctrl_kinematics_pose.pose;
-
-//    Q_EMIT updateKinematicsPose(msg);
-//  }
-//}
-
 bool QNode::init()
 {
   ros::init(init_argc,init_argv,"manipulator_x_position_ctrl_gui");
@@ -127,17 +93,12 @@ bool QNode::init()
   set_ctrl_module_pub_ = n.advertise<std_msgs::String>("/robotis/enable_ctrl_module", 0);
 
   set_position_ctrl_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_mode_msg", 0);
-//  set_gripper_mode_msg_pub_ = n.advertise<std_msgs::String>("/robotis/gripper/set_mode_msg", 0);
   set_initial_pose_msg_pub_ = n.advertise<std_msgs::String>("/robotis/position_ctrl/set_initial_pose_msg", 0);
   set_joint_pose_msg_pub_ = n.advertise<manipulator_x_position_ctrl_module_msgs::JointPose>("/robotis/position_ctrl/set_joint_pose_msg", 0);
-//  set_kinematics_pose_msg_pub_ = n.advertise<manipulator_x_position_ctrl_module_msgs::KinematicsPose>("/robotis/position_ctrl/set_kinematics_pose_msg", 0);
-//  set_gripper_pose_msg_pub_ = n.advertise<std_msgs::Float64>("/robotis/gripper/set_gripper_pose_msg", 0);
 
   enable_joint_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_joint_space_control_msg", 0);
-//  enable_task_space_control_pub_ = n.advertise<std_msgs::Bool>("/robotis/position_ctrl/enable_task_space_control_msg", 0);
 
   get_joint_pose_client_ = n.serviceClient<manipulator_x_position_ctrl_module_msgs::GetJointPose>("/robotis/position_ctrl/get_joint_pose", 0);
-//  get_kinematics_pose_client_ = n.serviceClient<manipulator_x_position_ctrl_module_msgs::GetKinematicsPose>("/robotis/position_ctrl/get_kinematics_pose", 0);
 
   status_msg_sub_ = n.subscribe("/robotis/status", 10, &QNode::statusMsgCallback, this);
 

@@ -87,14 +87,7 @@ public Q_SLOTS:
   void on_get_pre_value_pushbutton_clicked(bool check);
   void on_send_des_value_pushbutton_clicked(bool check);
 
-//  void on_get_pre_pose_pushbutton_clicked(bool check);
-//  void on_send_des_pose_pushbutton_clicked(bool check);
-
-//  void on_grip_off_pushbutton_clicked(bool check);
-//  void on_grip_on_pushbutton_clicked(bool check);
-
   void on_joint_space_control_checkbox_clicked(bool check);
-//  void on_task_space_control_checkbox_clicked(bool check);
 
   /******************************************
     ** Manual connections
@@ -102,7 +95,6 @@ public Q_SLOTS:
   void updateLoggingView(); // no idea why this can't connect automatically
 
   void updateJointPoseSpinbox(manipulator_x_position_ctrl_module_msgs::JointPose msg);
-//  void updateKinematicsPoseSpinbox(manipulator_x_position_ctrl_module_msgs::KinematicsPose msg);
 
 private:
   Ui::MainWindowDesign ui_;
@@ -112,12 +104,6 @@ private:
 
   QList<QAbstractSpinBox *> present_joint_angle_spinbox_;
   QList<QAbstractSpinBox *> desired_joint_angle_spinbox_;
-
-//  QList<QAbstractSpinBox *> present_task_space_position_spinbox_;
-//  QList<QAbstractSpinBox *> present_task_space_orientation_spinbox_;
-
-//  QList<QAbstractSpinBox *> desired_task_space_position_spinbox_;
-//  QList<QAbstractSpinBox *> desired_task_space_orientation_spinbox_;
 };
 
 }  // namespace manipulator_x_position_ctrl_gui
