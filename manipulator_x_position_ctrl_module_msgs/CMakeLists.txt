@@ -24,6 +24,8 @@ add_service_files(
   FILES
   GetJointPose.srv
   GetKinematicsPose.srv
+  JointPoseToKinematicsPose.srv
+  KinematicsPoseToJointPose.srv
 )
 
 generate_messages(

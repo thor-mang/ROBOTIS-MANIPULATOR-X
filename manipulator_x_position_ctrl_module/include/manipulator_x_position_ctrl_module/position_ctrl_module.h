@@ -76,6 +76,9 @@
 #include "manipulator_x_position_ctrl_module_msgs/GetJointPose.h"
 #include "manipulator_x_position_ctrl_module_msgs/GetKinematicsPose.h"
 
+#include "manipulator_x_position_ctrl_module_msgs/JointPoseToKinematicsPose.h"
+#include "manipulator_x_position_ctrl_module_msgs/KinematicsPoseToJointPose.h"
+
 namespace robotis_manipulator_x
 {
 
@@ -103,6 +106,9 @@ private:
 
   ros::ServiceServer get_joint_pose_server_;
   ros::ServiceServer get_kinematics_pose_server_;
+
+  ros::ServiceServer joint_pose_to_kinematics_pose_server_;
+  ros::ServiceServer kinematics_pose_to_joint_pose_server_;
 
   std::map<std::string, int> joint_name_to_id_;
 
@@ -165,6 +171,12 @@ public:
                             manipulator_x_position_ctrl_module_msgs::GetJointPose::Response &res);
   bool getKinematicsPoseCallback(manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Request &req,
                                  manipulator_x_position_ctrl_module_msgs::GetKinematicsPose::Response &res);
+
+  bool jointPoseToKinematicsPoseCallback(manipulator_x_position_ctrl_module_msgs::JointPoseToKinematicsPose::Request &req,
+                                         manipulator_x_position_ctrl_module_msgs::JointPoseToKinematicsPose::Response &res);
+
+  bool kinematicsPoseToJointPoseCallback(manipulator_x_position_ctrl_module_msgs::KinematicsPoseToJointPose::Request &req,
+                                         manipulator_x_position_ctrl_module_msgs::KinematicsPoseToJointPose::Response &res);
 
   void initialize(const int control_cycle_msec, robotis_framework::Robot *robot);
   void process(std::map<std::string, robotis_framework::Dynamixel *> dxls, std::map<std::string, double> sensors);

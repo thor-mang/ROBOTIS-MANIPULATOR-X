@@ -104,6 +104,10 @@ void PositionCtrlModule::queueThread()
   get_kinematics_pose_server_ = ros_node.advertiseService("/robotis/position_ctrl/get_kinematics_pose",
                                                           &PositionCtrlModule::getKinematicsPoseCallback, this);
 
+  joint_pose_to_kinematics_pose_server_ = ros_node.advertiseService("/robotis/joint_pose_to_kinematics_pose",
+                                                                    &PositionCtrlModule::jointPoseToKinematicsPoseCallback, this);
+  kinematics_pose_to_joint_pose_server_ = ros_node.advertiseService("/robotis/kinematics_pose_to_joint_pose",
+                                                                    &PositionCtrlModule::kinematicsPoseToJointPoseCallback, this);
   /* subscribe topics */
   ros::Subscriber set_mode_msg_sub = ros_node.subscribe("/robotis/position_ctrl/set_mode_msg", 5,
                                                         &PositionCtrlModule::setModeMsgCallback, this);
@@ -153,8 +157,8 @@ void PositionCtrlModule::setInitialPoseMsgCallback(const std_msgs::String::Const
 
     parseIniPoseData(ini_pose_path);
   }
-  else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+//  else
+//    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 void PositionCtrlModule::parseIniPoseData(const std::string &path)
@@ -256,8 +260,8 @@ void PositionCtrlModule::setJointPoseMsgCallback(const manipulator_x_position_ct
     else
       publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Joint Space Control");
   }
-  else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+//  else
+//    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 void PositionCtrlModule::setKinematicsPoseMsgCallback(const manipulator_x_position_ctrl_module_msgs::KinematicsPose::ConstPtr& msg)
@@ -304,8 +308,8 @@ void PositionCtrlModule::setKinematicsPoseMsgCallback(const manipulator_x_positi
     else
       publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Please Check Enable Task Space Control");
   }
-  else
-    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
+//  else
+//    publishStatusMsg(robotis_controller_msgs::StatusMsg::STATUS_WARN, "Previous Task is Alive");
 }
 
 bool PositionCtrlModule::getJointPoseCallback(manipulator_x_position_ctrl_module_msgs::GetJointPose::Request &req,
@@ -345,6 +349,82 @@ bool PositionCtrlModule::getKinematicsPoseCallback(manipulator_x_position_ctrl_m
 
   res.position_ctrl_kinematics_pose.group_name = "arm";
   res.position_ctrl_kinematics_pose.pose = present_kinematics_pose_;
+
+  return true;
+}
+
+bool PositionCtrlModule::jointPoseToKinematicsPoseCallback(manipulator_x_position_ctrl_module_msgs::JointPoseToKinematicsPose::Request &req,
+                                                           manipulator_x_position_ctrl_module_msgs::JointPoseToKinematicsPose::Response &res)
+{
+  if (req.joint_pose.name.size() != MAX_JOINT_NUM)
+    return false;
+
+  if (req.joint_pose.position.size() != MAX_JOINT_NUM)
+    return false;
+
+  Eigen::VectorXd joint_pose = Eigen::VectorXd::Zero(MAX_JOINT_NUM);
+  for(int i=0; i<req.joint_pose.name.size(); i++)
+  {
+    std::string joint_name = req.joint_pose.name[i];
+    joint_pose(joint_name_to_id_[joint_name]-1) = req.joint_pose.position[i];
+  }
+
+  KDL::JntArray kdl_joint_position;
+  kdl_joint_position.data = joint_pose;
+
+  KDL::Frame kdl_kinematics_pose;
+  forward_kinematics_solver_->JntToCart(kdl_joint_position, kdl_kinematics_pose);
+
+  res.kinematics_pose.position.x = kdl_kinematics_pose.p.x();
+  res.kinematics_pose.position.y = kdl_kinematics_pose.p.y();
+  res.kinematics_pose.position.z = kdl_kinematics_pose.p.z();
+
+  kdl_kinematics_pose.M.GetQuaternion(res.kinematics_pose.orientation.x,
+                                      res.kinematics_pose.orientation.y,
+                                      res.kinematics_pose.orientation.z,
+                                      res.kinematics_pose.orientation.w);
+
+  return true;
+}
+
+bool PositionCtrlModule::kinematicsPoseToJointPoseCallback(manipulator_x_position_ctrl_module_msgs::KinematicsPoseToJointPose::Request &req,
+                                                           manipulator_x_position_ctrl_module_msgs::KinematicsPoseToJointPose::Response &res)
+{
+
+  KDL::JntArray kdl_initial_joint_position;
+  kdl_initial_joint_position.data = present_joint_position_;
+
+  KDL::Frame kdl_desired_kinematics_pose;
+
+  kdl_desired_kinematics_pose.p.x(req.kinematics_pose.position.x);
+  kdl_desired_kinematics_pose.p.y(req.kinematics_pose.position.y);
+  kdl_desired_kinematics_pose.p.z(req.kinematics_pose.position.z);
+
+  kdl_desired_kinematics_pose.M = KDL::Rotation::Quaternion(req.kinematics_pose.orientation.x,
+                                                            req.kinematics_pose.orientation.y,
+                                                            req.kinematics_pose.orientation.z,
+                                                            req.kinematics_pose.orientation.w);
+
+  KDL::JntArray kdl_desired_joint_position;
+  kdl_desired_joint_position.resize(MAX_JOINT_NUM);
+
+  if (inverse_pos_kinematics_solver_->CartToJnt(kdl_initial_joint_position, kdl_desired_kinematics_pose, kdl_desired_joint_position) < 0)
+    return false;
+
+  res.joint_pose.name.push_back("joint1");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(0));
+  res.joint_pose.name.push_back("joint2");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(1));
+  res.joint_pose.name.push_back("joint3");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(2));
+  res.joint_pose.name.push_back("joint4");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(3));
+  res.joint_pose.name.push_back("joint5");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(4));
+  res.joint_pose.name.push_back("joint6");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(5));
+  res.joint_pose.name.push_back("joint7");
+  res.joint_pose.position.push_back(kdl_desired_joint_position(6));
 
   return true;
 }
