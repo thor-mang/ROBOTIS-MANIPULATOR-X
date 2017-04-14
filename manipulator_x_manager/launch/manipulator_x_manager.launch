@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <launch>
-    <arg name="use_gazebo"	default="true" />
+    <arg name="use_gazebo"	default="false" />
 
     <param name="gazebo"                value="$(arg use_gazebo)"    type="bool"/>
     <param name="gazebo_robot_name"     value="robotis_manipulator_x"/>
