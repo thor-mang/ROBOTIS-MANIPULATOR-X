@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   manipulator_x_position_ctrl_module_msgs
+  cmake_modules
 )
 
 include_directories(
