@@ -21,4 +21,7 @@
 
   <!-- Show in Rviz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulator_x_description)/launch/manipulator_x.rviz"/>
+  
+  <!-- Gripper Pub-->
+  <node name="manipulator_x_rviz_pub" pkg="manipulator_x_description" type="manipulator_x_rviz_pub"/>
 </launch>

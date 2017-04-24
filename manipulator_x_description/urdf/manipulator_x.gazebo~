@@ -68,5 +68,26 @@
     <mu2>0.2</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
+
+  <!-- Link8 -->
+  <gazebo reference="link8">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- grip_link -->
+  <gazebo reference="grip_link">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- grip_link_sub -->
+  <gazebo reference="grip_link_sub">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
     
 </robot>

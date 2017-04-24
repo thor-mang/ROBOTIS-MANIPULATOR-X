@@ -4,13 +4,13 @@ joint1 :   # XM-430
    goal_current          : 0
    homing_offset         : 0
 
-joint2 :   # XM-540
+joint2 :   # XM-430
    return_delay_time     : 0   
    operating_mode        : 3     
    goal_current          : 0
    homing_offset         : 0
 
-joint3 :   # XM-540
+joint3 :   # XM-430
    return_delay_time     : 0    
    operating_mode        : 3
    goal_current          : 0
