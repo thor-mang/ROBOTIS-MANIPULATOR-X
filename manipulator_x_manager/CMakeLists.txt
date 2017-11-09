@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   
   manipulator_x_position_ctrl_module
+  manipulator_x_position_ctrl_module_msgs
   manipulator_x_gripper_module
 )
 
