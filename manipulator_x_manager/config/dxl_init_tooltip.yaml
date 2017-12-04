@@ -1,29 +1,19 @@
-joint1 :   # XM-430
+arm_joint_1 :   # XM-430
    return_delay_time     : 1    
    operating_mode        : 3     
    goal_current          : 0
 
-joint2 :   # XM-430
+arm_joint_2 :   # XM-430
    return_delay_time     : 1    
    operating_mode        : 3     
    goal_current          : 0
 
-joint3 :   # XM-430
+arm_joint_3 :   # XM-430
    return_delay_time     : 1    
    operating_mode        : 3
    goal_current          : 0
 
-joint4 :   # XM-430
-   return_delay_time     : 1    
-   operating_mode        : 3     
-   goal_current          : 0
-
-joint5 :   # XM-430
-   return_delay_time     : 1    
-   operating_mode        : 3     
-   goal_current          : 0
-
-joint6 :   # XM-430
+arm_joint_4 :   # XM-430
    return_delay_time     : 1    
    operating_mode        : 3     
    goal_current          : 0
