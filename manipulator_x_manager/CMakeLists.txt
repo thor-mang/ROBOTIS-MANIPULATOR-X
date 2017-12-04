@@ -30,9 +30,9 @@ find_package(Eigen REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#   INCLUDE_DIRS include
-#  LIBRARIES manipulator_x_manager
-#  CATKIN_DEPENDS robotis_controller roscpp
+   #INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  #CATKIN_DEPENDS roscpp robotis_framework_common robotis_device robotis_controller robotis_controller_msgs robotis_math cmake_modules manipulator_x_position_ctrl_module manipulator_x_position_ctrl_module_msgs manipulator_x_gripper_module
 #  DEPENDS system_lib
 )
 
@@ -48,13 +48,16 @@ include_directories(
   ${Eigen_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
+set(SOURCES
+  src/manipulator_x_manager.cpp
+)
 
 ## Declare a C++ executable
 add_executable(manipulator_x_manager src/manipulator_x_manager.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(manipulator_x_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(manipulator_x_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(manipulator_x_manager
